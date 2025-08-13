@@ -10,6 +10,13 @@
   margin: 0 auto;
 }
 
+/* Login page specific styles */
+.main-content.login-page-main {
+  padding: 0;
+  margin: 0;
+  max-width: none;
+}
+
 .container {
   max-width: 1200px;
   margin: 0 auto;

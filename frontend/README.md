@@ -1,16 +1,6 @@
-# React Frontend
+# Internal Sea Core Frontend
 
-This is the React frontend for the Internal Sea Core project.
-
-## Features
-
-- Modern React 18 with TypeScript
-- React Router for navigation
-- Context API for state management
-- Axios for API communication
-- Responsive design with CSS
-- JWT authentication integration
-- Protected routes
+This is the frontend application for the Internal Sea Core project.
 
 ## Setup
 
@@ -24,70 +14,62 @@ npm install
 npm start
 ```
 
-The application will be available at `http://localhost:3000`
+## Login Page Background Image
+
+The login page now uses the beautiful ocean wave background image `fabian-jones-HWe3f8xIJq0-unsplash.jpg`.
+
+**To complete the setup:**
+1. Download the image `fabian-jones-HWe3f8xIJq0-unsplash.jpg` (the ocean wave image)
+2. Place it in the `frontend/public/` directory
+3. The CSS is already configured to use this image
+
+The background image creates a stunning visual effect with:
+- Dark, moody ocean waves
+- Subtle blue overlay for better text readability
+- Professional, atmospheric aesthetic
+- Perfect contrast for the white login form
+
+## Features
+
+- **Modern Login Page**: Beautiful two-column layout with ocean background image
+- **Responsive Design**: Works on all device sizes
+- **Form Validation**: Built-in form validation and error handling
+- **Authentication**: Integrated with the backend authentication system
+- **Navigation**: Conditional navbar (hidden on login page)
 
 ## Available Scripts
 
 - `npm start` - Runs the app in development mode
+- `npm build` - Builds the app for production
 - `npm test` - Launches the test runner
-- `npm run build` - Builds the app for production
-- `npm run eject` - Ejects from Create React App (one-way operation)
+- `npm eject` - Ejects from Create React App (one-way operation)
 
 ## Project Structure
 
 ```
-frontend/
-├── public/
-│   ├── index.html
-│   └── manifest.json
-├── src/
-│   ├── components/
-│   │   ├── Navbar.tsx
-│   │   └── Navbar.css
-│   ├── contexts/
-│   │   └── AuthContext.tsx
-│   ├── pages/
-│   │   ├── Home.tsx
-│   │   ├── Home.css
-│   │   ├── Login.tsx
-│   │   ├── Login.css
-│   │   ├── Dashboard.tsx
-│   │   ├── Dashboard.css
-│   │   ├── Items.tsx
-│   │   └── Items.css
-│   ├── App.tsx
-│   ├── App.css
-│   ├── index.tsx
-│   ├── index.css
-│   └── reportWebVitals.ts
-├── package.json
-└── README.md
+src/
+├── components/     # Reusable UI components
+├── contexts/      # React contexts (Auth, etc.)
+├── pages/         # Page components
+│   ├── Login.tsx  # Main login page (now the home page)
+│   ├── Home.tsx   # Home page (accessible via /home)
+│   ├── Dashboard.tsx
+│   └── Items.tsx
+└── App.tsx        # Main app component with routing
 ```
-
-## Pages
-
-- **Home** (`/`) - Welcome page with feature overview
-- **Login** (`/login`) - User authentication
-- **Dashboard** (`/dashboard`) - User dashboard with statistics (protected)
-- **Items** (`/items`) - Item management (protected)
-
-## Authentication
-
-The app uses JWT tokens for authentication. The `AuthContext` manages:
-- User login/logout
-- Token storage in localStorage
-- Protected route access
-- User state across the application
-
-## API Integration
-
-The frontend communicates with the FastAPI backend at `http://localhost:8000`. The proxy configuration in `package.json` handles CORS during development.
 
 ## Styling
 
-The app uses custom CSS with:
-- Responsive design
-- Modern card-based layouts
-- Consistent color scheme
-- Hover effects and transitions
-- Mobile-friendly navigation 
+The login page uses modern CSS features including:
+- CSS Grid and Flexbox for layout
+- Background image with overlay effects
+- Modern form styling with focus states
+- Responsive design with media queries
+- Professional color scheme and typography
+
+## Browser Support
+
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest) 

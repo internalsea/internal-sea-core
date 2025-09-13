@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 from app.core.database import get_db
 from app.models.user import User
-from app.schemas.user import UserCreate, UserResponse
+from app.schemas.user import UserCreate, UserResponse, UserUpdate
 from app.core.security import get_current_user
 
 router = APIRouter()
@@ -41,4 +41,22 @@ async def create_user(user: UserCreate, db: Session = Depends(get_db)):
     
     # Create new user logic here
     # This would typically involve hashing the password
-    return {"id": 1, "email": user.email, "full_name": user.full_name, "is_active": True} 
+    return {"id": 1, "email": user.email, "full_name": user.full_name, "is_active": True}
+
+@router.put("/me", response_model=UserResponse)
+async def update_current_user(
+    user_update: UserUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    update_data = user_update.dict(exclude_unset=True)
+    for field, value in update_data.items():
+        if field == "password":
+            # Hash the password before storing
+            from app.core.security import get_password_hash
+            value = get_password_hash(value)
+        setattr(current_user, field, value)
+    
+    db.commit()
+    db.refresh(current_user)
+    return current_user 

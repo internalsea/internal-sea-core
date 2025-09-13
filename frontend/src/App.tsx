@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Items from './pages/Items';
+import Settings from './pages/Settings';
 import { AuthProvider } from './contexts/AuthContext';
 
 // Component to conditionally render navbar
@@ -23,6 +24,7 @@ const AppContent: React.FC = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/items" element={<Items />} />
+          <Route path="/settings" element={<Settings />} />
         </Routes>
       </main>
     </div>

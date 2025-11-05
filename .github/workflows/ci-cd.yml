@@ -55,6 +55,12 @@ jobs:
         pip install -r requirements.txt
 
     - name: Run backend tests
+      env:
+        DATABASE_URL: postgresql://user:password@localhost:5432/internal_sea_core
+        REDIS_URL: redis://localhost:6379
+        SECRET_KEY: test-secret-key-for-ci
+        ENVIRONMENT: test
+        DEBUG: "true"
       run: |
         cd backend
         pytest tests/ -v
@@ -78,9 +84,11 @@ jobs:
         npm ci
 
     - name: Run frontend tests
+      env:
+        CI: true
       run: |
         cd frontend
-        npm test -- --watchAll=false --coverage
+        npm test -- --watchAll=false --coverage --passWithNoTests
 
     - name: Build frontend
       run: |
@@ -140,7 +148,7 @@ jobs:
 
     - name: Deploy to server
       run: |
-        ssh ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << 'EOF'
+        ssh ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} bash -c "
           # Navigate to deployment directory
           cd ${{ secrets.DEPLOY_PATH }}
           
@@ -168,8 +176,8 @@ jobs:
           # Check if services are running
           docker-compose ps
           
-          echo "Deployment completed successfully!"
-        EOF
+          echo 'Deployment completed successfully!'
+        "
 
     - name: Health check
       run: |

@@ -11,7 +11,11 @@ os.environ["ENVIRONMENT"] = "test"
 @pytest.fixture(scope="session")
 def test_db_engine():
     """Create test database engine"""
-    database_url = "postgresql://intsea:OceanHides1000Pearls@localhost:5433/intseadb_test"
+    # Use environment variable if set (for CI), otherwise use local default
+    database_url = os.getenv(
+        "DATABASE_URL",
+        "postgresql://intsea:OceanHides1000Pearls@localhost:5433/intseadb_test"
+    )
     engine = create_engine(database_url)
     
     # Run migrations to set up test database
@@ -39,8 +43,12 @@ def test_db_session(test_db_engine):
 @pytest.fixture(autouse=True)
 def setup_test_environment():
     """Set up test environment variables"""
-    os.environ["DATABASE_URL"] = "postgresql://intsea:OceanHides1000Pearls@localhost:5433/intseadb_test"
-    os.environ["REDIS_URL"] = "redis://localhost:6380"
-    os.environ["SECRET_KEY"] = "test-secret-key-for-testing-only"
+    # Only set if not already set (allows CI to override)
+    if "DATABASE_URL" not in os.environ:
+        os.environ["DATABASE_URL"] = "postgresql://intsea:OceanHides1000Pearls@localhost:5433/intseadb_test"
+    if "REDIS_URL" not in os.environ:
+        os.environ["REDIS_URL"] = "redis://localhost:6380"
+    if "SECRET_KEY" not in os.environ:
+        os.environ["SECRET_KEY"] = "test-secret-key-for-testing-only"
     os.environ["ENVIRONMENT"] = "test"
     os.environ["DEBUG"] = "true"

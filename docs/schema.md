@@ -71,6 +71,24 @@ This schema defines the **multi-tenant B2B architecture**, where a single user c
 
 
 ## Logical View
+```mermaid
+graph TD
+  User[User]
+  Organization[Organization]
+  Membership[OrganizationMembership]
+  Team[Team]
+  TeamRole[TeamUserRole]
+  Role[Role]
+
+  User -->|belongs to| Membership
+  Organization -->|has members| Membership
+  Organization -->|owns teams| Team
+  Team -->|has assignments| TeamRole
+  User -->|assigned to teams| TeamRole
+  Membership -->|org role| Role
+  TeamRole -->|team role| Role
+```
+
 ```
 User
   ├── OrganizationMembership → Organization

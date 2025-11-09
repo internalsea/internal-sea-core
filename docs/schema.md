@@ -45,7 +45,40 @@ This schema defines the **multi-tenant B2B architecture**, where a single user c
   - Designed for scalability — new roles can be added without structural changes.  
   - Shared between org-level and team-level entities for consistent RBAC management.
 
+## Relationships
 
+  - **User ↔ Organization**: many-to-many (via **OrganizationMembership**).
+  - One User can have multiple OrganizationMemberships.
+  - One Organization can have many Users through Memberships.
+
+- **Organization ↔ Team**: one-to-many.
+  - A Team belongs to exactly one Organization.
+  - An Organization can have many Teams.
+
+- **User ↔ Team**: many-to-many (via **TeamUserRole**).
+  - A User can be in many Teams (possibly across orgs they belong to).
+  - A Team can have many Users.
+
+- **Role ↔ {OrganizationMembership, TeamUserRole}**: one-to-many.
+  - Roles are shared; they’re referenced wherever access is granted.
+
+## Narrative View (Who owns what)
+
+- Organizations **own** Teams and OrganizationMemberships.
+- Teams **belong to** one Organization and **host** TeamUserRoles.
+- Users **participate in** Organizations via OrganizationMemberships and **participate in** Teams via TeamUserRoles.
+- Roles are **referenced by** Memberships and TeamUserRoles; they’re not scoped to a single tenant.
+
+
+## Logical View
+```
+User
+  ├── OrganizationMembership → Organization
+  │       └── Role (org-level)
+  └── TeamUserRole → Team → Organization
+          └── Role (team-level)
+
+```
 ---
 
 ## ER Diagram

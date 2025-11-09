@@ -4,6 +4,8 @@ This schema defines the **multi-tenant B2B architecture**, where a single user c
 
 ---
 
+## ER Diagram : [**View on dbdocs.io →**](https://dbdocs.io/Jerin%20Sam/intsea-models)  
+
 ## Overview
 
 - **Organizations**

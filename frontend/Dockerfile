@@ -4,11 +4,19 @@ FROM node:18-alpine as build
 # Set work directory
 WORKDIR /app
 
+# Accept build arguments for React environment variables
+ARG REACT_APP_API_URL=/api/v1
+ARG NODE_ENV=production
+
+# Set environment variables for build
+ENV REACT_APP_API_URL=$REACT_APP_API_URL
+ENV NODE_ENV=$NODE_ENV
+
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install dependencies (need devDependencies for React build)
+RUN npm ci
 
 # Copy source code
 COPY . .

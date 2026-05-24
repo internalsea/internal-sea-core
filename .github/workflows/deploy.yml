@@ -1,0 +1,86 @@
+# Deploy intsea.dev via shared-landing orchestrator (after tests pass in ci-cd.yml).
+#
+# Required secrets: DEPLOY_HOST, DEPLOY_USER, DEPLOY_SSH_KEY
+# Optional: DEPLOY_PORT, DEPLOY_BASE_DIR, DEPLOY_BRANCH, DEPLOY_GIT_TOKEN, REPO_*
+
+name: Deploy to on-premise
+
+on:
+  workflow_run:
+    workflows: [CI/CD Pipeline]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: onprem-deploy
+  cancel-in-progress: false
+
+env:
+  SSH_HOST: ${{ secrets.DEPLOY_HOST }}
+  SSH_USER: ${{ secrets.DEPLOY_USER }}
+  SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+  SSH_PORT: ${{ secrets.DEPLOY_PORT }}
+  DEPLOY_BASE_DIR: ${{ secrets.DEPLOY_BASE_DIR }}
+  DEPLOY_BRANCH: ${{ secrets.DEPLOY_BRANCH }}
+  DEPLOY_GIT_TOKEN: ${{ secrets.DEPLOY_GIT_TOKEN }}
+  COMPOSE_SERVICES: intsea-backend intsea-frontend
+  REPO_SHARED_LANDING: ${{ secrets.REPO_SHARED_LANDING }}
+  REPO_CITY_GODS_TODAY: ${{ secrets.REPO_CITY_GODS_TODAY }}
+  REPO_DEVS_FASHION: ${{ secrets.REPO_DEVS_FASHION }}
+  REPO_INTERNAL_SEA_COM: ${{ secrets.REPO_INTERNAL_SEA_COM }}
+  REPO_INTERNAL_SEA_HOLDING_COM: ${{ secrets.REPO_INTERNAL_SEA_HOLDING_COM }}
+  REPO_INTERNAL_SEA_CORE: ${{ secrets.REPO_INTERNAL_SEA_CORE }}
+
+jobs:
+  deploy:
+    name: SSH deploy
+    runs-on: ubuntu-latest
+    if: >-
+      ${{ github.event_name == 'workflow_dispatch' ||
+          (github.event.workflow_run.conclusion == 'success' &&
+           github.event.workflow_run.event == 'push') }}
+    timeout-minutes: 30
+
+    steps:
+      - name: Check required secrets
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          set -euo pipefail
+          missing=0
+          for name in DEPLOY_HOST DEPLOY_USER DEPLOY_SSH_KEY; do
+            eval "val=\${$name:-}"
+            if [ -z "$val" ]; then
+              echo "::error::Missing required secret: $name"
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            exit 1
+          fi
+
+      - name: Checkout shared-landing deploy scripts
+        uses: actions/checkout@v4
+        with:
+          repository: muove4sea/shared-landing
+          ref: main
+          path: shared-landing
+          token: ${{ secrets.DEPLOY_GIT_TOKEN }}
+
+      - name: Update shared-landing
+        run: bash shared-landing/scripts/ci-ssh-remote.sh update-repo shared-landing
+
+      - name: Update internal-sea-core
+        run: bash shared-landing/scripts/ci-ssh-remote.sh update-repo internal-sea-core
+
+      - name: Sync compose environment
+        run: bash shared-landing/scripts/ci-ssh-remote.sh sync-env
+
+      - name: Verify Docker build context
+        run: bash shared-landing/scripts/ci-ssh-remote.sh verify-repo internal-sea-core
+
+      - name: Docker Compose up
+        run: bash shared-landing/scripts/ci-ssh-remote.sh compose-up

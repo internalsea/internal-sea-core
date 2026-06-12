@@ -5,8 +5,18 @@ from typing import Self
 from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-_REPO_ROOT = Path(__file__).resolve().parents[3]
-_ENV_FILES = (str(_REPO_ROOT / ".env"), ".env")
+def _settings_env_files() -> tuple[str, ...]:
+    """Resolve .env paths for monorepo (apps/api) and Docker (/app) layouts."""
+    here = Path(__file__).resolve()
+    candidates: list[str] = []
+    if len(here.parents) > 3:
+        candidates.append(str(here.parents[3] / ".env"))
+    candidates.append(str(here.parents[1] / ".env"))
+    candidates.append(".env")
+    return tuple(dict.fromkeys(candidates))
+
+
+_ENV_FILES = _settings_env_files()
 
 _PRODUCTION_LIKE_ENVS = frozenset({"production", "staging", "prod"})
 _INSECURE_JWT_SECRETS = frozenset({"change_me_later", "changeme", "secret"})

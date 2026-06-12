@@ -1,0 +1,62 @@
+# Example production-oriented Compose — reference only, not used by CI.
+# Copy and adapt for your environment. Do NOT commit real secrets.
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: internal_sea_core
+      POSTGRES_USER: internal_sea
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U internal_sea -d internal_sea_core"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ../../apps/api
+    env_file:
+      - ../../.env
+    environment:
+      APP_ENV: production
+      DEBUG: "false"
+      AUTH_ENABLED: "true"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health/live')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    # Run migrations separately before/upgrading API:
+    # docker compose run --rm api alembic upgrade head
+
+  web:
+    build:
+      context: ../../apps/web
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL}
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "8080:80"
+
+volumes:
+  postgres_data:

@@ -1,0 +1,1 @@
+"""Generic entity relationship module."""

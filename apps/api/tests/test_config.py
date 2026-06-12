@@ -30,6 +30,12 @@ def test_production_rejects_debug_true() -> None:
         )
 
 
+def test_cors_origins_parses_comma_separated_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("CORS_ORIGINS", "https://intsea.dev,https://www.intsea.dev")
+    settings = Settings()
+    assert settings.cors_origins == ["https://intsea.dev", "https://www.intsea.dev"]
+
+
 def test_production_rejects_wildcard_cors() -> None:
     with pytest.raises(ValidationError, match="CORS"):
         Settings(

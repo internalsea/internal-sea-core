@@ -1,9 +1,9 @@
 from functools import lru_cache
 from pathlib import Path
-from typing import Self
+from typing import Annotated, Self
 
 from pydantic import Field, field_validator, model_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 def _settings_env_files() -> tuple[str, ...]:
     """Resolve .env paths for monorepo (apps/api) and Docker (/app) layouts."""
@@ -40,7 +40,10 @@ class Settings(BaseSettings):
     # API
     api_host: str = "0.0.0.0"
     api_port: int = 8000
-    cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:5173"])
+    # Comma-separated in .env / docker-compose; NoDecode skips pydantic-settings JSON parsing.
+    cors_origins: Annotated[list[str], NoDecode] = Field(
+        default_factory=lambda: ["http://localhost:5173"]
+    )
 
     # Database
     postgres_host: str = "localhost"

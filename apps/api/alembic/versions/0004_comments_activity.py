@@ -19,7 +19,7 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    op.drop_constraint("ck_comments_target_required", "comments", type_="check")
+    op.drop_constraint(op.f("ck_comments_target_required"), "comments", type_="check")
     op.add_column("comments", sa.Column("project_id", postgresql.UUID(as_uuid=True), nullable=True))
     op.create_foreign_key(
         op.f("fk_comments_project_id_projects"),
@@ -29,7 +29,7 @@ def upgrade() -> None:
         ["id"],
     )
     op.create_check_constraint(
-        "ck_comments_target_required",
+        op.f("ck_comments_target_required"),
         "comments",
         "data_product_id IS NOT NULL OR work_item_id IS NOT NULL OR project_id IS NOT NULL",
     )
@@ -75,11 +75,11 @@ def downgrade() -> None:
     op.drop_index("ix_activity_events_entity_type_entity_id", table_name="activity_events")
     op.drop_table("activity_events")
 
-    op.drop_constraint("ck_comments_target_required", "comments", type_="check")
+    op.drop_constraint(op.f("ck_comments_target_required"), "comments", type_="check")
     op.drop_constraint(op.f("fk_comments_project_id_projects"), "comments", type_="foreignkey")
     op.drop_column("comments", "project_id")
     op.create_check_constraint(
-        "ck_comments_target_required",
+        op.f("ck_comments_target_required"),
         "comments",
         "data_product_id IS NOT NULL OR work_item_id IS NOT NULL",
     )

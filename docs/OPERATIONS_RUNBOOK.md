@@ -68,6 +68,20 @@ curl http://localhost:8000/api/v1/health
 | 403 on writes as viewer | Expected RBAC | Use editor/admin account |
 | CORS errors in browser | Origin not in `CORS_ORIGINS` | Add frontend URL to env |
 | Frontend calls localhost API in prod | `VITE_API_BASE_URL` not set at build | Rebuild web with correct URL |
+| Deploy seed fails with `documentation_url` | `intsea-backend` image not rebuilt after code update | Rebuild `intsea-backend` on server, then rerun deploy seed |
+
+## On-prem deploy (shared-landing)
+
+After `update-repo internal-sea-core`, rebuild Internal Sea images before migrate/seed one-off containers run. Otherwise the server may keep an old `intsea-backend` image (`Skipped - No image to be pulled`) and seed will fail on stale code.
+
+On the server (paths may vary):
+
+```bash
+cd /opt/shared-landing
+docker compose build intsea-backend intsea-frontend
+```
+
+CI/CD should run `compose-build intsea-backend intsea-frontend` (or equivalent) before `compose-up`.
 
 ## Reset local environment
 

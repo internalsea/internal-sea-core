@@ -2048,6 +2048,9 @@ def main() -> None:
     try:
         asyncio.run(seed_database())
     except Exception as exc:
+        import traceback
+
+        traceback.print_exc()
         print(f"Seed failed: {exc}", file=sys.stderr)
         raise SystemExit(1) from exc
 

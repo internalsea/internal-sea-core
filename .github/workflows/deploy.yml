@@ -183,6 +183,9 @@ jobs:
       DEPLOY_BRANCH: ${{ secrets.DEPLOY_BRANCH }}
       DEPLOY_GIT_TOKEN: ${{ secrets.DEPLOY_GIT_TOKEN }}
       COMPOSE_SERVICES: intsea-postgres intsea-redis intsea-backend intsea-frontend
+      # Rebuild Internal Sea images after update-repo so one-off migrate/seed containers use current code.
+      COMPOSE_BUILD: "1"
+      COMPOSE_BUILD_SERVICES: intsea-backend intsea-frontend
       REPO_SHARED_LANDING: ${{ secrets.REPO_SHARED_LANDING }}
       REPO_CITY_GODS_TODAY: ${{ secrets.REPO_CITY_GODS_TODAY }}
       REPO_DEVS_FASHION: ${{ secrets.REPO_DEVS_FASHION }}
@@ -230,6 +233,9 @@ jobs:
 
       - name: Verify Docker build context
         run: bash shared-landing/scripts/ci-ssh-remote.sh verify-repo internal-sea-core
+
+      - name: Build Internal Sea images on server
+        run: bash shared-landing/scripts/ci-ssh-remote.sh compose-build intsea-backend intsea-frontend
 
       - name: Docker Compose up
         run: bash shared-landing/scripts/ci-ssh-remote.sh compose-up

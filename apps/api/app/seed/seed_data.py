@@ -605,6 +605,7 @@ DATA_PRODUCTS: list[DataProductSeed] = [
         "refresh_frequency": "Daily",
         "source_systems": "ERP, CRM",
         "consumers": "Regional Managers",
+        "documentation_url": None,
     },
     {
         "name": "Project Delivery Health Report",

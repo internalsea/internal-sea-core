@@ -211,6 +211,9 @@ jobs:
             exit 1
           fi
 
+      - name: Checkout internal-sea-core
+        uses: actions/checkout@v4
+
       - name: Checkout shared-landing deploy scripts
         uses: actions/checkout@v4
         with:

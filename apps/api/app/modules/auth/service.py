@@ -71,12 +71,13 @@ class AuthService:
         if existing is not None:
             raise DuplicateUserEmailError()
 
+        is_first_user = await self._repository.count_users() == 0
         user = await self._repository.create_user(
             UserCreateInternal(
                 email=email,
                 full_name=payload.full_name,
                 hashed_password=hash_password(payload.password),
-                role=UserRole.VIEWER,
+                role=UserRole.ADMIN if is_first_user else UserRole.VIEWER,
                 is_active=True,
                 is_superuser=False,
             )

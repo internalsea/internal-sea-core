@@ -4,7 +4,7 @@ import uuid
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-from app.domain.enums import CompanyStatus
+from app.domain.enums import CompanyStatus, UserRole
 from app.models.identity import User
 from app.modules.tenancy.errors import OnboardingNotAllowedError
 from app.modules.tenancy.repository import TenancyRepository
@@ -52,10 +52,14 @@ async def test_create_company_generates_slug() -> None:
     workspace.id = uuid.uuid4()
     repository.create_workspace.return_value = workspace
     repository.create_member.return_value = MagicMock()
+    repository.get_member.return_value = MagicMock(role="owner")
+    user = User(email="u@example.com", full_name="User", role=UserRole.VIEWER)
+    auth_repo = AsyncMock()
+    auth_repo.update_user.return_value = user
     session = AsyncMock()
 
     service = TenancyService(repository, session)
-    user = User(email="u@example.com", full_name="User")
+    service._auth_repository = auth_repo
     from app.modules.tenancy.schemas import CompanyCreate
 
     result = await service.create_company(CompanyCreate(name="Acme Corp"), owner_user=user)
@@ -63,3 +67,4 @@ async def test_create_company_generates_slug() -> None:
     repository.create_company.assert_awaited_once()
     call_data = repository.create_company.await_args.args[0]
     assert call_data["slug"] == "acme-corp"
+    auth_repo.update_user.assert_awaited_once()

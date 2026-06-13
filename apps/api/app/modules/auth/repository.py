@@ -51,6 +51,10 @@ class AuthRepository:
         )
         return list(result.scalars().all()), total
 
+    async def count_users(self) -> int:
+        result = await self._session.execute(select(func.count()).select_from(User))
+        return int(result.scalar_one())
+
     async def create_user(self, payload: UserCreateInternal) -> User:
         user = User(
             email=payload.email.lower(),

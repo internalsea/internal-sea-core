@@ -19,7 +19,7 @@ from app.models.identity import User
 from app.models.people import Capability, Person, Team
 from app.models.tenancy import CompanyMember
 from app.modules.auth.repository import AuthRepository
-from app.modules.auth.schemas import UserCreateInternal
+from app.modules.auth.schemas import UserCreateInternal, UserUpdateInternal
 from app.modules.auth.security import create_access_token, hash_password, validate_password_strength
 from app.modules.auth.service import AuthService
 from app.modules.tenancy.errors import (
@@ -56,6 +56,33 @@ class TenancyService:
         self._repository = repository
         self._session = session
         self._auth_repository = AuthRepository(session)
+
+    async def _sync_platform_role_with_membership(
+        self,
+        user: User,
+        member: CompanyMember | None,
+    ) -> User:
+        """Align global auth role with company membership (owners/admins can manage the app)."""
+        if member is None or user.is_superuser or user.role == UserRole.ADMIN:
+            return user
+
+        member_role = CompanyMemberRole(member.role)
+        target_role: UserRole | None = None
+        if member_role in {CompanyMemberRole.OWNER, CompanyMemberRole.ADMIN}:
+            target_role = UserRole.ADMIN
+        elif member_role == CompanyMemberRole.EDITOR and user.role == UserRole.VIEWER:
+            target_role = UserRole.EDITOR
+
+        if target_role is None or user.role == target_role:
+            return user
+
+        updated = await self._auth_repository.update_user(
+            user,
+            UserUpdateInternal(role=target_role),
+        )
+        await self._session.flush()
+        await self._session.refresh(updated)
+        return updated
 
     async def _resolve_company_slug(self, name: str, slug: str | None = None) -> str:
         base = slugify_name(slug or name)
@@ -106,6 +133,8 @@ class TenancyService:
                 "joined_at": self._repository.now_utc(),
             }
         )
+        member = await self._repository.get_member(company.id, owner_user.id)
+        await self._sync_platform_role_with_membership(owner_user, member)
         await self._session.commit()
         await self._session.refresh(company)
         await self._session.refresh(workspace)
@@ -241,6 +270,8 @@ class TenancyService:
                 role=CompanyMemberRole.ADMIN.value,
                 status=CompanyMemberStatus.ACTIVE.value,
             )
+        await self._sync_platform_role_with_membership(user, member)
+        await self._session.commit()
         return CurrentTenantContext(
             company=CompanyRead.model_validate(company),
             workspace=WorkspaceRead.model_validate(workspace),

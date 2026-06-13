@@ -124,7 +124,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setStoredToken(response.access_token)
       setToken(response.access_token)
       setUser(response.user)
-      navigate('/dashboard', { replace: true })
+      navigate('/onboarding/company-setup', { replace: true })
     },
     [navigate],
   )

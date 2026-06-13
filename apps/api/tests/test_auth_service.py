@@ -64,6 +64,7 @@ async def test_register_returns_token_response() -> None:
     )
     repository = AsyncMock()
     repository.get_user_by_email.return_value = None
+    repository.count_users.return_value = 1
     repository.create_user.return_value = user
     session = AsyncMock()
     service = AuthService(repository, session)
@@ -75,3 +76,30 @@ async def test_register_returns_token_response() -> None:
     assert response.user.email == "new@example.com"
     assert response.user.role == UserRole.VIEWER
     session.commit.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_register_first_user_is_admin() -> None:
+    user = User(
+        id=uuid.uuid4(),
+        email="first@example.com",
+        full_name="First User",
+        hashed_password=hash_password("secret12345"),
+        role=UserRole.ADMIN,
+        is_active=True,
+        is_superuser=False,
+    )
+    repository = AsyncMock()
+    repository.get_user_by_email.return_value = None
+    repository.count_users.return_value = 0
+    repository.create_user.return_value = user
+    session = AsyncMock()
+    service = AuthService(repository, session)
+
+    response = await service.register(
+        RegisterRequest(email="first@example.com", full_name="First User", password="secret12345")
+    )
+
+    assert response.user.role == UserRole.ADMIN
+    create_payload = repository.create_user.await_args.args[0]
+    assert create_payload.role == UserRole.ADMIN

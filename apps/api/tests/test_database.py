@@ -1,9 +1,8 @@
 from unittest.mock import AsyncMock, patch
 
 import pytest
-from fastapi.testclient import TestClient
-
 from app.db.health import check_database_connection
+from fastapi.testclient import TestClient
 
 
 def test_check_database_connection_is_importable() -> None:

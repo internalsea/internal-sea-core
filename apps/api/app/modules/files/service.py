@@ -160,7 +160,9 @@ class FileService:
         if "name" in update_data:
             existing = await self._repository.get_storage_by_name(update_data["name"])
             if existing is not None and existing.id != storage_id:
-                raise FileStorageConflictError(f"File storage already exists: {update_data['name']}")
+                raise FileStorageConflictError(
+                    f"File storage already exists: {update_data['name']}"
+                )
         if "storage_type" in update_data:
             update_data["storage_type"] = self._enum_value(update_data["storage_type"])
         updated = await self._repository.update_storage(storage, update_data)

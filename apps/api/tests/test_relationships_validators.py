@@ -2,7 +2,6 @@ import uuid
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-
 from app.domain.enums import EntityType, ProjectType
 from app.modules.relationships.errors import EntityNotFoundError, UnsupportedEntityTypeError
 from app.modules.relationships.validators import (

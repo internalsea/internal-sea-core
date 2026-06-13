@@ -2,11 +2,9 @@ import uuid
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-
 from app.domain.enums import AutomationTargetType
 from app.modules.automation.errors import (
     AutomationTargetNotFoundError,
-    UnsupportedAutomationTargetTypeError,
 )
 from app.modules.automation.validators import (
     SUPPORTED_AUTOMATION_TARGET_TYPES,

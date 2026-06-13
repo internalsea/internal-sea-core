@@ -6,7 +6,6 @@ from app.modules.activity.helpers import get_updated_fields
 from app.modules.activity.schemas import ActivityEventCreateInternal
 from app.modules.activity.service import ActivityService
 from app.modules.projects.errors import ProjectNotFoundError
-from app.modules.tenancy.scope import ensure_company_access, merge_tenant_fields
 from app.modules.projects.repository import ProjectListFilters, ProjectRepository
 from app.modules.projects.schemas import (
     ProjectCreate,
@@ -16,6 +15,7 @@ from app.modules.projects.schemas import (
     ProjectSummary,
     ProjectUpdate,
 )
+from app.modules.tenancy.scope import ensure_company_access, merge_tenant_fields
 
 
 class ProjectService:
@@ -50,7 +50,9 @@ class ProjectService:
             pages=calculate_pages(total, normalized_page_size),
         )
 
-    async def get_project(self, project_id: uuid.UUID, *, company_id: uuid.UUID | None = None) -> ProjectRead:
+    async def get_project(
+        self, project_id: uuid.UUID, *, company_id: uuid.UUID | None = None
+    ) -> ProjectRead:
         project = await self._repository.get_by_id(project_id)
         if project is None:
             raise ProjectNotFoundError(project_id)
@@ -58,7 +60,9 @@ class ProjectService:
             ensure_company_access(project, company_id, label="Project")
         return ProjectRead.model_validate(project)
 
-    async def get_project_summary(self, project_id: uuid.UUID, *, company_id: uuid.UUID | None = None) -> ProjectSummary:
+    async def get_project_summary(
+        self, project_id: uuid.UUID, *, company_id: uuid.UUID | None = None
+    ) -> ProjectSummary:
         project = await self._repository.get_by_id(project_id)
         if project is None:
             raise ProjectNotFoundError(project_id)
@@ -80,7 +84,9 @@ class ProjectService:
         company_id: uuid.UUID,
         workspace_id: uuid.UUID,
     ) -> ProjectRead:
-        data = merge_tenant_fields(payload.model_dump(), company_id=company_id, workspace_id=workspace_id)
+        data = merge_tenant_fields(
+            payload.model_dump(), company_id=company_id, workspace_id=workspace_id
+        )
         project = await self._repository.create(data)
         entity_type = self._project_entity_type(project)
         title = (
@@ -145,7 +151,9 @@ class ProjectService:
                 )
         return ProjectRead.model_validate(updated)
 
-    async def delete_project(self, project_id: uuid.UUID, *, company_id: uuid.UUID | None = None) -> None:
+    async def delete_project(
+        self, project_id: uuid.UUID, *, company_id: uuid.UUID | None = None
+    ) -> None:
         project = await self._repository.get_by_id(project_id)
         if project is None:
             raise ProjectNotFoundError(project_id)
@@ -164,7 +172,9 @@ class ProjectService:
         )
         await self._repository.delete(project)
 
-    async def get_internal_project(self, project_id: uuid.UUID, *, company_id: uuid.UUID | None = None) -> ProjectRead:
+    async def get_internal_project(
+        self, project_id: uuid.UUID, *, company_id: uuid.UUID | None = None
+    ) -> ProjectRead:
         project = await self._get_internal_project_model(project_id, company_id=company_id)
         return ProjectRead.model_validate(project)
 
@@ -178,13 +188,19 @@ class ProjectService:
         await self._get_internal_project_model(project_id, company_id=company_id)
         update_data = payload.model_dump(exclude_unset=True)
         update_data.pop("project_type", None)
-        return await self.update_project(project_id, ProjectUpdate(**update_data), company_id=company_id)
+        return await self.update_project(
+            project_id, ProjectUpdate(**update_data), company_id=company_id
+        )
 
-    async def delete_internal_project(self, project_id: uuid.UUID, *, company_id: uuid.UUID | None = None) -> None:
+    async def delete_internal_project(
+        self, project_id: uuid.UUID, *, company_id: uuid.UUID | None = None
+    ) -> None:
         await self._get_internal_project_model(project_id, company_id=company_id)
         await self.delete_project(project_id, company_id=company_id)
 
-    async def _get_internal_project_model(self, project_id: uuid.UUID, *, company_id: uuid.UUID | None = None):
+    async def _get_internal_project_model(
+        self, project_id: uuid.UUID, *, company_id: uuid.UUID | None = None
+    ):
         project = await self._repository.get_by_id(project_id)
         if project is None or project.project_type != ProjectType.INTERNAL_PROJECT:
             raise ProjectNotFoundError(project_id)

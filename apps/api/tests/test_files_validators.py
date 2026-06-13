@@ -2,7 +2,6 @@ import uuid
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-
 from app.domain.enums import FileEntityType, ProjectType
 from app.modules.files.errors import FileEntityNotFoundError, UnsupportedFileEntityTypeError
 from app.modules.files.validators import (

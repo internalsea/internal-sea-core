@@ -17,9 +17,9 @@ from app.domain.enums import (
 )
 from app.models.identity import User
 from app.models.people import Capability, Person, Team
-from app.models.tenancy import Company, CompanyMember, Workspace
+from app.models.tenancy import CompanyMember
 from app.modules.auth.repository import AuthRepository
-from app.modules.auth.schemas import CurrentUser, UserCreateInternal
+from app.modules.auth.schemas import UserCreateInternal
 from app.modules.auth.security import create_access_token, hash_password, validate_password_strength
 from app.modules.auth.service import AuthService
 from app.modules.tenancy.errors import (
@@ -30,7 +30,7 @@ from app.modules.tenancy.errors import (
     TenantAccessDeniedError,
     WorkspaceNotFoundError,
 )
-from app.modules.tenancy.repository import CompanyListFilters, TenancyRepository
+from app.modules.tenancy.repository import TenancyRepository
 from app.modules.tenancy.schemas import (
     CompanyCreate,
     CompanyListResponse,

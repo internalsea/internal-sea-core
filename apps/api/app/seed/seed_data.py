@@ -382,9 +382,7 @@ BUSINESS_DOMAINS: list[BusinessDomainSeed] = [
     },
     {
         "name": "Customer",
-        "description": (
-            "Customer segmentation, behavior, retention, loyalty and personalization."
-        ),
+        "description": ("Customer segmentation, behavior, retention, loyalty and personalization."),
         "owner_email": "sofia.marin@example.com",
     },
     {
@@ -911,14 +909,19 @@ FILE_ASSETS: list[FileAssetSeed] = [
 COMPLIANCE_POLICIES: list[CompliancePolicySeed] = [
     {
         "name": "Data Product Governance Policy",
-        "description": "Defines minimum ownership, documentation, quality and evidence requirements for active data products.",
+        "description": (
+            "Defines minimum ownership, documentation, quality and evidence "
+            "requirements for active data products."
+        ),
         "status": "active",
         "owner_email": "emma.johnson@example.com",
         "version": "v1.0",
     },
     {
         "name": "Project Delivery Compliance Policy",
-        "description": "Defines required delivery controls for active client and internal projects.",
+        "description": (
+            "Defines required delivery controls for active client and internal projects."
+        ),
         "status": "active",
         "owner_email": "grace.lee@example.com",
         "version": "v1.0",
@@ -1112,7 +1115,10 @@ AUTOMATION_TRIGGERS: list[AutomationTriggerSeed] = [
         "next_run_at_past_minutes": 5,
         "action_config": {
             "title": "Review Executive Sales Dashboard documentation",
-            "description": "Monthly review of ownership, documentation, refresh frequency and quality status.",
+            "description": (
+                "Monthly review of ownership, documentation, refresh frequency "
+                "and quality status."
+            ),
             "priority": "medium",
             "type": "task",
             "due_in_days": 7,
@@ -1513,7 +1519,10 @@ NOTIFICATION_TEMPLATES: list[NotificationTemplateSeed] = [
         "status": "active",
         "event_type": "automation_run",
         "subject_template": "Automation run: {{title}}",
-        "body_template": "Automation event for {{entity_type}}/{{entity_id}} finished with status {{status}}.",
+        "body_template": (
+            "Automation event for {{entity_type}}/{{entity_id}} "
+            "finished with status {{status}}."
+        ),
     },
 ]
 

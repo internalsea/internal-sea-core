@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import uuid
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.config import get_settings
 from app.domain.enums import (
     ActivityAction,
     ActivityEntityType,
@@ -25,14 +26,13 @@ from app.domain.enums import (
 from app.models.automation import AutomationRun, AutomationTrigger
 from app.models.compliance import ComplianceCheck
 from app.models.work import Comment, WorkItem
+from app.modules.activity.dependencies import build_activity_service
 from app.modules.activity.repository import ActivityRepository
 from app.modules.activity.schemas import ActivityEventCreateInternal
-from app.modules.activity.dependencies import build_activity_service
 from app.modules.automation.repository import AutomationRepository
 from app.modules.automation.schemas import AutomationRunRead, AutomationRunResult
 from app.modules.notifications.repository import NotificationRepository
 from app.modules.notifications.schemas import NotificationMessageCreate
-from app.config import get_settings
 from app.modules.notifications.service import NotificationService
 from app.modules.notifications.validators import is_external_channel_type
 
@@ -123,11 +123,9 @@ class AutomationRunner:
         simulate: bool = True,
         worker_instance_id: str | None = None,
     ) -> AutomationRunResult:
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         action_type = AutomationActionType(trigger.action_type)
-        target_type = (
-            AutomationTargetType(trigger.target_type) if trigger.target_type else None
-        )
+        target_type = AutomationTargetType(trigger.target_type) if trigger.target_type else None
 
         run = await self._repository.create_run(
             {
@@ -184,13 +182,19 @@ class AutomationRunner:
                 result_details = {"action_type": action_type.value}
                 message = result_summary
             else:
-                status, result_summary, result_details, created_work_item_id, created_comment_id, created_activity_event_id, message = (
-                    await self._execute_safe_action(
-                        trigger=trigger,
-                        action_type=action_type,
-                        target_type=target_type,
-                        executed_by_id=executed_by_id,
-                    )
+                (
+                    status,
+                    result_summary,
+                    result_details,
+                    created_work_item_id,
+                    created_comment_id,
+                    created_activity_event_id,
+                    message,
+                ) = await self._execute_safe_action(
+                    trigger=trigger,
+                    action_type=action_type,
+                    target_type=target_type,
+                    executed_by_id=executed_by_id,
                 )
         except Exception as exc:
             status = AutomationRunStatus.FAILED
@@ -201,7 +205,7 @@ class AutomationRunner:
                 run,
                 {
                     "status": status.value,
-                    "finished_at": datetime.now(timezone.utc),
+                    "finished_at": datetime.now(UTC),
                     "result_summary": result_summary,
                     "result_details": result_details,
                     "error_message": message,
@@ -217,7 +221,7 @@ class AutomationRunner:
                 message=message,
             )
 
-        finished_at = datetime.now(timezone.utc)
+        finished_at = datetime.now(UTC)
         run = await self._repository.update_run(
             run,
             {
@@ -499,8 +503,6 @@ class AutomationRunner:
         elif not settings.notification_external_delivery_enabled:
             channel = None
             if channel_id:
-                from app.modules.notifications.repository import NotificationRepository
-
                 channel = await NotificationRepository(self._session).get_channel_by_id(channel_id)
             channel_type = channel.channel_type if channel else NotificationChannelType.IN_APP.value
             if is_external_channel_type(channel_type):
@@ -526,9 +528,7 @@ class AutomationRunner:
             event_type=event_type,
             subject=subject,
             body=body,
-            recipient_type=NotificationRecipientType(recipient_type)
-            if recipient_type
-            else None,
+            recipient_type=NotificationRecipientType(recipient_type) if recipient_type else None,
             recipient_value=recipient_value,
             entity_type=entity_type,
             entity_id=entity_id,

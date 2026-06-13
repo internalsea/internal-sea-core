@@ -1,13 +1,16 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import AsyncMock
 
 import pytest
-from fastapi.testclient import TestClient
-
 from app.main import create_app
 from app.modules.capabilities.router import get_capability_service
-from app.modules.capabilities.schemas import CapabilityListItem, CapabilityListResponse, CapabilityRead
+from app.modules.capabilities.schemas import (
+    CapabilityListItem,
+    CapabilityListResponse,
+    CapabilityRead,
+)
+from fastapi.testclient import TestClient
 
 
 @pytest.fixture
@@ -25,7 +28,7 @@ def api_client(mock_capability_service: AsyncMock) -> TestClient:
 
 
 def _sample_capability() -> CapabilityRead:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     return CapabilityRead(
         id=uuid.uuid4(),
         name="Data Engineering",
@@ -68,7 +71,9 @@ def test_create_capability(api_client: TestClient, mock_capability_service: Asyn
         "/api/v1/capabilities",
         json={
             "name": "Data Engineering",
-            "description": "Builds and operates data pipelines, data products and platform integrations.",
+            "description": (
+                "Builds and operates data pipelines, data products and platform integrations."
+            ),
         },
     )
 

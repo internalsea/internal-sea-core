@@ -7,9 +7,9 @@ from app.modules.search.ranking import sort_search_results
 from app.modules.search.repository import SearchRepository
 from app.modules.search.schemas import (
     DEFAULT_SEARCH_LIMIT,
-    EntityLookupResult,
     MAX_SEARCH_LIMIT,
     MIN_SEARCH_QUERY_LENGTH,
+    EntityLookupResult,
     SearchFilters,
     SearchResponse,
     SearchResultType,

@@ -2,7 +2,6 @@ import uuid
 from unittest.mock import AsyncMock
 
 import pytest
-
 from app.domain.enums import ProjectType
 from app.modules.projects.errors import ProjectNotFoundError
 from app.modules.projects.repository import ProjectListFilters

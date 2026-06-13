@@ -14,8 +14,8 @@ from app.modules.teams.schemas import (
     TeamSummary,
     TeamUpdate,
 )
-from app.modules.tenancy.dependencies import CurrentTenant, get_current_tenant
 from app.modules.teams.service import TeamService
+from app.modules.tenancy.dependencies import CurrentTenant, get_current_tenant
 
 router = APIRouter(prefix="/teams", tags=["Teams"])
 

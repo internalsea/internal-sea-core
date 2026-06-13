@@ -3,8 +3,7 @@
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timezone
-from typing import Any
+from datetime import UTC, datetime
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -58,14 +57,16 @@ class NotificationDispatcher:
             if is_external_channel_type(channel_type_preview):
                 simulate = settings.notification_worker_simulate_external
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         channel_type = (
             message.channel.channel_type
             if message.channel is not None
             else NotificationChannelType.IN_APP.value
         )
-        recipient = recipient_override or message.recipient_value or (
-            message.channel.default_recipient if message.channel else None
+        recipient = (
+            recipient_override
+            or message.recipient_value
+            or (message.channel.default_recipient if message.channel else None)
         )
 
         attempt = NotificationDeliveryAttempt(
@@ -81,7 +82,9 @@ class NotificationDispatcher:
                 "channel_type": channel_type,
                 "recipient": recipient,
                 "subject": message.subject,
-                "body_preview": (message.body[:200] + "…") if len(message.body) > 200 else message.body,
+                "body_preview": (message.body[:200] + "…")
+                if len(message.body) > 200
+                else message.body,
             },
         )
         session.add(attempt)

@@ -1,6 +1,5 @@
 from fastapi.testclient import TestClient
 
-
 EXPECTED_TAGS = {
     "Health",
     "Auth",

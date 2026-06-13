@@ -9,7 +9,12 @@ from app.dependencies import get_db
 from app.modules.activity.repository import ActivityRepository
 from app.modules.activity.service import ActivityService
 from app.modules.comments.repository import CommentRepository
-from app.modules.comments.schemas import CommentCreate, CommentListResponse, CommentRead, CommentUpdate
+from app.modules.comments.schemas import (
+    CommentCreate,
+    CommentListResponse,
+    CommentRead,
+    CommentUpdate,
+)
 from app.modules.comments.service import CommentService
 from app.modules.data_products.repository import DataProductRepository
 from app.modules.projects.repository import ProjectRepository

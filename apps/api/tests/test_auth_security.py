@@ -1,9 +1,6 @@
-from datetime import timedelta
-
 import jwt
 import pytest
-
-from app.config import get_settings
+from app.core.errors import ValidationError
 from app.modules.auth.security import (
     create_access_token,
     decode_access_token,
@@ -11,7 +8,6 @@ from app.modules.auth.security import (
     validate_password_strength,
     verify_password,
 )
-from app.core.errors import ValidationError
 
 
 def test_hash_password_does_not_return_plaintext() -> None:

@@ -2,7 +2,6 @@ import uuid
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-
 from app.domain.enums import FileEntityType, FileStatus
 from app.modules.files.errors import (
     FileAssetNotFoundError,

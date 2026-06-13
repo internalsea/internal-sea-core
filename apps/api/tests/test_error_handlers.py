@@ -1,10 +1,10 @@
-from fastapi import HTTPException
-from fastapi.testclient import TestClient
+from unittest.mock import AsyncMock
 
 from app.core.errors import NotFoundError
 from app.main import create_app
 from app.modules.capabilities.router import get_capability_service
-from unittest.mock import AsyncMock
+from fastapi import HTTPException
+from fastapi.testclient import TestClient
 
 
 def test_validation_error_returns_standard_shape(client: TestClient) -> None:

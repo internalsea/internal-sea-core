@@ -1,11 +1,9 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal
 from unittest.mock import AsyncMock
 
 import pytest
-from fastapi.testclient import TestClient
-
 from app.domain.enums import (
     MetricDirection,
     MetricStatus,
@@ -20,6 +18,7 @@ from app.modules.performance.schemas import (
     PerformanceMetricDefinitionRead,
     PerformanceOverview,
 )
+from fastapi.testclient import TestClient
 
 
 @pytest.fixture
@@ -37,7 +36,7 @@ def api_client(mock_performance_service: AsyncMock) -> TestClient:
 
 
 def _sample_definition() -> PerformanceMetricDefinitionRead:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     return PerformanceMetricDefinitionRead(
         id=uuid.uuid4(),
         name="Data Product Quality Score",
@@ -73,12 +72,14 @@ def test_list_metric_definitions(
     mock_performance_service: AsyncMock,
 ) -> None:
     definition = _sample_definition()
-    mock_performance_service.list_definitions.return_value = PerformanceMetricDefinitionListResponse(
-        items=[PerformanceMetricDefinitionListItem.model_validate(definition)],
-        page=1,
-        page_size=20,
-        total=1,
-        pages=1,
+    mock_performance_service.list_definitions.return_value = (
+        PerformanceMetricDefinitionListResponse(
+            items=[PerformanceMetricDefinitionListItem.model_validate(definition)],
+            page=1,
+            page_size=20,
+            total=1,
+            pages=1,
+        )
     )
 
     response = api_client.get("/api/v1/performance/metrics")

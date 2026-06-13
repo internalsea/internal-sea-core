@@ -1,7 +1,6 @@
 import pytest
-from pydantic import ValidationError
-
 from app.modules.capabilities.schemas import CapabilityCreate, CapabilityUpdate
+from pydantic import ValidationError
 
 
 def test_capability_create_valid_payload() -> None:

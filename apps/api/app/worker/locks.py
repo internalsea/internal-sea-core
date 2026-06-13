@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from sqlalchemy import and_, or_, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -15,7 +15,7 @@ from app.models.notifications import NotificationMessage
 def is_lock_expired(lock_expires_at: datetime | None) -> bool:
     if lock_expires_at is None:
         return True
-    return lock_expires_at < datetime.now(timezone.utc)
+    return lock_expires_at < datetime.now(UTC)
 
 
 async def acquire_automation_trigger_lock(
@@ -24,7 +24,7 @@ async def acquire_automation_trigger_lock(
     worker_instance_id: str,
     timeout_seconds: int,
 ) -> bool:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     expires = now + timedelta(seconds=timeout_seconds)
     stmt = (
         update(AutomationTrigger)
@@ -65,7 +65,7 @@ async def acquire_notification_message_lock(
     worker_instance_id: str,
     timeout_seconds: int,
 ) -> bool:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     expires = now + timedelta(seconds=timeout_seconds)
     stmt = (
         update(NotificationMessage)
@@ -101,7 +101,7 @@ async def release_notification_message_lock(
 
 
 async def count_locked_automation_triggers(session: AsyncSession) -> int:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     from sqlalchemy import func, select
 
     result = await session.scalar(
@@ -118,7 +118,7 @@ async def count_locked_automation_triggers(session: AsyncSession) -> int:
 
 
 async def count_locked_notification_messages(session: AsyncSession) -> int:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     from sqlalchemy import func, select
 
     result = await session.scalar(

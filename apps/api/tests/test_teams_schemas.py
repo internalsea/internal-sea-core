@@ -1,7 +1,6 @@
 import pytest
-from pydantic import ValidationError
-
 from app.modules.teams.schemas import TeamCreate, TeamUpdate
+from pydantic import ValidationError
 
 
 def test_team_create_valid_payload() -> None:

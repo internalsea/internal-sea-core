@@ -5,6 +5,7 @@ from typing import Annotated, Self
 from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
+
 def _settings_env_files() -> tuple[str, ...]:
     """Resolve .env paths for monorepo (apps/api) and Docker (/app) layouts."""
     here = Path(__file__).resolve()
@@ -104,12 +105,15 @@ class Settings(BaseSettings):
 
         if self.jwt_secret_key.strip().lower() in _INSECURE_JWT_SECRETS:
             raise ValueError(
-                "JWT_SECRET_KEY must be changed from the default value in production-like environments"
+                "JWT_SECRET_KEY must be changed from the default value "
+                "in production-like environments"
             )
         if self.debug:
             raise ValueError("DEBUG must be false in production-like environments")
         if "*" in self.cors_origins:
-            raise ValueError("CORS_ORIGINS must not include wildcard in production-like environments")
+            raise ValueError(
+                "CORS_ORIGINS must not include wildcard in production-like environments"
+            )
         if not self.auth_enabled:
             raise ValueError("AUTH_ENABLED must be true in production-like environments")
         return self

@@ -23,27 +23,40 @@ def _value(numeric):
 
 
 def test_score_calculation_higher_is_better() -> None:
-    definition = _definition(direction=MetricDirection.HIGHER_IS_BETTER.value, target_value=Decimal("90"))
+    definition = _definition(
+        direction=MetricDirection.HIGHER_IS_BETTER.value, target_value=Decimal("90")
+    )
     score = calculate_metric_score(definition, _value(92))
     assert score == Decimal("102.22")
 
 
 def test_score_calculation_lower_is_better() -> None:
-    definition = _definition(direction=MetricDirection.LOWER_IS_BETTER.value, target_value=Decimal("10"))
+    definition = _definition(
+        direction=MetricDirection.LOWER_IS_BETTER.value, target_value=Decimal("10")
+    )
     score = calculate_metric_score(definition, _value(8))
     assert score == Decimal("120.00")
 
 
 def test_trend_calculation_up() -> None:
-    assert calculate_trend(Decimal("90"), Decimal("80"), MetricDirection.HIGHER_IS_BETTER) == PerformanceTrend.UP
+    assert (
+        calculate_trend(Decimal("90"), Decimal("80"), MetricDirection.HIGHER_IS_BETTER)
+        == PerformanceTrend.UP
+    )
 
 
 def test_trend_calculation_stable() -> None:
-    assert calculate_trend(Decimal("90"), Decimal("90"), MetricDirection.HIGHER_IS_BETTER) == PerformanceTrend.STABLE
+    assert (
+        calculate_trend(Decimal("90"), Decimal("90"), MetricDirection.HIGHER_IS_BETTER)
+        == PerformanceTrend.STABLE
+    )
 
 
 def test_trend_calculation_unknown() -> None:
-    assert calculate_trend(None, Decimal("80"), MetricDirection.HIGHER_IS_BETTER) == PerformanceTrend.UNKNOWN
+    assert (
+        calculate_trend(None, Decimal("80"), MetricDirection.HIGHER_IS_BETTER)
+        == PerformanceTrend.UNKNOWN
+    )
 
 
 def test_interpret_metric_no_target() -> None:

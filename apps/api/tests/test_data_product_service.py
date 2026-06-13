@@ -2,7 +2,6 @@ import uuid
 from unittest.mock import AsyncMock
 
 import pytest
-
 from app.modules.data_products.errors import DataProductNotFoundError
 from app.modules.data_products.repository import DataProductListFilters
 from app.modules.data_products.service import DataProductService

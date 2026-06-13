@@ -1,9 +1,8 @@
-from datetime import datetime, timezone
-from unittest.mock import AsyncMock, MagicMock, patch
 import uuid
+from datetime import UTC, datetime
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-
 from app.worker.runner import WorkerRunner
 
 
@@ -24,7 +23,7 @@ async def test_worker_runner_passes_worker_instance_id_to_automation() -> None:
     ):
         runner = WorkerRunner(session, instance_id="test-worker", batch_size=5)
         mock_result = MagicMock()
-        mock_result.run.finished_at = datetime.now(timezone.utc)
+        mock_result.run.finished_at = datetime.now(UTC)
         runner._automation_runner.run_trigger = AsyncMock(return_value=mock_result)
 
         result = await runner.run_once()

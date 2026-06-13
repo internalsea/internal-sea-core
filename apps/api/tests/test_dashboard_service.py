@@ -1,15 +1,21 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import AsyncMock
 
 import pytest
-
-from app.domain.enums import DataProductStatus, DataProductType, ProjectStatus, ProjectType, QualityStatus
+from app.domain.enums import (
+    DataProductStatus,
+    DataProductType,
+    ProjectStatus,
+    ProjectType,
+    QualityStatus,
+)
 from app.models.catalog import DataProduct
 from app.models.projects import Project
-from app.modules.dashboard.gaps import OwnershipGapCandidate
-from app.modules.dashboard.gaps import resolve_data_product_owner_gap_severity as resolve_dp_severity
-from app.modules.dashboard.gaps import resolve_project_gap_severity
+from app.modules.dashboard.gaps import OwnershipGapCandidate, resolve_project_gap_severity
+from app.modules.dashboard.gaps import (
+    resolve_data_product_owner_gap_severity as resolve_dp_severity,
+)
 from app.modules.dashboard.repository import ProjectWorkCounts
 from app.modules.dashboard.schemas import DashboardSummary
 from app.modules.dashboard.service import DashboardService, normalize_dashboard_limit
@@ -59,7 +65,7 @@ async def test_service_get_summary_calls_repository() -> None:
 
 @pytest.mark.asyncio
 async def test_service_get_recent_data_products_normalizes_limit() -> None:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     product = DataProduct(
         id=uuid.uuid4(),
         name="Finance KPI Layer",
@@ -83,7 +89,7 @@ async def test_service_get_recent_data_products_normalizes_limit() -> None:
 @pytest.mark.asyncio
 async def test_service_get_project_health_merges_work_counts() -> None:
     project_id = uuid.uuid4()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     project = Project(
         id=project_id,
         name="Internal Sea MVP",

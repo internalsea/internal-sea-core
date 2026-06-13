@@ -2,7 +2,6 @@ import uuid
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-
 from app.domain.enums import ComplianceSubjectType, ProjectType
 from app.modules.compliance.errors import (
     ComplianceSubjectNotFoundError,

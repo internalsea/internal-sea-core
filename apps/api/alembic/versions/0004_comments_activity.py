@@ -6,16 +6,16 @@ Create Date: 2026-06-12
 
 """
 
-from typing import Sequence, Union
+from collections.abc import Sequence
 
 import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.dialects import postgresql
 
 revision: str = "0004"
-down_revision: Union[str, None] = "0003"
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | None = "0003"
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:
@@ -65,7 +65,9 @@ def upgrade() -> None:
     )
     op.create_index("ix_activity_events_action", "activity_events", ["action"], unique=False)
     op.create_index("ix_activity_events_actor_id", "activity_events", ["actor_id"], unique=False)
-    op.create_index("ix_activity_events_created_at", "activity_events", ["created_at"], unique=False)
+    op.create_index(
+        "ix_activity_events_created_at", "activity_events", ["created_at"], unique=False
+    )
 
 
 def downgrade() -> None:

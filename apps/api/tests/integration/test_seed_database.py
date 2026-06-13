@@ -3,13 +3,11 @@
 from __future__ import annotations
 
 import pytest
-from sqlalchemy import select
-
 from app.db.session import get_sessionmaker
+from app.domain.enums import WorkItemType
 from app.models.catalog import DataProduct
 from app.models.people import Capability, Person, Team
 from app.models.projects import Project
-from app.domain.enums import WorkItemType
 from app.models.work import WorkItem
 from app.seed.seed import count_seeded_entities, seed_database
 from app.seed.seed_data import (
@@ -19,6 +17,7 @@ from app.seed.seed_data import (
     TEAMS,
     WORK_ITEMS,
 )
+from sqlalchemy import select
 
 
 @pytest.mark.integration

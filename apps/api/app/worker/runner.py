@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -52,13 +52,13 @@ class WorkerRunner:
         )
 
     async def run_once(self) -> WorkerCycleResult:
-        started_at = datetime.now(timezone.utc)
+        started_at = datetime.now(UTC)
         failures: list[str] = []
         due_trigger_items = await find_due_automation_triggers(self._session, self._batch_size)
         due_message_items = await find_due_notification_messages(self._session, self._batch_size)
         automation_runs_created = await self.process_due_automation_triggers(failures)
         notifications_processed = await self.process_due_notifications(failures)
-        finished_at = datetime.now(timezone.utc)
+        finished_at = datetime.now(UTC)
 
         due_triggers = len(due_trigger_items)
         due_notifications = len(due_message_items)
@@ -168,7 +168,7 @@ class WorkerRunner:
                 schedule = None
                 if trigger.schedule_id:
                     schedule = await self._automation_repo.get_schedule_by_id(trigger.schedule_id)
-                run_at = result.run.finished_at or datetime.now(timezone.utc)
+                run_at = result.run.finished_at or datetime.now(UTC)
                 await update_trigger_next_run(
                     self._session,
                     trigger,

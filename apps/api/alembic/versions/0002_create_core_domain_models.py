@@ -6,16 +6,16 @@ Create Date: 2026-06-06
 
 """
 
-from typing import Sequence, Union
+from collections.abc import Sequence
 
 import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.dialects import postgresql
 
 revision: str = "0002"
-down_revision: Union[str, None] = "0001"
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | None = "0001"
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 TIMESTAMP_COLUMNS = (
     sa.Column(
@@ -88,7 +88,11 @@ def upgrade() -> None:
             "(availability_percent >= 0 AND availability_percent <= 100)",
             name=op.f("ck_people_availability_percent_range"),
         ),
-        sa.ForeignKeyConstraint(["capability_id"], ["capabilities.id"], name=op.f("fk_people_capability_id_capabilities")),
+        sa.ForeignKeyConstraint(
+            ["capability_id"],
+            ["capabilities.id"],
+            name=op.f("fk_people_capability_id_capabilities"),
+        ),
         sa.ForeignKeyConstraint(["team_id"], ["teams.id"], name=op.f("fk_people_team_id_teams")),
         sa.ForeignKeyConstraint(["user_id"], ["users.id"], name=op.f("fk_people_user_id_users")),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_people")),
@@ -104,7 +108,9 @@ def upgrade() -> None:
         sa.Column("description", sa.Text(), nullable=True),
         sa.Column("owner_id", postgresql.UUID(as_uuid=True), nullable=True),
         *TIMESTAMP_COLUMNS,
-        sa.ForeignKeyConstraint(["owner_id"], ["people.id"], name=op.f("fk_business_domains_owner_id_people")),
+        sa.ForeignKeyConstraint(
+            ["owner_id"], ["people.id"], name=op.f("fk_business_domains_owner_id_people")
+        ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_business_domains")),
         sa.UniqueConstraint("name", name=op.f("uq_business_domains_name")),
     )

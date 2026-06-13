@@ -1,6 +1,6 @@
 import uuid
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -252,7 +252,7 @@ class AutomationRepository:
         *,
         run_at: datetime | None = None,
     ) -> AutomationTrigger:
-        now = run_at or datetime.now(timezone.utc)
+        now = run_at or datetime.now(UTC)
         trigger.last_run_at = now
         await self._session.commit()
         await self._session.refresh(trigger)
@@ -264,7 +264,7 @@ class AutomationRepository:
         *,
         run_at: datetime | None = None,
     ) -> AutomationSchedule:
-        now = run_at or datetime.now(timezone.utc)
+        now = run_at or datetime.now(UTC)
         schedule.last_run_at = now
         await self._session.commit()
         await self._session.refresh(schedule)

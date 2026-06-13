@@ -1,10 +1,8 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import AsyncMock
 
 import pytest
-from fastapi.testclient import TestClient
-
 from app.config import get_settings
 from app.main import create_app
 from app.modules.automation.router import get_automation_service
@@ -15,10 +13,9 @@ from app.modules.automation.schemas import (
     AutomationScheduleListItem,
     AutomationScheduleListResponse,
     AutomationScheduleRead,
-    AutomationTriggerListItem,
-    AutomationTriggerListResponse,
     AutomationTriggerRead,
 )
+from fastapi.testclient import TestClient
 
 
 @pytest.fixture
@@ -36,7 +33,7 @@ def api_client(mock_automation_service: AsyncMock) -> TestClient:
 
 
 def _sample_schedule() -> AutomationScheduleRead:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     return AutomationScheduleRead(
         id=uuid.uuid4(),
         name="Monthly Review",
@@ -56,7 +53,7 @@ def _sample_schedule() -> AutomationScheduleRead:
 
 
 def _sample_trigger() -> AutomationTriggerRead:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     return AutomationTriggerRead(
         id=uuid.uuid4(),
         name="Review Dashboard",
@@ -103,7 +100,7 @@ def test_list_schedules(api_client: TestClient, mock_automation_service: AsyncMo
 
 def test_run_trigger_simulate(api_client: TestClient, mock_automation_service: AsyncMock) -> None:
     trigger_id = uuid.uuid4()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     run = AutomationRunRead(
         id=uuid.uuid4(),
         trigger_id=trigger_id,
@@ -186,7 +183,7 @@ def test_editor_can_run_trigger(
         pytest.skip("Auth seed users not available in unit test DB")
     token = login.json()["access_token"]
     trigger_id = uuid.uuid4()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     mock_automation_service.run_trigger.return_value = AutomationRunResult(
         run=AutomationRunRead(
             id=uuid.uuid4(),

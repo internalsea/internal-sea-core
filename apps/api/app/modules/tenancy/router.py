@@ -100,7 +100,9 @@ async def get_company(
 async def update_company(
     company_id: uuid.UUID,
     payload: CompanyUpdate,
-    _tenant: CurrentTenant = Depends(require_company_role(CompanyMemberRole.ADMIN, CompanyMemberRole.OWNER)),
+    _tenant: CurrentTenant = Depends(
+        require_company_role(CompanyMemberRole.ADMIN, CompanyMemberRole.OWNER)
+    ),
     service: TenancyService = Depends(get_tenancy_service),
 ) -> CompanyRead:
     return await service.update_company(company_id, payload)
@@ -126,7 +128,9 @@ async def list_workspaces(
 async def create_workspace(
     company_id: uuid.UUID,
     payload: WorkspaceCreate,
-    _tenant: CurrentTenant = Depends(require_company_role(CompanyMemberRole.ADMIN, CompanyMemberRole.OWNER)),
+    _tenant: CurrentTenant = Depends(
+        require_company_role(CompanyMemberRole.ADMIN, CompanyMemberRole.OWNER)
+    ),
     service: TenancyService = Depends(get_tenancy_service),
 ) -> WorkspaceRead:
     payload = payload.model_copy(update={"company_id": company_id})
@@ -151,7 +155,9 @@ async def get_workspace(
 async def update_workspace(
     workspace_id: uuid.UUID,
     payload: WorkspaceUpdate,
-    _tenant: CurrentTenant = Depends(require_company_role(CompanyMemberRole.ADMIN, CompanyMemberRole.OWNER)),
+    _tenant: CurrentTenant = Depends(
+        require_company_role(CompanyMemberRole.ADMIN, CompanyMemberRole.OWNER)
+    ),
     service: TenancyService = Depends(get_tenancy_service),
 ) -> WorkspaceRead:
     return await service.update_workspace(workspace_id, payload)
@@ -177,7 +183,9 @@ async def list_members(
 async def add_member(
     company_id: uuid.UUID,
     payload: CompanyMemberCreate,
-    _tenant: CurrentTenant = Depends(require_company_role(CompanyMemberRole.ADMIN, CompanyMemberRole.OWNER)),
+    _tenant: CurrentTenant = Depends(
+        require_company_role(CompanyMemberRole.ADMIN, CompanyMemberRole.OWNER)
+    ),
     service: TenancyService = Depends(get_tenancy_service),
 ) -> CompanyMemberRead:
     payload = payload.model_copy(update={"company_id": company_id})
@@ -188,7 +196,9 @@ async def add_member(
 async def update_member(
     member_id: uuid.UUID,
     payload: CompanyMemberUpdate,
-    _tenant: CurrentTenant = Depends(require_company_role(CompanyMemberRole.ADMIN, CompanyMemberRole.OWNER)),
+    _tenant: CurrentTenant = Depends(
+        require_company_role(CompanyMemberRole.ADMIN, CompanyMemberRole.OWNER)
+    ),
     service: TenancyService = Depends(get_tenancy_service),
 ) -> CompanyMemberRead:
     return await service.update_member(member_id, payload)
@@ -197,7 +207,9 @@ async def update_member(
 @router.delete("/members/{member_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def remove_member(
     member_id: uuid.UUID,
-    _tenant: CurrentTenant = Depends(require_company_role(CompanyMemberRole.ADMIN, CompanyMemberRole.OWNER)),
+    _tenant: CurrentTenant = Depends(
+        require_company_role(CompanyMemberRole.ADMIN, CompanyMemberRole.OWNER)
+    ),
     service: TenancyService = Depends(get_tenancy_service),
 ) -> None:
     await service.remove_member(member_id)

@@ -1,11 +1,9 @@
 """Tests for tenancy dependencies."""
 
 import uuid
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock
 
 import pytest
-from fastapi import HTTPException
-
 from app.domain.enums import CompanyMemberRole, CompanyMemberStatus, UserRole
 from app.models.identity import User
 from app.models.tenancy import CompanyMember

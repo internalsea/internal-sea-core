@@ -72,7 +72,9 @@ async def list_metric_definitions(
     return await service.list_definitions(filters=filters, page=page, page_size=page_size)
 
 
-@router.post("/metrics", response_model=PerformanceMetricDefinitionRead, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/metrics", response_model=PerformanceMetricDefinitionRead, status_code=status.HTTP_201_CREATED
+)
 async def create_metric_definition(
     payload: PerformanceMetricDefinitionCreate,
     _user: EditorUser,
@@ -135,7 +137,9 @@ async def list_metric_values(
     return await service.list_values(filters=filters, page=page, page_size=page_size)
 
 
-@router.post("/values", response_model=PerformanceMetricValueRead, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/values", response_model=PerformanceMetricValueRead, status_code=status.HTTP_201_CREATED
+)
 async def create_metric_value(
     payload: PerformanceMetricValueCreate,
     _user: EditorUser,

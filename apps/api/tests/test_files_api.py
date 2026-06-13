@@ -1,10 +1,8 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import AsyncMock
 
 import pytest
-from fastapi.testclient import TestClient
-
 from app.domain.enums import FileAssetType, FileEntityType, FileSensitivity, FileStatus
 from app.main import create_app
 from app.modules.files.errors import FileAttachmentConflictError
@@ -15,6 +13,7 @@ from app.modules.files.schemas import (
     FileAssetRead,
     FileAttachmentRead,
 )
+from fastapi.testclient import TestClient
 
 
 @pytest.fixture
@@ -32,7 +31,7 @@ def api_client(mock_file_service: AsyncMock) -> TestClient:
 
 
 def _sample_file() -> FileAssetRead:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     return FileAssetRead(
         id=uuid.uuid4(),
         name="Finance KPI Definitions",
@@ -78,7 +77,7 @@ def test_list_files(api_client: TestClient, mock_file_service: AsyncMock) -> Non
         external_url="https://example.com/docs/finance-kpi-definitions",
         owner_id=None,
         version="v1.0",
-        updated_at=datetime.now(timezone.utc),
+        updated_at=datetime.now(UTC),
     )
     mock_file_service.list_files.return_value = FileAssetListResponse(
         items=[item],
@@ -140,7 +139,7 @@ def test_attach_file_conflict(api_client: TestClient, mock_file_service: AsyncMo
 
 
 def test_attach_file_success(api_client: TestClient, mock_file_service: AsyncMock) -> None:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     attachment = FileAttachmentRead(
         id=uuid.uuid4(),
         file_id=uuid.uuid4(),

@@ -2,10 +2,9 @@ from datetime import date
 from decimal import Decimal
 
 import pytest
-from pydantic import ValidationError
-
 from app.domain.enums import ProjectStatus, ProjectType
 from app.modules.projects.schemas import ProjectCreate, ProjectUpdate
+from pydantic import ValidationError
 
 
 def test_project_create_valid_payload() -> None:

@@ -2,7 +2,6 @@ import uuid
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-
 from app.domain.enums import NotificationChannelType, NotificationEventType
 from app.modules.notifications.errors import NotificationConflictError
 from app.modules.notifications.repository import NotificationRepository

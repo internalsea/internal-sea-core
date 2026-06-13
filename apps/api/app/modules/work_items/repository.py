@@ -93,9 +93,7 @@ class WorkItemRepository:
         )
         query = self._apply_filters(select(WorkItem), board_filters)
         query = query.where(WorkItem.status.in_(board_statuses))
-        result = await self._session.scalars(
-            query.order_by(WorkItem.updated_at.desc())
-        )
+        result = await self._session.scalars(query.order_by(WorkItem.updated_at.desc()))
         return list(result.all())
 
     async def get_by_id(self, work_item_id: uuid.UUID) -> WorkItem | None:

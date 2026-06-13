@@ -1,9 +1,8 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-
 from app.domain.enums import EntityLinkType, EntityType
 from app.modules.relationships.errors import EntityLinkConflictError
 from app.modules.relationships.schemas import EntityLinkCreate
@@ -46,7 +45,7 @@ async def test_create_link_records_activity_on_success() -> None:
 
     source_id = uuid.uuid4()
     target_id = uuid.uuid4()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     link = MagicMock()
     link.id = uuid.uuid4()
     link.source_type = EntityType.DATA_PRODUCT.value

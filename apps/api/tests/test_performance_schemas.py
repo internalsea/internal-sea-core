@@ -3,13 +3,12 @@ from decimal import Decimal
 from uuid import uuid4
 
 import pytest
-from pydantic import ValidationError
-
 from app.domain.enums import PerformanceSubjectType
 from app.modules.performance.schemas import (
     PerformanceMetricDefinitionCreate,
     PerformanceMetricValueCreate,
 )
+from pydantic import ValidationError
 
 
 def test_metric_definition_create_rejects_empty_name() -> None:

@@ -3,14 +3,13 @@
 import uuid
 
 import pytest
-from pydantic import ValidationError
-
 from app.domain.enums import CompanyStatus, Industry
 from app.modules.tenancy.schemas import (
     CompanyCreate,
     CompanyRead,
     FirstUserOnboardingRequest,
 )
+from pydantic import ValidationError
 
 
 def test_company_create_rejects_empty_name() -> None:
@@ -49,6 +48,7 @@ def test_company_read_from_attributes() -> None:
         "created_at": now,
         "updated_at": now,
     }
+
     # Use model_validate with a simple namespace object
     class Obj:
         pass

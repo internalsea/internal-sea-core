@@ -2,8 +2,6 @@ import uuid
 from datetime import date
 
 import pytest
-from pydantic import ValidationError
-
 from app.domain.enums import ComplianceSubjectType, EvidenceStatus, RuleSeverity
 from app.modules.compliance.schemas import (
     ComplianceCheckCreate,
@@ -13,6 +11,7 @@ from app.modules.compliance.schemas import (
     PolicyCreate,
     PolicyUpdate,
 )
+from pydantic import ValidationError
 
 
 def test_policy_create_rejects_empty_name() -> None:

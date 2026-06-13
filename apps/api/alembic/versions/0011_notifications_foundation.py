@@ -6,16 +6,16 @@ Create Date: 2026-06-12
 
 """
 
-from typing import Sequence, Union
+from collections.abc import Sequence
 
 import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.dialects import postgresql
 
 revision: str = "0011"
-down_revision: Union[str, None] = "0010"
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | None = "0010"
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 TIMESTAMP_COLUMNS = (
     sa.Column(
@@ -326,9 +326,7 @@ def upgrade() -> None:
         sa.ForeignKeyConstraint(
             ["message_id"],
             ["notification_messages.id"],
-            name=op.f(
-                "fk_notification_delivery_attempts_message_id_notification_messages"
-            ),
+            name=op.f("fk_notification_delivery_attempts_message_id_notification_messages"),
         ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_notification_delivery_attempts")),
     )

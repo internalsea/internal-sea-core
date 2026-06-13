@@ -1,11 +1,17 @@
 import uuid
+from datetime import UTC
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-
-from app.domain.enums import AutomationActionType, AutomationTargetType, AutomationTriggerType
-from app.modules.automation.errors import AutomationScheduleNotFoundError, AutomationTriggerNotFoundError
-from app.modules.automation.schemas import AutomationRunRequest, AutomationScheduleCreate, AutomationTriggerCreate
+from app.domain.enums import AutomationActionType, AutomationTargetType
+from app.modules.automation.errors import (
+    AutomationScheduleNotFoundError,
+    AutomationTriggerNotFoundError,
+)
+from app.modules.automation.schemas import (
+    AutomationRunRequest,
+    AutomationScheduleCreate,
+)
 from app.modules.automation.service import AutomationService
 
 
@@ -58,10 +64,10 @@ async def test_create_schedule(service: tuple[AutomationService, AsyncMock]) -> 
     schedule.cron_expression = None
     schedule.is_active = True
     schedule.created_by_id = None
-    from datetime import datetime, timezone
+    from datetime import datetime
 
-    schedule.created_at = datetime.now(timezone.utc)
-    schedule.updated_at = datetime.now(timezone.utc)
+    schedule.created_at = datetime.now(UTC)
+    schedule.updated_at = datetime.now(UTC)
     repository.create_schedule.return_value = schedule
 
     result = await svc.create_schedule(AutomationScheduleCreate(name="Monthly"))
@@ -69,7 +75,9 @@ async def test_create_schedule(service: tuple[AutomationService, AsyncMock]) -> 
 
 
 @pytest.mark.asyncio
-async def test_run_trigger_delegates_to_runner(service: tuple[AutomationService, AsyncMock]) -> None:
+async def test_run_trigger_delegates_to_runner(
+    service: tuple[AutomationService, AsyncMock],
+) -> None:
     svc, repository = service
     trigger = MagicMock()
     trigger.id = uuid.uuid4()
@@ -79,11 +87,11 @@ async def test_run_trigger_delegates_to_runner(service: tuple[AutomationService,
     trigger.action_type = AutomationActionType.CREATE_WORK_ITEM.value
     repository.get_trigger_by_id.return_value = trigger
 
-    from datetime import datetime, timezone
+    from datetime import datetime
 
     from app.modules.automation.schemas import AutomationRunRead, AutomationRunResult
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     run_result = AutomationRunResult(
         run=AutomationRunRead(
             id=uuid.uuid4(),

@@ -1,14 +1,13 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import AsyncMock
 
 import pytest
-from fastapi.testclient import TestClient
-
 from app.domain.enums import ActivityAction, ActivityEntityType
 from app.main import create_app
 from app.modules.activity.dependencies import get_activity_service
 from app.modules.activity.schemas import ActivityEventListResponse, ActivityEventRead
+from fastapi.testclient import TestClient
 
 
 @pytest.fixture
@@ -35,7 +34,7 @@ def test_openapi_includes_activity_paths(api_client: TestClient) -> None:
 
 def test_list_entity_activity(api_client: TestClient, mock_activity_service: AsyncMock) -> None:
     entity_id = uuid.uuid4()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     mock_activity_service.list_entity_activity.return_value = ActivityEventListResponse(
         items=[
             ActivityEventRead(

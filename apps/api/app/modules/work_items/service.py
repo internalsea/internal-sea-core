@@ -87,7 +87,9 @@ class WorkItemService:
         ]
         return WorkItemBoardResponse(columns=columns)
 
-    async def get_work_item(self, work_item_id: uuid.UUID, *, company_id: uuid.UUID | None = None) -> WorkItemRead:
+    async def get_work_item(
+        self, work_item_id: uuid.UUID, *, company_id: uuid.UUID | None = None
+    ) -> WorkItemRead:
         work_item = await self._repository.get_by_id(work_item_id)
         if work_item is None:
             raise WorkItemNotFoundError(work_item_id)
@@ -102,7 +104,9 @@ class WorkItemService:
         company_id: uuid.UUID,
         workspace_id: uuid.UUID,
     ) -> WorkItemRead:
-        data = merge_tenant_fields(payload.model_dump(), company_id=company_id, workspace_id=workspace_id)
+        data = merge_tenant_fields(
+            payload.model_dump(), company_id=company_id, workspace_id=workspace_id
+        )
         work_item = await self._repository.create(data)
         await self._activity.record_event(
             ActivityEventCreateInternal(
@@ -156,7 +160,9 @@ class WorkItemService:
                 )
         return WorkItemRead.model_validate(updated)
 
-    async def delete_work_item(self, work_item_id: uuid.UUID, *, company_id: uuid.UUID | None = None) -> None:
+    async def delete_work_item(
+        self, work_item_id: uuid.UUID, *, company_id: uuid.UUID | None = None
+    ) -> None:
         work_item = await self._repository.get_by_id(work_item_id)
         if work_item is None:
             raise WorkItemNotFoundError(work_item_id)

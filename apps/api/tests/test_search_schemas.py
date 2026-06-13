@@ -1,9 +1,7 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
-from pydantic import ValidationError
-
 from app.modules.search.schemas import (
     MAX_SEARCH_LIMIT,
     EntityLookupResult,
@@ -12,10 +10,11 @@ from app.modules.search.schemas import (
     SearchResult,
     SearchResultType,
 )
+from pydantic import ValidationError
 
 
 def test_search_result_schema_for_each_type() -> None:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     base = {
         "id": uuid.uuid4(),
         "title": "Example",

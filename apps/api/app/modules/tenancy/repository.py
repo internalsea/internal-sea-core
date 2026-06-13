@@ -5,7 +5,7 @@ from __future__ import annotations
 import math
 import uuid
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -45,7 +45,9 @@ class TenancyRepository:
         if filters.status is not None:
             query = query.where(Company.status == filters.status.value)
 
-        total = int(await self._session.scalar(select(func.count()).select_from(query.subquery())) or 0)
+        total = int(
+            await self._session.scalar(select(func.count()).select_from(query.subquery())) or 0
+        )
         items = list(
             await self._session.scalars(
                 query.order_by(Company.name.asc()).offset(offset).limit(limit)
@@ -88,10 +90,7 @@ class TenancyRepository:
     ) -> tuple[list[Workspace], int]:
         base = select(Workspace).where(Workspace.company_id == company_id)
         total = int(
-            await self._session.scalar(
-                select(func.count()).select_from(base.subquery())
-            )
-            or 0
+            await self._session.scalar(select(func.count()).select_from(base.subquery())) or 0
         )
         items = list(
             await self._session.scalars(
@@ -208,4 +207,4 @@ class TenancyRepository:
 
     @staticmethod
     def now_utc() -> datetime:
-        return datetime.now(timezone.utc)
+        return datetime.now(UTC)

@@ -522,9 +522,7 @@ class NotificationService:
             raise ValidationError(f"Message is not queued (status={message.status})")
 
         settings = get_settings()
-        channel_type = (
-            message.channel.channel_type if message.channel is not None else "in_app"
-        )
+        channel_type = message.channel.channel_type if message.channel is not None else "in_app"
         from app.modules.notifications.validators import is_external_channel_type
 
         simulate = settings.notification_worker_simulate_external
@@ -564,9 +562,7 @@ class NotificationService:
                     update={"subject": subject or payload.subject, "body": body}
                 )
         if payload.status == NotificationMessageStatus.DRAFT:
-            payload = payload.model_copy(
-                update={"status": NotificationMessageStatus.QUEUED}
-            )
+            payload = payload.model_copy(update={"status": NotificationMessageStatus.QUEUED})
         message_read = await self.create_message(payload, created_by_id=created_by_id)
         return await self.send_message(
             message_read.id,

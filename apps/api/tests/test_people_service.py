@@ -2,7 +2,6 @@ import uuid
 from unittest.mock import AsyncMock
 
 import pytest
-
 from app.modules.people.errors import PersonNotFoundError
 from app.modules.people.repository import PersonListFilters
 from app.modules.people.service import PersonService

@@ -6,15 +6,15 @@ Create Date: 2026-06-12
 
 """
 
-from typing import Sequence, Union
+from collections.abc import Sequence
 
 import sqlalchemy as sa
 from alembic import op
 
 revision: str = "0013"
-down_revision: Union[str, None] = "0012"
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | None = "0012"
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 TENANT_TABLES_COMPANY_WORKSPACE = (
     "people",
@@ -63,8 +63,18 @@ def upgrade() -> None:
         sa.Column("country", sa.String(length=100), nullable=True),
         sa.Column("website", sa.String(length=2048), nullable=True),
         sa.Column("status", sa.String(length=50), nullable=False, server_default="trial"),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False),
-        sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
+        sa.Column(
+            "updated_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("slug", name="uq_companies_slug"),
     )
@@ -84,8 +94,18 @@ def upgrade() -> None:
         sa.Column("default_timezone", sa.String(length=100), nullable=True, server_default="UTC"),
         sa.Column("default_currency", sa.String(length=10), nullable=True, server_default="EUR"),
         sa.Column("status", sa.String(length=50), nullable=False, server_default="active"),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False),
-        sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
+        sa.Column(
+            "updated_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(["company_id"], ["companies.id"]),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("company_id", "slug", name="uq_workspaces_company_slug"),
@@ -103,8 +123,18 @@ def upgrade() -> None:
         sa.Column("role", sa.String(length=50), nullable=False, server_default="viewer"),
         sa.Column("status", sa.String(length=50), nullable=False, server_default="active"),
         sa.Column("joined_at", sa.DateTime(timezone=True), nullable=True),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False),
-        sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
+        sa.Column(
+            "updated_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
         sa.ForeignKeyConstraint(["company_id"], ["companies.id"]),
         sa.ForeignKeyConstraint(["person_id"], ["people.id"]),
         sa.ForeignKeyConstraint(["user_id"], ["users.id"]),

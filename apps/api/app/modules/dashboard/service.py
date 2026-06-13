@@ -2,11 +2,12 @@ import uuid
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.domain.enums import DataProductType, ProjectType, WorkItemType
 from app.models.catalog import DataProduct
 from app.models.projects import Project
 from app.models.work import WorkItem
-from app.modules.dashboard.gaps import OwnershipGapCandidate
 from app.modules.dashboard.advanced_repository import AdvancedDashboardRepository
+from app.modules.dashboard.gaps import OwnershipGapCandidate
 from app.modules.dashboard.repository import DashboardRepository, ProjectWorkCounts
 from app.modules.dashboard.schemas import (
     ActionableInsightsResponse,
@@ -33,7 +34,9 @@ MAX_DASHBOARD_LIMIT = 20
 MAX_ADVANCED_DASHBOARD_LIMIT = 50
 
 
-def normalize_dashboard_limit(limit: int, default: int, *, max_limit: int = MAX_DASHBOARD_LIMIT) -> int:
+def normalize_dashboard_limit(
+    limit: int, default: int, *, max_limit: int = MAX_DASHBOARD_LIMIT
+) -> int:
     if limit < 1:
         return default
     return min(limit, max_limit)
@@ -60,7 +63,9 @@ class DashboardService:
     async def get_project_health(self, limit: int = 8) -> list[ProjectHealthItem]:
         normalized_limit = normalize_dashboard_limit(limit, default=8)
         projects = await self._repository.get_project_health(limit=normalized_limit)
-        counts = await self._repository.get_project_work_counts([project.id for project in projects])
+        counts = await self._repository.get_project_work_counts(
+            [project.id for project in projects]
+        )
         return [_to_project_health_item(project, counts.get(project.id)) for project in projects]
 
     async def get_capability_workload(self) -> list[CapabilityWorkloadItem]:

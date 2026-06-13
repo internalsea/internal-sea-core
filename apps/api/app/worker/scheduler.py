@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from dateutil.relativedelta import relativedelta
-from sqlalchemy import and_, or_, select
+from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.enums import AutomationStatus, AutomationTriggerType, NotificationMessageStatus
@@ -39,7 +39,7 @@ async def find_due_automation_triggers(
     session: AsyncSession,
     limit: int,
 ) -> list[AutomationTrigger]:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     stmt = (
         select(AutomationTrigger)
         .where(
@@ -63,7 +63,7 @@ async def find_due_notification_messages(
     session: AsyncSession,
     limit: int,
 ) -> list[NotificationMessage]:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     stmt = (
         select(NotificationMessage)
         .where(
@@ -88,7 +88,7 @@ async def find_due_notification_messages(
 
 
 async def count_due_automation_triggers(session: AsyncSession) -> int:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     from sqlalchemy import func
 
     result = await session.scalar(
@@ -109,7 +109,7 @@ async def count_due_automation_triggers(session: AsyncSession) -> int:
 
 
 async def count_due_notification_messages(session: AsyncSession) -> int:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     from sqlalchemy import func
 
     result = await session.scalar(

@@ -15,8 +15,8 @@ from app.modules.people.schemas import (
     PersonSummary,
     PersonUpdate,
 )
-from app.modules.tenancy.dependencies import CurrentTenant, get_current_tenant
 from app.modules.people.service import PersonService
+from app.modules.tenancy.dependencies import CurrentTenant, get_current_tenant
 
 router = APIRouter(prefix="/people", tags=["People"])
 

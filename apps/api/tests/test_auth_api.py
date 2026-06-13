@@ -1,13 +1,12 @@
 import uuid
 
 import pytest
-from fastapi.testclient import TestClient
-
 from app.config import get_settings
 from app.domain.enums import UserRole
 from app.main import create_app
 from app.models.identity import User
 from app.modules.auth.dependencies import require_admin, require_viewer
+from fastapi.testclient import TestClient
 
 
 def test_openapi_contains_auth_endpoints(client: TestClient) -> None:

@@ -71,6 +71,8 @@ class ActivityRepository:
         count_query = select(func.count()).select_from(base_query.subquery())
         total = await self._session.scalar(count_query) or 0
 
-        items_query = base_query.order_by(ActivityEvent.created_at.desc()).offset(offset).limit(limit)
+        items_query = (
+            base_query.order_by(ActivityEvent.created_at.desc()).offset(offset).limit(limit)
+        )
         result = await self._session.execute(items_query)
         return list(result.scalars().all()), total

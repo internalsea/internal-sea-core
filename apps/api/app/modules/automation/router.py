@@ -64,7 +64,9 @@ async def list_schedules(
     )
 
 
-@router.post("/schedules", response_model=AutomationScheduleRead, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/schedules", response_model=AutomationScheduleRead, status_code=status.HTTP_201_CREATED
+)
 async def create_schedule(
     payload: AutomationScheduleCreate,
     user: EditorUser,

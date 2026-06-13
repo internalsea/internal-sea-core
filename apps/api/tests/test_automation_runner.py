@@ -1,12 +1,10 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-
 from app.domain.enums import AutomationActionType, AutomationRunStatus, AutomationTargetType
 from app.modules.automation.runner import AutomationRunner
-from app.modules.automation.schemas import AutomationRunRead
 
 
 def _make_trigger(**overrides):
@@ -27,7 +25,7 @@ def _make_trigger(**overrides):
 async def test_run_simulate_returns_simulated_status() -> None:
     session = AsyncMock()
     repository = AsyncMock()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     run_id = uuid.uuid4()
     repository.create_run = AsyncMock(
         return_value=MagicMock(
@@ -80,7 +78,7 @@ async def test_run_simulate_returns_simulated_status() -> None:
 async def test_unsupported_action_type_returns_skipped() -> None:
     session = AsyncMock()
     repository = AsyncMock()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     run_id = uuid.uuid4()
     repository.create_run = AsyncMock(
         return_value=MagicMock(
@@ -132,7 +130,7 @@ async def test_unsupported_action_type_returns_skipped() -> None:
 async def test_create_work_item_uses_defaults() -> None:
     session = AsyncMock()
     repository = AsyncMock()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     work_item_id = uuid.uuid4()
     run_id = uuid.uuid4()
 

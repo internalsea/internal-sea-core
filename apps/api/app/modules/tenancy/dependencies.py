@@ -131,7 +131,9 @@ async def get_current_tenant(
 def require_company_role(*roles: CompanyMemberRole) -> Callable[..., CurrentTenant]:
     min_rank = min(ROLE_RANK[role] for role in roles)
 
-    async def _dependency(tenant: Annotated[CurrentTenant, Depends(get_current_tenant)]) -> CurrentTenant:
+    async def _dependency(
+        tenant: Annotated[CurrentTenant, Depends(get_current_tenant)],
+    ) -> CurrentTenant:
         if tenant.user.is_superuser:
             return tenant
         if ROLE_RANK.get(tenant.role, 0) >= min_rank:

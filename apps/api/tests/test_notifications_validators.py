@@ -1,8 +1,7 @@
 import uuid
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock
 
 import pytest
-
 from app.modules.notifications.errors import UnsupportedNotificationEntityTypeError
 from app.modules.notifications.validators import (
     is_supported_notification_entity_type,

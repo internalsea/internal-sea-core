@@ -1,7 +1,6 @@
 import pytest
-from pydantic import ValidationError
-
 from app.modules.auth.schemas import LoginRequest, RegisterRequest, UserCreate, UserRead
+from pydantic import ValidationError
 
 
 def test_login_request_validates_email() -> None:

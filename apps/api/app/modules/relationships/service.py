@@ -208,9 +208,7 @@ class RelationshipService:
         if link is None:
             raise EntityLinkNotFoundError(link_id)
 
-        description = (
-            f"{link.source_type} unlinked from {link.target_type} ({link.link_type})"
-        )
+        description = f"{link.source_type} unlinked from {link.target_type} ({link.link_type})"
         source_type = EntityType(link.source_type)
         target_type = EntityType(link.target_type)
 

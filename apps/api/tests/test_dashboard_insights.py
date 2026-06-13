@@ -1,5 +1,4 @@
 import uuid
-from unittest.mock import MagicMock
 
 from app.modules.dashboard.insights import InsightContext, build_actionable_insights
 from app.modules.dashboard.schemas import ActionableInsight

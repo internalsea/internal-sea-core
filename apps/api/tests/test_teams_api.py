@@ -1,13 +1,12 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import AsyncMock
 
 import pytest
-from fastapi.testclient import TestClient
-
 from app.main import create_app
 from app.modules.teams.router import get_team_service
 from app.modules.teams.schemas import TeamListItem, TeamListResponse, TeamRead
+from fastapi.testclient import TestClient
 
 
 @pytest.fixture
@@ -25,7 +24,7 @@ def api_client(mock_team_service: AsyncMock) -> TestClient:
 
 
 def _sample_team() -> TeamRead:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     return TeamRead(
         id=uuid.uuid4(),
         name="Core Platform Team",

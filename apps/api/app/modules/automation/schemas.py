@@ -1,12 +1,11 @@
 import uuid
 from datetime import datetime
-from typing import Any
+from typing import Any, Self
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from app.domain.enums import (
     AutomationActionType,
-    AutomationRunStatus,
     AutomationStatus,
     AutomationTargetType,
     AutomationTriggerType,
@@ -33,7 +32,7 @@ class AutomationScheduleBase(BaseModel):
         return value
 
     @model_validator(mode="after")
-    def validate_dates_and_cron(self) -> AutomationScheduleBase:
+    def validate_dates_and_cron(self) -> Self:
         if self.start_at and self.end_at and self.end_at < self.start_at:
             raise ValueError("end_at must not be before start_at")
         if self.cron_expression and self.frequency != ScheduleFrequency.CUSTOM:
@@ -64,7 +63,7 @@ class AutomationScheduleUpdate(BaseModel):
         return value
 
     @model_validator(mode="after")
-    def validate_dates_and_cron(self) -> AutomationScheduleUpdate:
+    def validate_dates_and_cron(self) -> Self:
         if self.start_at and self.end_at and self.end_at < self.start_at:
             raise ValueError("end_at must not be before start_at")
         if self.cron_expression and self.frequency not in (None, ScheduleFrequency.CUSTOM):
@@ -122,7 +121,7 @@ class AutomationTriggerBase(BaseModel):
         return value
 
     @model_validator(mode="after")
-    def validate_target_and_schedule(self) -> AutomationTriggerBase:
+    def validate_target_and_schedule(self) -> Self:
         if (self.target_type is None) != (self.target_id is None):
             raise ValueError("target_type and target_id must be provided together")
         if self.trigger_type == AutomationTriggerType.SCHEDULE and self.schedule_id is None:

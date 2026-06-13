@@ -1,10 +1,8 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import AsyncMock
 
 import pytest
-from fastapi.testclient import TestClient
-
 from app.domain.enums import ComplianceCheckType, ComplianceStatus, ComplianceSubjectType
 from app.main import create_app
 from app.modules.compliance.errors import ComplianceEvidenceConflictError
@@ -12,12 +10,12 @@ from app.modules.compliance.router import get_compliance_service
 from app.modules.compliance.schemas import (
     ComplianceCheckListItem,
     ComplianceCheckListResponse,
-    ComplianceCheckRead,
     ComplianceOverview,
     PolicyListItem,
     PolicyListResponse,
     PolicyRead,
 )
+from fastapi.testclient import TestClient
 
 
 @pytest.fixture
@@ -44,7 +42,9 @@ def test_openapi_includes_compliance_paths(api_client: TestClient) -> None:
     assert "/api/v1/compliance/entity/{subject_type}/{subject_id}" in paths
 
 
-def test_get_compliance_overview(api_client: TestClient, mock_compliance_service: AsyncMock) -> None:
+def test_get_compliance_overview(
+    api_client: TestClient, mock_compliance_service: AsyncMock
+) -> None:
     mock_compliance_service.get_overview.return_value = ComplianceOverview(
         policies_total=2,
         checks_total=4,
@@ -64,7 +64,7 @@ def test_list_policies(api_client: TestClient, mock_compliance_service: AsyncMoc
         effective_from=None,
         effective_to=None,
         version="v1.0",
-        updated_at=datetime.now(timezone.utc),
+        updated_at=datetime.now(UTC),
     )
     mock_compliance_service.list_policies.return_value = PolicyListResponse(
         items=[item],
@@ -80,7 +80,7 @@ def test_list_policies(api_client: TestClient, mock_compliance_service: AsyncMoc
 
 def test_create_policy(api_client: TestClient, mock_compliance_service: AsyncMock) -> None:
     policy_id = uuid.uuid4()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     mock_compliance_service.create_policy.return_value = PolicyRead(
         id=policy_id,
         name="Data Product Governance Policy",
@@ -128,7 +128,7 @@ def test_list_checks(api_client: TestClient, mock_compliance_service: AsyncMock)
         next_check_at=None,
         rule_id=None,
         control_id=None,
-        updated_at=datetime.now(timezone.utc),
+        updated_at=datetime.now(UTC),
     )
     mock_compliance_service.list_checks.return_value = ComplianceCheckListResponse(
         items=[item],

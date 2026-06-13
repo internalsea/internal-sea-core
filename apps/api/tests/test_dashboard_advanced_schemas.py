@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from app.modules.dashboard.schemas import ActionableInsight, ExecutiveSummary
 
@@ -18,7 +18,7 @@ def test_executive_summary_schema() -> None:
         ownership_gaps=1,
         automation_due_triggers=0,
         notification_failed_messages=0,
-        generated_at=datetime.now(timezone.utc),
+        generated_at=datetime.now(UTC),
     )
     assert summary.overall_score == 88
 

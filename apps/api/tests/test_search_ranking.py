@@ -1,12 +1,12 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from app.modules.search.ranking import compute_match_rank, sort_search_results
 from app.modules.search.schemas import SearchResult, SearchResultType
 
 
 def _result(title: str, *, matched_field: str | None = None) -> SearchResult:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     return SearchResult(
         id=uuid.uuid4(),
         type=SearchResultType.TEAM,

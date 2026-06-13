@@ -7,6 +7,8 @@ from app.api.auth_deps import EditorUser, ViewerUser
 from app.core.pagination import DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE
 from app.dependencies import get_db
 from app.domain.enums import WorkItemPriority, WorkItemStatus, WorkItemType
+from app.modules.activity.dependencies import build_activity_service
+from app.modules.tenancy.dependencies import CurrentTenant, get_current_tenant
 from app.modules.work_items.repository import WorkItemListFilters, WorkItemRepository
 from app.modules.work_items.schemas import (
     PaginatedWorkItemList,
@@ -15,8 +17,6 @@ from app.modules.work_items.schemas import (
     WorkItemRead,
     WorkItemUpdate,
 )
-from app.modules.activity.dependencies import build_activity_service
-from app.modules.tenancy.dependencies import CurrentTenant, get_current_tenant
 from app.modules.work_items.service import WorkItemService
 
 router = APIRouter(prefix="/work-items", tags=["Work"])

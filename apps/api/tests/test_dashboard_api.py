@@ -1,10 +1,8 @@
 import uuid
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from unittest.mock import AsyncMock
 
 import pytest
-from fastapi.testclient import TestClient
-
 from app.main import create_app
 from app.modules.dashboard.router import get_dashboard_service
 from app.modules.dashboard.schemas import (
@@ -15,6 +13,7 @@ from app.modules.dashboard.schemas import (
     ProjectHealthItem,
     RecentDataProductItem,
 )
+from fastapi.testclient import TestClient
 
 
 @pytest.fixture
@@ -58,8 +57,10 @@ def test_get_dashboard_summary(api_client: TestClient, mock_dashboard_service: A
     assert data["work_items_open"] == 7
 
 
-def test_get_recent_data_products(api_client: TestClient, mock_dashboard_service: AsyncMock) -> None:
-    now = datetime.now(timezone.utc)
+def test_get_recent_data_products(
+    api_client: TestClient, mock_dashboard_service: AsyncMock
+) -> None:
+    now = datetime.now(UTC)
     mock_dashboard_service.get_recent_data_products.return_value = [
         RecentDataProductItem(
             id=uuid.uuid4(),
@@ -82,7 +83,7 @@ def test_get_high_priority_work_items(
     api_client: TestClient,
     mock_dashboard_service: AsyncMock,
 ) -> None:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     mock_dashboard_service.get_high_priority_work_items.return_value = [
         HighPriorityWorkItem(
             id=uuid.uuid4(),

@@ -2,7 +2,6 @@ import uuid
 
 from app.core.pagination import calculate_pages, normalize_pagination
 from app.modules.teams.errors import TeamConflictError, TeamNotFoundError
-from app.modules.tenancy.scope import ensure_company_access, merge_tenant_fields
 from app.modules.teams.repository import TeamListFilters, TeamRepository
 from app.modules.teams.schemas import (
     TeamCreate,
@@ -12,6 +11,7 @@ from app.modules.teams.schemas import (
     TeamSummary,
     TeamUpdate,
 )
+from app.modules.tenancy.scope import ensure_company_access, merge_tenant_fields
 
 
 class TeamService:
@@ -40,7 +40,9 @@ class TeamService:
             pages=calculate_pages(total, normalized_page_size),
         )
 
-    async def get_team(self, team_id: uuid.UUID, *, company_id: uuid.UUID | None = None) -> TeamRead:
+    async def get_team(
+        self, team_id: uuid.UUID, *, company_id: uuid.UUID | None = None
+    ) -> TeamRead:
         team = await self._repository.get_by_id(team_id)
         if team is None:
             raise TeamNotFoundError(team_id)
@@ -48,7 +50,9 @@ class TeamService:
             ensure_company_access(team, company_id, label="Team")
         return TeamRead.model_validate(team)
 
-    async def get_team_summary(self, team_id: uuid.UUID, *, company_id: uuid.UUID | None = None) -> TeamSummary:
+    async def get_team_summary(
+        self, team_id: uuid.UUID, *, company_id: uuid.UUID | None = None
+    ) -> TeamSummary:
         team = await self._repository.get_by_id(team_id)
         if team is None:
             raise TeamNotFoundError(team_id)
@@ -75,7 +79,9 @@ class TeamService:
         existing = await self._repository.get_by_name(payload.name)
         if existing is not None:
             raise TeamConflictError(f"Team with name '{payload.name}' already exists")
-        data = merge_tenant_fields(payload.model_dump(), company_id=company_id, workspace_id=workspace_id)
+        data = merge_tenant_fields(
+            payload.model_dump(), company_id=company_id, workspace_id=workspace_id
+        )
         team = await self._repository.create(data)
         return TeamRead.model_validate(team)
 
@@ -107,6 +113,7 @@ class TeamService:
             ensure_company_access(team, company_id, label="Team")
         if await self._repository.has_references(team_id):
             raise TeamConflictError(
-                "Cannot delete team while people, data products, work items or projects reference it"
+                "Cannot delete team while people, data products, work items, "
+                "or projects reference it"
             )
         await self._repository.delete(team)

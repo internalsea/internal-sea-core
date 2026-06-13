@@ -1,12 +1,12 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from app.core.pagination import calculate_pages, normalize_pagination
-from app.domain.enums import AutomationStatus
 from app.domain.enums import (
     ActivityAction,
     AutomationActionType,
+    AutomationStatus,
     AutomationTargetType,
     AutomationTriggerType,
 )
@@ -23,7 +23,7 @@ from app.modules.automation.repository import (
     AutomationScheduleListFilters,
     AutomationTriggerListFilters,
 )
-from app.modules.automation.runner import AutomationRunner, MVP_SAFE_ACTION_TYPES
+from app.modules.automation.runner import MVP_SAFE_ACTION_TYPES, AutomationRunner
 from app.modules.automation.schemas import (
     AutomationOverview,
     AutomationRunListResponse,
@@ -261,9 +261,7 @@ class AutomationService:
         merged_trigger_type = update_data.get("trigger_type", trigger.trigger_type)
         merged_action_type = update_data.get("action_type", trigger.action_type)
 
-        target_type_enum = (
-            AutomationTargetType(merged_target_type) if merged_target_type else None
-        )
+        target_type_enum = AutomationTargetType(merged_target_type) if merged_target_type else None
         trigger_type_enum = AutomationTriggerType(merged_trigger_type)
         action_type_enum = AutomationActionType(merged_action_type)
 
@@ -421,7 +419,7 @@ class AutomationService:
             return None
         if schedule.next_run_at is not None:
             return schedule.next_run_at
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         if schedule.start_at and schedule.start_at > now:
             return schedule.start_at
         return calculate_next_run_at(schedule, now) or now

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -35,8 +35,8 @@ from app.models.notifications import (
     NotificationPreference,
     NotificationTemplate,
 )
-from app.models.performance import PerformanceMetricDefinition, PerformanceMetricValue
 from app.models.people import Capability, Person, Team
+from app.models.performance import PerformanceMetricDefinition, PerformanceMetricValue
 from app.models.projects import Project
 from app.models.relationships import EntityLink
 from app.models.tenancy import Company, CompanyMember, Workspace
@@ -132,7 +132,7 @@ async def seed_demo_company_members(
     user_by_email: dict[str, User],
     person_by_email: dict[str, Person],
 ) -> None:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     for email, role in DEMO_MEMBER_ROLES.items():
         user = user_by_email.get(email)
         if user is None:

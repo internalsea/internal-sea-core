@@ -1,11 +1,10 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import AsyncMock
 
 import pytest
-from fastapi.testclient import TestClient
-
 from app.main import create_app
 from app.worker.schemas import DueWorkSummary, WorkerCycleResult, WorkerStatus
+from fastapi.testclient import TestClient
 
 
 class _MockWorkerRunner:
@@ -13,7 +12,7 @@ class _MockWorkerRunner:
         self.db = db
 
     async def run_once(self) -> WorkerCycleResult:
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         return WorkerCycleResult(
             worker_instance_id="local-worker",
             started_at=now,
@@ -39,7 +38,7 @@ def mock_worker_deps(monkeypatch: pytest.MonkeyPatch) -> None:
                 batch_size=10,
                 automation_due_count=2,
                 notification_due_count=1,
-                last_checked_at=datetime.now(timezone.utc),
+                last_checked_at=datetime.now(UTC),
             )
         ),
     )

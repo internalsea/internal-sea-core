@@ -1,8 +1,7 @@
 import pytest
-from pydantic import ValidationError
-
 from app.domain.enums import SeniorityLevel
 from app.modules.people.schemas import PersonCreate, PersonUpdate
+from pydantic import ValidationError
 
 
 def test_person_create_valid_payload() -> None:

@@ -1,14 +1,13 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import AsyncMock
 
 import pytest
-from fastapi.testclient import TestClient
-
 from app.domain.enums import ProjectStatus, ProjectType
 from app.main import create_app
 from app.modules.projects.router import get_project_service
 from app.modules.projects.schemas import ProjectListItem, ProjectListResponse, ProjectRead
+from fastapi.testclient import TestClient
 
 
 @pytest.fixture
@@ -26,7 +25,7 @@ def api_client(mock_project_service: AsyncMock) -> TestClient:
 
 
 def _sample_project(*, project_type: ProjectType = ProjectType.CLIENT_PROJECT) -> ProjectRead:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     return ProjectRead(
         id=uuid.uuid4(),
         name="Finance Data Platform Migration",

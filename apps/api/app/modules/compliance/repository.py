@@ -8,7 +8,6 @@ from app.domain.enums import (
     ComplianceStatus,
     ComplianceSubjectType,
     ControlStatus,
-    EvidenceStatus,
     PolicyStatus,
     RuleSeverity,
 )
@@ -61,9 +60,7 @@ class ComplianceRepository:
         query = select(Policy)
         if filters.search:
             pattern = f"%{filters.search}%"
-            query = query.where(
-                or_(Policy.name.ilike(pattern), Policy.description.ilike(pattern))
-            )
+            query = query.where(or_(Policy.name.ilike(pattern), Policy.description.ilike(pattern)))
         if filters.status is not None:
             query = query.where(Policy.status == filters.status.value)
         if filters.owner_id is not None:
@@ -287,7 +284,9 @@ class ComplianceRepository:
             ComplianceCheck.subject_type == subject_type.value,
             ComplianceCheck.subject_id == subject_id,
         )
-        total = int(await self._session.scalar(select(func.count()).select_from(query.subquery())) or 0)
+        total = int(
+            await self._session.scalar(select(func.count()).select_from(query.subquery())) or 0
+        )
         result = await self._session.scalars(
             query.order_by(
                 ComplianceCheck.due_date.asc().nulls_last(),
@@ -308,7 +307,9 @@ class ComplianceRepository:
         await self._session.refresh(check)
         return check
 
-    async def update_check(self, check: ComplianceCheck, data: dict[str, object]) -> ComplianceCheck:
+    async def update_check(
+        self, check: ComplianceCheck, data: dict[str, object]
+    ) -> ComplianceCheck:
         for key, value in data.items():
             setattr(check, key, value)
         await self._session.commit()

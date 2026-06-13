@@ -9,8 +9,8 @@ from app.modules.search.errors import SearchEntityNotFoundError
 from app.modules.search.repository import SearchRepository
 from app.modules.search.schemas import (
     DEFAULT_SEARCH_LIMIT,
-    EntityLookupResult,
     MAX_SEARCH_LIMIT,
+    EntityLookupResult,
     SearchResponse,
     SearchResultType,
 )

@@ -27,6 +27,7 @@ jobs:
           set -e
           test -f README.md
           test -f docker-compose.yml
+          test -f .env.example
           test -f apps/api/pyproject.toml
           test -f apps/api/app/main.py
           test -f apps/api/alembic.ini
@@ -37,7 +38,9 @@ jobs:
           echo "Required foundation files present."
 
       - name: Validate docker-compose syntax
-        run: docker compose -f docker-compose.yml config --quiet
+        run: |
+          cp .env.example .env
+          docker compose -f docker-compose.yml config --quiet
 
   backend:
     name: Backend checks

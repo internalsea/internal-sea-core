@@ -66,9 +66,7 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         if args.command == "run-once":
-            return asyncio.run(
-                _run_once(batch_size=args.batch_size, instance_id=args.instance_id)
-            )
+            return asyncio.run(_run_once(batch_size=args.batch_size, instance_id=args.instance_id))
         if args.command == "run-loop":
             return asyncio.run(
                 _run_loop(

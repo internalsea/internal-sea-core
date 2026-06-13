@@ -14,8 +14,8 @@ from app.modules.capabilities.schemas import (
     CapabilitySummary,
     CapabilityUpdate,
 )
-from app.modules.tenancy.dependencies import CurrentTenant, get_current_tenant
 from app.modules.capabilities.service import CapabilityService
+from app.modules.tenancy.dependencies import CurrentTenant, get_current_tenant
 
 router = APIRouter(prefix="/capabilities", tags=["Capabilities"])
 

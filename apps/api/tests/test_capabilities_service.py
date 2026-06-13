@@ -2,7 +2,6 @@ import uuid
 from unittest.mock import AsyncMock
 
 import pytest
-
 from app.modules.capabilities.errors import CapabilityNotFoundError
 from app.modules.capabilities.repository import CapabilityListFilters
 from app.modules.capabilities.service import CapabilityService

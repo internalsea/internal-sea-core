@@ -1,9 +1,8 @@
 import uuid
 
 import pytest
-from pydantic import ValidationError
-
 from app.modules.work_items.schemas import WorkItemCreate, WorkItemUpdate
+from pydantic import ValidationError
 
 
 def test_work_item_create_accepts_project_id() -> None:

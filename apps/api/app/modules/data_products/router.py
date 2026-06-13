@@ -15,8 +15,8 @@ from app.modules.data_products.schemas import (
     DataProductUpdate,
     PaginatedDataProductList,
 )
-from app.modules.tenancy.dependencies import CurrentTenant, get_current_tenant
 from app.modules.data_products.service import DataProductService
+from app.modules.tenancy.dependencies import CurrentTenant, get_current_tenant
 
 router = APIRouter(prefix="/data-products", tags=["Catalog"])
 

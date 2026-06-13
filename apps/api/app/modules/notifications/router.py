@@ -82,7 +82,9 @@ async def list_channels(
     return await service.list_channels(filters=filters, page=page, page_size=page_size)
 
 
-@router.post("/channels", response_model=NotificationChannelRead, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/channels", response_model=NotificationChannelRead, status_code=status.HTTP_201_CREATED
+)
 async def create_channel(
     payload: NotificationChannelCreate,
     user: EditorUser,
@@ -266,7 +268,9 @@ async def list_messages(
     return await service.list_messages(filters=filters, page=page, page_size=page_size)
 
 
-@router.post("/messages", response_model=NotificationMessageRead, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/messages", response_model=NotificationMessageRead, status_code=status.HTTP_201_CREATED
+)
 async def create_message(
     payload: NotificationMessageCreate,
     user: EditorUser,

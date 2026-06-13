@@ -110,9 +110,7 @@ class ProjectRepository:
         today = date.today()
         base = WorkItem.project_id == project_id
 
-        total = int(
-            await self._session.scalar(select(func.count(WorkItem.id)).where(base)) or 0
-        )
+        total = int(await self._session.scalar(select(func.count(WorkItem.id)).where(base)) or 0)
         open_count = int(
             await self._session.scalar(
                 select(func.count(WorkItem.id)).where(

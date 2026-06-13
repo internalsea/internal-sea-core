@@ -1,8 +1,6 @@
 from uuid import uuid4
 
 import pytest
-from pydantic import ValidationError
-
 from app.domain.enums import NotificationChannelType, NotificationEventType
 from app.modules.notifications.schemas import (
     NotificationChannelCreate,
@@ -10,6 +8,7 @@ from app.modules.notifications.schemas import (
     NotificationPreferenceCreate,
     NotificationTemplateCreate,
 )
+from pydantic import ValidationError
 
 
 def test_channel_create_rejects_empty_name() -> None:

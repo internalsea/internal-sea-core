@@ -5,7 +5,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.auth_deps import ViewerUser
 from app.dependencies import get_db
-from app.modules.tenancy.dependencies import get_current_company_id
 from app.modules.dashboard.schemas import (
     ActionableInsightsResponse,
     AdvancedDashboardResponse,
@@ -27,6 +26,7 @@ from app.modules.dashboard.schemas import (
     WorkDeliverySummary,
 )
 from app.modules.dashboard.service import DashboardService, build_dashboard_service
+from app.modules.tenancy.dependencies import get_current_company_id
 
 router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
 

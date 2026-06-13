@@ -1,8 +1,7 @@
-from unittest.mock import AsyncMock, MagicMock
 import uuid
+from unittest.mock import AsyncMock
 
 import pytest
-
 from app.domain.enums import UserRole
 from app.models.identity import User
 from app.modules.auth.errors import InvalidCredentialsError

@@ -1,14 +1,13 @@
 import re
 import uuid
 from datetime import datetime
-from typing import Any
+from typing import Any, Self
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from app.domain.enums import (
     NotificationChannelStatus,
     NotificationChannelType,
-    NotificationDeliveryStatus,
     NotificationEventType,
     NotificationMessageStatus,
     NotificationPriority,
@@ -221,7 +220,7 @@ class NotificationPreferenceBase(BaseModel):
     is_enabled: bool = True
 
     @model_validator(mode="after")
-    def require_user_or_person(self) -> NotificationPreferenceBase:
+    def require_user_or_person(self) -> Self:
         if self.user_id is None and self.person_id is None:
             raise ValueError("At least one of user_id or person_id must be provided")
         return self
@@ -272,7 +271,7 @@ class NotificationMessageBase(BaseModel):
         return value
 
     @model_validator(mode="after")
-    def validate_recipient_and_entity(self) -> NotificationMessageBase:
+    def validate_recipient_and_entity(self) -> Self:
         if self.recipient_type is not None and not self.recipient_value:
             raise ValueError("recipient_value is required when recipient_type is provided")
         if self.entity_type is not None and self.entity_id is None:

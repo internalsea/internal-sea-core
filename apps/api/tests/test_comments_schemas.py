@@ -1,7 +1,6 @@
 import pytest
-from pydantic import ValidationError
-
 from app.modules.comments.schemas import CommentCreate, CommentUpdate
+from pydantic import ValidationError
 
 
 def test_comment_create_rejects_empty_body() -> None:

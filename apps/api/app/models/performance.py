@@ -7,12 +7,27 @@ from datetime import date, datetime
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Boolean, Date, DateTime, ForeignKey, Index, Numeric, String, Text, UniqueConstraint
+from sqlalchemy import (
+    Boolean,
+    Date,
+    DateTime,
+    ForeignKey,
+    Index,
+    Numeric,
+    String,
+    Text,
+    UniqueConstraint,
+)
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
-from app.db.mixins import CompanyScopedMixin, TimestampMixin, UUIDPrimaryKeyMixin, WorkspaceScopedMixin
+from app.db.mixins import (
+    CompanyScopedMixin,
+    TimestampMixin,
+    UUIDPrimaryKeyMixin,
+    WorkspaceScopedMixin,
+)
 from app.domain.enums import MetricDirection, MetricStatus, MetricValueStatus, MetricValueType
 
 if TYPE_CHECKING:

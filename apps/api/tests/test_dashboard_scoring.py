@@ -1,5 +1,4 @@
 from app.modules.dashboard.scoring import (
-    calculate_automation_health_score,
     calculate_compliance_health_score,
     calculate_overall_score,
     calculate_status_from_score,

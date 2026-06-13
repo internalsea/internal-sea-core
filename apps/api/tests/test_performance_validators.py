@@ -1,8 +1,7 @@
 import uuid
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock
 
 import pytest
-
 from app.domain.enums import PerformanceSubjectType
 from app.modules.performance.errors import (
     PerformanceSubjectNotFoundError,

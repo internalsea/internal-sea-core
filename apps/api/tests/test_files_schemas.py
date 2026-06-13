@@ -1,10 +1,9 @@
 import uuid
 
 import pytest
-from pydantic import ValidationError
-
 from app.domain.enums import FileAssetType, FileEntityType, FileSensitivity
 from app.modules.files.schemas import FileAssetCreate, FileAttachmentCreate
+from pydantic import ValidationError
 
 
 def test_file_asset_create_accepts_valid_external_url() -> None:

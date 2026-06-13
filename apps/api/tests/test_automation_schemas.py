@@ -1,9 +1,7 @@
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import pytest
-from pydantic import ValidationError
-
 from app.domain.enums import (
     AutomationActionType,
     AutomationStatus,
@@ -16,6 +14,7 @@ from app.modules.automation.schemas import (
     AutomationScheduleUpdate,
     AutomationTriggerCreate,
 )
+from pydantic import ValidationError
 
 
 def test_automation_schedule_create_rejects_empty_name() -> None:
@@ -24,7 +23,7 @@ def test_automation_schedule_create_rejects_empty_name() -> None:
 
 
 def test_schedule_date_validation_rejects_end_before_start() -> None:
-    start = datetime.now(timezone.utc)
+    start = datetime.now(UTC)
     end = start - timedelta(days=1)
     with pytest.raises(ValidationError):
         AutomationScheduleCreate(

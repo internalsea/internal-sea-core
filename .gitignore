@@ -40,6 +40,7 @@ pytest_cache/
 .dmypy.json
 dmypy.json
 .ruff_cache/
+apps/api/.tools/
 
 # Virtual environments
 .venv/

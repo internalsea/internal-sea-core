@@ -1,10 +1,8 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import AsyncMock
 
 import pytest
-from fastapi.testclient import TestClient
-
 from app.main import create_app
 from app.modules.search.router import get_search_service
 from app.modules.search.schemas import (
@@ -13,6 +11,7 @@ from app.modules.search.schemas import (
     SearchResult,
     SearchResultType,
 )
+from fastapi.testclient import TestClient
 
 
 @pytest.fixture
@@ -51,7 +50,7 @@ def test_search_rejects_short_query(api_client: TestClient, mock_search_service:
 
 
 def test_search_returns_results(api_client: TestClient, mock_search_service: AsyncMock) -> None:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     entity_id = uuid.uuid4()
     mock_search_service.search.return_value = SearchResponse(
         query="sales",
@@ -97,7 +96,9 @@ def test_search_limit_max_enforced(api_client: TestClient) -> None:
     assert response.status_code == 422
 
 
-def test_entity_lookup_returns_result(api_client: TestClient, mock_search_service: AsyncMock) -> None:
+def test_entity_lookup_returns_result(
+    api_client: TestClient, mock_search_service: AsyncMock
+) -> None:
     entity_id = uuid.uuid4()
     mock_search_service.lookup_entity.return_value = EntityLookupResult(
         id=entity_id,

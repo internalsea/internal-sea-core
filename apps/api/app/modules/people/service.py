@@ -2,7 +2,6 @@ import uuid
 
 from app.core.pagination import calculate_pages, normalize_pagination
 from app.modules.people.errors import PersonConflictError, PersonNotFoundError
-from app.modules.tenancy.scope import ensure_company_access, merge_tenant_fields
 from app.modules.people.repository import PersonListFilters, PersonRepository
 from app.modules.people.schemas import (
     PersonCreate,
@@ -12,6 +11,7 @@ from app.modules.people.schemas import (
     PersonSummary,
     PersonUpdate,
 )
+from app.modules.tenancy.scope import ensure_company_access, merge_tenant_fields
 
 
 class PersonService:
@@ -40,7 +40,9 @@ class PersonService:
             pages=calculate_pages(total, normalized_page_size),
         )
 
-    async def get_person(self, person_id: uuid.UUID, *, company_id: uuid.UUID | None = None) -> PersonRead:
+    async def get_person(
+        self, person_id: uuid.UUID, *, company_id: uuid.UUID | None = None
+    ) -> PersonRead:
         person = await self._repository.get_by_id(person_id)
         if person is None:
             raise PersonNotFoundError(person_id)
@@ -48,7 +50,9 @@ class PersonService:
             ensure_company_access(person, company_id, label="Person")
         return PersonRead.model_validate(person)
 
-    async def get_person_summary(self, person_id: uuid.UUID, *, company_id: uuid.UUID | None = None) -> PersonSummary:
+    async def get_person_summary(
+        self, person_id: uuid.UUID, *, company_id: uuid.UUID | None = None
+    ) -> PersonSummary:
         person = await self._repository.get_by_id(person_id)
         if person is None:
             raise PersonNotFoundError(person_id)
@@ -74,7 +78,9 @@ class PersonService:
             existing = await self._repository.get_by_email(payload.email)
             if existing is not None:
                 raise PersonConflictError(f"Person with email {payload.email} already exists")
-        data = merge_tenant_fields(payload.model_dump(), company_id=company_id, workspace_id=workspace_id)
+        data = merge_tenant_fields(
+            payload.model_dump(), company_id=company_id, workspace_id=workspace_id
+        )
         person = await self._repository.create(data)
         return PersonRead.model_validate(person)
 
@@ -100,7 +106,9 @@ class PersonService:
         updated = await self._repository.update(person, update_data)
         return PersonRead.model_validate(updated)
 
-    async def deactivate_person(self, person_id: uuid.UUID, *, company_id: uuid.UUID | None = None) -> None:
+    async def deactivate_person(
+        self, person_id: uuid.UUID, *, company_id: uuid.UUID | None = None
+    ) -> None:
         person = await self._repository.get_by_id(person_id)
         if person is None:
             raise PersonNotFoundError(person_id)

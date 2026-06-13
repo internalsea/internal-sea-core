@@ -3,7 +3,6 @@ from decimal import Decimal
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-
 from app.domain.enums import PerformanceSubjectType
 from app.modules.performance.errors import PerformanceMetricConflictError
 from app.modules.performance.schemas import PerformanceMetricValueCreate

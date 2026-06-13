@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -26,7 +26,7 @@ async def get_worker_status(
         batch_size=settings.worker_batch_size,
         automation_due_count=await count_due_automation_triggers(session),
         notification_due_count=await count_due_notification_messages(session),
-        last_checked_at=datetime.now(timezone.utc),
+        last_checked_at=datetime.now(UTC),
     )
 
 

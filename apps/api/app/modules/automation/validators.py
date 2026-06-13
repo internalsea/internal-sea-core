@@ -1,6 +1,5 @@
 import uuid
 
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.enums import AutomationTargetType, ProjectType

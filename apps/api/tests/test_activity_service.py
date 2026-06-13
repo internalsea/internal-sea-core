@@ -1,9 +1,8 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-
 from app.domain.enums import ActivityAction, ActivityEntityType
 from app.modules.activity.helpers import get_updated_fields
 from app.modules.activity.schemas import ActivityEventCreateInternal
@@ -14,7 +13,7 @@ from app.modules.activity.service import ActivityService
 async def test_service_records_event_with_expected_data() -> None:
     repository = AsyncMock()
     entity_id = uuid.uuid4()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     event = MagicMock()
     event.id = uuid.uuid4()
     event.entity_type = ActivityEntityType.WORK_ITEM.value

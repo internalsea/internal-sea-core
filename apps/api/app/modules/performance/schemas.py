@@ -110,11 +110,7 @@ class PerformanceMetricValueBase(BaseModel):
 
     @model_validator(mode="after")
     def validate_value_fields(self) -> "PerformanceMetricValueBase":
-        if (
-            self.value_numeric is None
-            and self.value_text is None
-            and self.value_bool is None
-        ):
+        if self.value_numeric is None and self.value_text is None and self.value_bool is None:
             raise ValueError("At least one value field must be provided")
         if (
             self.period_start is not None

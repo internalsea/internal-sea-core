@@ -6,7 +6,7 @@ import asyncio
 import sys
 import uuid
 from dataclasses import dataclass, field
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
 
 from sqlalchemy import and_, func, select
@@ -30,9 +30,9 @@ from app.domain.enums import (
     QualityStatus,
     ScheduleFrequency,
     SeniorityLevel,
+    UserRole,
     WorkItemPriority,
     WorkItemStatus,
-    UserRole,
     WorkItemType,
 )
 from app.models.automation import AutomationSchedule, AutomationTrigger
@@ -46,7 +46,6 @@ from app.models.compliance import (
 )
 from app.models.files import FileAsset, FileAttachment, FileStorage
 from app.models.identity import User
-from app.models.people import Capability, Person, Team
 from app.models.notifications import (
     NotificationChannel,
     NotificationDeliveryAttempt,
@@ -54,45 +53,41 @@ from app.models.notifications import (
     NotificationPreference,
     NotificationTemplate,
 )
+from app.models.people import Capability, Person, Team
 from app.models.performance import PerformanceMetricDefinition, PerformanceMetricValue
 from app.models.projects import Project
 from app.models.relationships import EntityLink
 from app.models.work import WorkItem
 from app.modules.auth.security import hash_password
-from app.seed.tenant import (
-    assign_default_tenant_to_seeded_objects,
-    get_or_create_demo_tenant,
-    seed_demo_company_members,
-)
 from app.seed.seed_data import (
+    AUTOMATION_SCHEDULES,
+    AUTOMATION_TRIGGERS,
     BUSINESS_DOMAINS,
     CAPABILITIES,
     CLIENT_PROJECTS,
-    DATA_PRODUCTS,
-    AUTOMATION_SCHEDULES,
-    AUTOMATION_TRIGGERS,
-    PERFORMANCE_METRIC_DEFINITIONS,
-    PERFORMANCE_METRIC_VALUES,
-    NOTIFICATION_CHANNELS,
-    NOTIFICATION_MESSAGES,
-    NOTIFICATION_PREFERENCES,
-    NOTIFICATION_TEMPLATES,
     COMPLIANCE_CHECKS,
     COMPLIANCE_CONTROLS,
     COMPLIANCE_POLICIES,
     COMPLIANCE_RULES,
+    DATA_PRODUCTS,
     DEMO_AUTH_USERS,
     FILE_ASSETS,
     FILE_STORAGES,
     INTERNAL_PROJECTS,
+    NOTIFICATION_CHANNELS,
+    NOTIFICATION_MESSAGES,
+    NOTIFICATION_PREFERENCES,
+    NOTIFICATION_TEMPLATES,
     PEOPLE,
+    PERFORMANCE_METRIC_DEFINITIONS,
+    PERFORMANCE_METRIC_VALUES,
     RELATIONSHIPS,
     TEAMS,
     WORK_ITEMS,
-    BusinessDomainSeed,
-    CapabilitySeed,
     AutomationScheduleSeed,
     AutomationTriggerSeed,
+    BusinessDomainSeed,
+    CapabilitySeed,
     ComplianceCheckSeed,
     ComplianceControlSeed,
     CompliancePolicySeed,
@@ -107,6 +102,11 @@ from app.seed.seed_data import (
     RelationshipSeed,
     TeamSeed,
     WorkItemSeed,
+)
+from app.seed.tenant import (
+    assign_default_tenant_to_seeded_objects,
+    get_or_create_demo_tenant,
+    seed_demo_company_members,
 )
 
 
@@ -574,9 +574,7 @@ async def get_or_create_work_item(
 ) -> WorkItem:
     work_type = WorkItemType(data["type"])
     result = await session.execute(
-        select(WorkItem).where(
-            and_(WorkItem.title == data["title"], WorkItem.type == work_type)
-        )
+        select(WorkItem).where(and_(WorkItem.title == data["title"], WorkItem.type == work_type))
     )
     existing = result.scalar_one_or_none()
 
@@ -735,9 +733,7 @@ async def _run_seed(session: AsyncSession, summary: SeedSummary) -> None:
     product_by_name: dict[str, DataProduct] = {}
     for item in DATA_PRODUCTS:
         business_owner_email = item.get("business_owner_email")
-        business_owner = (
-            person_by_email.get(business_owner_email) if business_owner_email else None
-        )
+        business_owner = person_by_email.get(business_owner_email) if business_owner_email else None
         product = await get_or_create_data_product(
             session,
             item,
@@ -890,7 +886,9 @@ async def _run_seed(session: AsyncSession, summary: SeedSummary) -> None:
             continue
         rule = rule_by_code.get(item["rule_code"])
         control = control_by_name.get(item["control_name"])
-        evidence_file = file_by_name.get(item.get("evidence_file", "")) if item.get("evidence_file") else None
+        evidence_file = (
+            file_by_name.get(item.get("evidence_file", "")) if item.get("evidence_file") else None
+        )
         await get_or_create_compliance_check(
             session,
             item,
@@ -962,7 +960,9 @@ async def _run_seed(session: AsyncSession, summary: SeedSummary) -> None:
         )
         if subject_id is None:
             continue
-        period_start, period_end = _performance_period_for_frequency(item.get("frequency", "monthly"))
+        period_start, period_end = _performance_period_for_frequency(
+            item.get("frequency", "monthly")
+        )
         await get_or_create_performance_metric_value(
             session,
             item,
@@ -995,10 +995,7 @@ async def _run_seed(session: AsyncSession, summary: SeedSummary) -> None:
         template_by_name[item["name"]] = template
 
     check_by_title = {
-        check.title: check
-        for check in (
-            await session.scalars(select(ComplianceCheck))
-        ).all()
+        check.title: check for check in (await session.scalars(select(ComplianceCheck))).all()
     }
 
     for item in NOTIFICATION_MESSAGES:
@@ -1292,7 +1289,7 @@ async def get_or_create_automation_trigger(
         }
         past_minutes = data.get("next_run_at_past_minutes")
         if past_minutes is not None:
-            updates["next_run_at"] = datetime.now(timezone.utc) - timedelta(minutes=past_minutes)
+            updates["next_run_at"] = datetime.now(UTC) - timedelta(minutes=past_minutes)
         for field, value in updates.items():
             if value is not None and getattr(existing, field) != value:
                 setattr(existing, field, value)
@@ -1306,9 +1303,9 @@ async def get_or_create_automation_trigger(
     next_run_at = None
     past_minutes = data.get("next_run_at_past_minutes")
     if past_minutes is not None:
-        next_run_at = datetime.now(timezone.utc) - timedelta(minutes=past_minutes)
+        next_run_at = datetime.now(UTC) - timedelta(minutes=past_minutes)
     elif data.get("status", AutomationStatus.ACTIVE.value) == AutomationStatus.ACTIVE.value:
-        next_run_at = schedule.next_run_at or datetime.now(timezone.utc)
+        next_run_at = schedule.next_run_at or datetime.now(UTC)
 
     trigger = AutomationTrigger(
         name=data["name"],
@@ -1907,7 +1904,7 @@ async def get_or_create_notification_message(
             NotificationMessage.channel_id == channel.id,
         )
     )
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     scheduled_at = None
     past_minutes = data.get("scheduled_at_past_minutes")
     if past_minutes is not None:

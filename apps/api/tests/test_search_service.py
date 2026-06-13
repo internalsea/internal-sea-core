@@ -1,14 +1,12 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import AsyncMock
 
 import pytest
-from fastapi import HTTPException
-
-from app.modules.search.schemas import SearchResult, SearchResultType
-from app.modules.search.service import SearchService, normalize_search_limit
+from app.domain.enums import ProjectType
 from app.modules.search.errors import SearchEntityNotFoundError
-from app.modules.search.schemas import EntityLookupResult
+from app.modules.search.schemas import EntityLookupResult, SearchResult, SearchResultType
+from app.modules.search.service import SearchService, normalize_search_limit
 from app.modules.search.urls import (
     build_compliance_check_url,
     build_data_product_url,
@@ -17,7 +15,7 @@ from app.modules.search.urls import (
     build_project_url,
     project_search_result_type,
 )
-from app.domain.enums import ProjectType
+from fastapi import HTTPException
 
 
 def test_normalize_search_limit() -> None:
@@ -72,7 +70,7 @@ async def test_service_rejects_short_query() -> None:
 
 @pytest.mark.asyncio
 async def test_service_calls_repository_with_normalized_query() -> None:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     entity_id = uuid.uuid4()
     repository = AsyncMock()
     repository.search.return_value = [

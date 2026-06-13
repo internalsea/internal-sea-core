@@ -19,8 +19,8 @@ from app.models.notifications import (
     NotificationPreference,
     NotificationTemplate,
 )
-from app.models.performance import PerformanceMetricDefinition, PerformanceMetricValue
 from app.models.people import Capability, Person, Team
+from app.models.performance import PerformanceMetricDefinition, PerformanceMetricValue
 from app.models.projects import Project
 from app.models.relationships import EntityLink
 from app.models.system import SystemInfo

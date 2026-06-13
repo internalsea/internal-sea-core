@@ -88,4 +88,3 @@ async def get_entity_display_name(
         entity = await session.get(Capability, entity_id)
         return entity.name if entity else None
     return None
-

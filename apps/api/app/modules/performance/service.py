@@ -28,11 +28,6 @@ from app.modules.performance.repository import (
     PerformanceRepository,
     PerformanceValueListFilters,
 )
-from app.modules.performance.scoring import (
-    calculate_metric_score,
-    calculate_trend,
-    interpret_metric,
-)
 from app.modules.performance.schemas import (
     PerformanceMetricDefinitionCreate,
     PerformanceMetricDefinitionFilters,
@@ -49,6 +44,11 @@ from app.modules.performance.schemas import (
     PerformanceOverview,
     PerformanceScorecard,
     PerformanceScorecardMetric,
+)
+from app.modules.performance.scoring import (
+    calculate_metric_score,
+    calculate_trend,
+    interpret_metric,
 )
 from app.modules.performance.validators import (
     is_supported_performance_subject_type,
@@ -89,9 +89,7 @@ class PerformanceService:
             subject_type=PerformanceSubjectType(definition.subject_type),
             value_type=MetricValueType(definition.value_type),
             direction=MetricDirection(definition.direction),
-            frequency=MetricFrequency(definition.frequency)
-            if definition.frequency
-            else None,
+            frequency=MetricFrequency(definition.frequency) if definition.frequency else None,
             status=MetricStatus(definition.status),
             unit=definition.unit,
             target_value=definition.target_value,
@@ -249,7 +247,12 @@ class PerformanceService:
                 "A metric value already exists for this subject and period"
             )
 
-        if require_value_field and value_numeric is None and value_text is None and value_bool is None:
+        if (
+            require_value_field
+            and value_numeric is None
+            and value_text is None
+            and value_bool is None
+        ):
             raise PerformanceValidationError("At least one value field must be provided")
 
     async def list_values(
@@ -356,9 +359,7 @@ class PerformanceService:
 
         update_data = payload.model_dump(exclude_unset=True)
         metric_definition_id = update_data.get("metric_definition_id", value.metric_definition_id)
-        subject_type = PerformanceSubjectType(
-            update_data.get("subject_type", value.subject_type)
-        )
+        subject_type = PerformanceSubjectType(update_data.get("subject_type", value.subject_type))
         subject_id = update_data.get("subject_id", value.subject_id)
         period_start = update_data.get("period_start", value.period_start)
         period_end = update_data.get("period_end", value.period_end)
@@ -476,7 +477,9 @@ class PerformanceService:
         if scores:
             average_score = (sum(scores) / Decimal(len(scores))).quantize(Decimal("0.01"))
 
-        metrics_with_values = sum(1 for metric in metrics if metric.current_value_numeric is not None)
+        metrics_with_values = sum(
+            1 for metric in metrics if metric.current_value_numeric is not None
+        )
 
         return PerformanceScorecard(
             subject_type=subject_type,

@@ -1,14 +1,17 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import AsyncMock
 
 import pytest
-from fastapi.testclient import TestClient
-
 from app.domain.enums import EntityLinkType, EntityType
 from app.main import create_app
 from app.modules.relationships.router import get_relationship_service
-from app.modules.relationships.schemas import EntityLinkListResponse, EntityLinkRead, EntityRelationshipView
+from app.modules.relationships.schemas import (
+    EntityLinkListResponse,
+    EntityLinkRead,
+    EntityRelationshipView,
+)
+from fastapi.testclient import TestClient
 
 
 @pytest.fixture
@@ -26,7 +29,7 @@ def api_client(mock_relationship_service: AsyncMock) -> TestClient:
 
 
 def _sample_link() -> EntityLinkRead:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     return EntityLinkRead(
         id=uuid.uuid4(),
         source_type=EntityType.DATA_PRODUCT,
@@ -51,7 +54,9 @@ def test_openapi_includes_relationships_paths(api_client: TestClient) -> None:
     assert "/api/v1/relationships/entity/{entity_type}/{entity_id}" in paths
 
 
-def test_get_entity_relationships(api_client: TestClient, mock_relationship_service: AsyncMock) -> None:
+def test_get_entity_relationships(
+    api_client: TestClient, mock_relationship_service: AsyncMock
+) -> None:
     entity_id = uuid.uuid4()
     link = _sample_link()
     mock_relationship_service.get_relationship_view.return_value = EntityRelationshipView(

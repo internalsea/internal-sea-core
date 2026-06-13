@@ -8,6 +8,9 @@ from sqlalchemy import and_, case, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.enums import (
+    AutomationRunStatus,
+    AutomationStatus,
+    ComplianceStatus,
     DataProductStatus,
     ProjectStatus,
     ProjectType,
@@ -16,13 +19,11 @@ from app.domain.enums import (
     WorkItemStatus,
     WorkItemType,
 )
-from app.domain.enums import ComplianceStatus
-from app.domain.enums import AutomationRunStatus, AutomationStatus
 from app.models.automation import AutomationRun, AutomationTrigger
 from app.models.catalog import DataProduct
 from app.models.compliance import ComplianceCheck
-from app.models.people import Capability, Person, Team
 from app.models.notifications import NotificationMessage
+from app.models.people import Capability, Person, Team
 from app.models.performance import PerformanceMetricDefinition, PerformanceMetricValue
 from app.models.projects import Project
 from app.models.work import WorkItem
@@ -223,8 +224,7 @@ class DashboardRepository:
     async def get_high_priority_work_items(self, *, limit: int) -> list[WorkItem]:
         query = self._apply_company_scope(select(WorkItem), WorkItem)
         result = await self._session.scalars(
-            query
-            .where(
+            query.where(
                 WorkItem.priority.in_(HIGH_PRIORITY_VALUES),
                 OPEN_WORK_ITEM_FILTER,
             )
@@ -240,8 +240,7 @@ class DashboardRepository:
     async def get_project_health(self, *, limit: int) -> list[Project]:
         query = self._apply_company_scope(select(Project), Project)
         result = await self._session.scalars(
-            query
-            .where(
+            query.where(
                 or_(
                     Project.status == ProjectStatus.ACTIVE,
                     Project.health_status.in_(("warning", "critical")),
@@ -267,9 +266,7 @@ class DashboardRepository:
         query = self._apply_company_scope(
             select(
                 WorkItem.project_id,
-                func.count(WorkItem.id)
-                .filter(OPEN_WORK_ITEM_FILTER)
-                .label("open_work_items"),
+                func.count(WorkItem.id).filter(OPEN_WORK_ITEM_FILTER).label("open_work_items"),
                 func.count(WorkItem.id)
                 .filter(
                     and_(

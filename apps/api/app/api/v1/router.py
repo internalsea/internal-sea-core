@@ -2,11 +2,11 @@ from fastapi import APIRouter
 
 from app.api.v1.endpoints import health
 from app.modules.activity.router import router as activity_router
-from app.modules.automation.router import router as automation_router
 from app.modules.auth.router import router as auth_router
+from app.modules.automation.router import router as automation_router
 from app.modules.capabilities.router import router as capabilities_router
-from app.modules.compliance.router import router as compliance_router
 from app.modules.comments.router import router as comments_router
+from app.modules.compliance.router import router as compliance_router
 from app.modules.dashboard.router import router as dashboard_router
 from app.modules.data_products.router import router as data_products_router
 from app.modules.files.router import router as files_router
@@ -19,8 +19,8 @@ from app.modules.relationships.router import router as relationships_router
 from app.modules.search.router import router as search_router
 from app.modules.teams.router import router as teams_router
 from app.modules.tenancy.router import router as tenancy_router
-from app.modules.worker.router import router as worker_router
 from app.modules.work_items.router import router as work_items_router
+from app.modules.worker.router import router as worker_router
 
 api_v1_router = APIRouter()
 api_v1_router.include_router(health.router)

@@ -1,14 +1,13 @@
 import uuid
 
 import pytest
-from pydantic import ValidationError
-
 from app.domain.enums import EntityLinkType, EntityType
 from app.modules.relationships.schemas import (
     EntityLinkCreate,
     EntityLinkFilters,
     EntityRelationshipView,
 )
+from pydantic import ValidationError
 
 
 def test_entity_link_create_accepts_valid_payload() -> None:

@@ -6,16 +6,16 @@ Create Date: 2026-06-12
 
 """
 
-from typing import Sequence, Union
+from collections.abc import Sequence
 
 import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.dialects import postgresql
 
 revision: str = "0009"
-down_revision: Union[str, None] = "0008"
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | None = "0008"
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 TIMESTAMP_COLUMNS = (
     sa.Column(
@@ -121,7 +121,9 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("id", name=op.f("pk_automation_triggers")),
     )
     op.create_index("ix_automation_triggers_name", "automation_triggers", ["name"], unique=False)
-    op.create_index("ix_automation_triggers_status", "automation_triggers", ["status"], unique=False)
+    op.create_index(
+        "ix_automation_triggers_status", "automation_triggers", ["status"], unique=False
+    )
     op.create_index(
         "ix_automation_triggers_trigger_type", "automation_triggers", ["trigger_type"], unique=False
     )
@@ -182,7 +184,9 @@ def upgrade() -> None:
         ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_automation_runs")),
     )
-    op.create_index("ix_automation_runs_trigger_id", "automation_runs", ["trigger_id"], unique=False)
+    op.create_index(
+        "ix_automation_runs_trigger_id", "automation_runs", ["trigger_id"], unique=False
+    )
     op.create_index("ix_automation_runs_status", "automation_runs", ["status"], unique=False)
     op.create_index(
         "ix_automation_runs_started_at", "automation_runs", ["started_at"], unique=False

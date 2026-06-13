@@ -50,9 +50,7 @@ class NotificationRepository:
                 )
             )
         if filters.channel_type is not None:
-            query = query.where(
-                NotificationChannel.channel_type == filters.channel_type.value
-            )
+            query = query.where(NotificationChannel.channel_type == filters.channel_type.value)
         if filters.status is not None:
             query = query.where(NotificationChannel.status == filters.status.value)
         return query
@@ -98,9 +96,7 @@ class NotificationRepository:
         if filters.entity_id is not None:
             query = query.where(NotificationMessage.entity_id == filters.entity_id)
         if filters.automation_run_id is not None:
-            query = query.where(
-                NotificationMessage.automation_run_id == filters.automation_run_id
-            )
+            query = query.where(NotificationMessage.automation_run_id == filters.automation_run_id)
         return query
 
     async def list_channels(
@@ -118,9 +114,7 @@ class NotificationRepository:
         )
         total = int(await self._session.scalar(count) or 0)
         result = await self._session.scalars(
-            filtered.order_by(NotificationChannel.updated_at.desc())
-            .offset(offset)
-            .limit(limit)
+            filtered.order_by(NotificationChannel.updated_at.desc()).offset(offset).limit(limit)
         )
         return list(result.all()), total
 
@@ -169,9 +163,7 @@ class NotificationRepository:
         )
         total = int(await self._session.scalar(count) or 0)
         result = await self._session.scalars(
-            filtered.order_by(NotificationTemplate.updated_at.desc())
-            .offset(offset)
-            .limit(limit)
+            filtered.order_by(NotificationTemplate.updated_at.desc()).offset(offset).limit(limit)
         )
         return list(result.all()), total
 
@@ -220,9 +212,7 @@ class NotificationRepository:
         count_query = select(func.count()).select_from(query.subquery())
         total = int(await self._session.scalar(count_query) or 0)
         result = await self._session.scalars(
-            query.order_by(NotificationPreference.updated_at.desc())
-            .offset(offset)
-            .limit(limit)
+            query.order_by(NotificationPreference.updated_at.desc()).offset(offset).limit(limit)
         )
         return list(result.all()), total
 
@@ -286,9 +276,7 @@ class NotificationRepository:
         )
         total = int(await self._session.scalar(count) or 0)
         result = await self._session.scalars(
-            filtered.order_by(NotificationMessage.created_at.desc())
-            .offset(offset)
-            .limit(limit)
+            filtered.order_by(NotificationMessage.created_at.desc()).offset(offset).limit(limit)
         )
         return list(result.all()), total
 

@@ -8,6 +8,7 @@ from app.api.auth_deps import EditorUser, ViewerUser
 from app.core.pagination import DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE
 from app.dependencies import get_db
 from app.domain.enums import ProjectStatus, ProjectType
+from app.modules.activity.dependencies import build_activity_service
 from app.modules.projects.repository import ProjectListFilters, ProjectRepository
 from app.modules.projects.schemas import (
     ProjectCreate,
@@ -16,9 +17,8 @@ from app.modules.projects.schemas import (
     ProjectSummary,
     ProjectUpdate,
 )
-from app.modules.activity.dependencies import build_activity_service
-from app.modules.tenancy.dependencies import CurrentTenant, get_current_tenant
 from app.modules.projects.service import ProjectService
+from app.modules.tenancy.dependencies import CurrentTenant, get_current_tenant
 
 router = APIRouter(prefix="/projects", tags=["Projects"])
 

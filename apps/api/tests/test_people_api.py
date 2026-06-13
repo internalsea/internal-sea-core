@@ -1,14 +1,13 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import AsyncMock
 
 import pytest
-from fastapi.testclient import TestClient
-
 from app.domain.enums import SeniorityLevel
 from app.main import create_app
 from app.modules.people.router import get_person_service
 from app.modules.people.schemas import PersonListItem, PersonListResponse, PersonRead
+from fastapi.testclient import TestClient
 
 
 @pytest.fixture
@@ -26,7 +25,7 @@ def api_client(mock_person_service: AsyncMock) -> TestClient:
 
 
 def _sample_person() -> PersonRead:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     return PersonRead(
         id=uuid.uuid4(),
         full_name="Nikita Rogatov",

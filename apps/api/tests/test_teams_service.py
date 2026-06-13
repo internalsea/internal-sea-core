@@ -2,7 +2,6 @@ import uuid
 from unittest.mock import AsyncMock
 
 import pytest
-
 from app.modules.teams.errors import TeamNotFoundError
 from app.modules.teams.repository import TeamListFilters
 from app.modules.teams.service import TeamService

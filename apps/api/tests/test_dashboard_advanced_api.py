@@ -1,9 +1,7 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import AsyncMock
 
 import pytest
-from fastapi.testclient import TestClient
-
 from app.main import create_app
 from app.modules.dashboard.router import get_scoped_dashboard_service
 from app.modules.dashboard.schemas import (
@@ -12,6 +10,7 @@ from app.modules.dashboard.schemas import (
     OperationalHealth,
 )
 from app.modules.dashboard.service import MAX_ADVANCED_DASHBOARD_LIMIT, normalize_dashboard_limit
+from fastapi.testclient import TestClient
 
 
 @pytest.fixture
@@ -36,8 +35,10 @@ def test_advanced_endpoints_registered(api_client: TestClient) -> None:
     assert "/api/v1/dashboard/advanced" in paths
 
 
-def test_executive_summary_endpoint(api_client: TestClient, mock_dashboard_service: AsyncMock) -> None:
-    now = datetime.now(timezone.utc)
+def test_executive_summary_endpoint(
+    api_client: TestClient, mock_dashboard_service: AsyncMock
+) -> None:
+    now = datetime.now(UTC)
     mock_dashboard_service.get_executive_summary.return_value = ExecutiveSummary(
         overall_status="good",
         overall_score=85,
@@ -59,7 +60,9 @@ def test_executive_summary_endpoint(api_client: TestClient, mock_dashboard_servi
     assert response.json()["overall_score"] == 85
 
 
-def test_actionable_insights_endpoint(api_client: TestClient, mock_dashboard_service: AsyncMock) -> None:
+def test_actionable_insights_endpoint(
+    api_client: TestClient, mock_dashboard_service: AsyncMock
+) -> None:
     mock_dashboard_service.get_actionable_insights.return_value = ActionableInsightsResponse(
         items=[],
         total=0,
@@ -74,8 +77,10 @@ def test_actionable_insights_endpoint(api_client: TestClient, mock_dashboard_ser
     )
 
 
-def test_operational_health_endpoint(api_client: TestClient, mock_dashboard_service: AsyncMock) -> None:
-    now = datetime.now(timezone.utc)
+def test_operational_health_endpoint(
+    api_client: TestClient, mock_dashboard_service: AsyncMock
+) -> None:
+    now = datetime.now(UTC)
     mock_dashboard_service.get_operational_health.return_value = OperationalHealth(
         status="warning",
         work_health_score=75,

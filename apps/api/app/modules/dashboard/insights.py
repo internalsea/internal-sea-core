@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 import uuid
 from dataclasses import dataclass
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime
 
 from app.domain.enums import DataProductStatus, ProjectStatus, WorkItemPriority
 from app.models.catalog import DataProduct
@@ -33,7 +33,9 @@ class InsightContext:
     failed_notification_count: int
 
 
-def _insight_id(category: str, entity_type: str | None, entity_id: uuid.UUID | None, rule: str) -> str:
+def _insight_id(
+    category: str, entity_type: str | None, entity_id: uuid.UUID | None, rule: str
+) -> str:
     raw = f"{category}:{entity_type}:{entity_id}:{rule}"
     return hashlib.sha256(raw.encode()).hexdigest()[:16]
 
@@ -129,7 +131,9 @@ def build_actionable_insights(ctx: InsightContext, *, limit: int = 20) -> list[A
                 category="project_health",
                 severity="critical",
                 title=f"Project at risk: {project.name}",
-                description="Active project with warning/critical health or passed target end date.",
+                description=(
+                    "Active project with warning/critical health or passed target end date."
+                ),
                 entity_type=entity_type,
                 entity_id=project.id,
                 recommended_action="Review project health and delivery plan",
@@ -266,7 +270,7 @@ def is_stale_technical_debt(item: WorkItem, *, cutoff: datetime) -> bool:
     if created is None:
         return False
     if created.tzinfo is None:
-        created = created.replace(tzinfo=timezone.utc)
+        created = created.replace(tzinfo=UTC)
     return created < cutoff
 
 

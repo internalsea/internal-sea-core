@@ -4,7 +4,6 @@ import uuid
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-
 from app.domain.enums import CompanyStatus
 from app.models.identity import User
 from app.modules.tenancy.errors import OnboardingNotAllowedError

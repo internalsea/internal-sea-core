@@ -2,7 +2,6 @@ import uuid
 
 from app.core.pagination import calculate_pages, normalize_pagination
 from app.modules.capabilities.errors import CapabilityConflictError, CapabilityNotFoundError
-from app.modules.tenancy.scope import ensure_company_access, merge_tenant_fields
 from app.modules.capabilities.repository import CapabilityListFilters, CapabilityRepository
 from app.modules.capabilities.schemas import (
     CapabilityCreate,
@@ -12,6 +11,7 @@ from app.modules.capabilities.schemas import (
     CapabilitySummary,
     CapabilityUpdate,
 )
+from app.modules.tenancy.scope import ensure_company_access, merge_tenant_fields
 
 
 class CapabilityService:
@@ -40,7 +40,9 @@ class CapabilityService:
             pages=calculate_pages(total, normalized_page_size),
         )
 
-    async def get_capability(self, capability_id: uuid.UUID, *, company_id: uuid.UUID | None = None) -> CapabilityRead:
+    async def get_capability(
+        self, capability_id: uuid.UUID, *, company_id: uuid.UUID | None = None
+    ) -> CapabilityRead:
         capability = await self._repository.get_by_id(capability_id)
         if capability is None:
             raise CapabilityNotFoundError(capability_id)
@@ -76,10 +78,10 @@ class CapabilityService:
     ) -> CapabilityRead:
         existing = await self._repository.get_by_name(payload.name)
         if existing is not None:
-            raise CapabilityConflictError(
-                f"Capability with name '{payload.name}' already exists"
-            )
-        data = merge_tenant_fields(payload.model_dump(), company_id=company_id, workspace_id=workspace_id)
+            raise CapabilityConflictError(f"Capability with name '{payload.name}' already exists")
+        data = merge_tenant_fields(
+            payload.model_dump(), company_id=company_id, workspace_id=workspace_id
+        )
         capability = await self._repository.create(data)
         return CapabilityRead.model_validate(capability)
 
@@ -105,7 +107,9 @@ class CapabilityService:
         updated = await self._repository.update(capability, update_data)
         return CapabilityRead.model_validate(updated)
 
-    async def delete_capability(self, capability_id: uuid.UUID, *, company_id: uuid.UUID | None = None) -> None:
+    async def delete_capability(
+        self, capability_id: uuid.UUID, *, company_id: uuid.UUID | None = None
+    ) -> None:
         capability = await self._repository.get_by_id(capability_id)
         if capability is None:
             raise CapabilityNotFoundError(capability_id)

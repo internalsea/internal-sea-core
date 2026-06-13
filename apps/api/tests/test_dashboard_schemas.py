@@ -1,5 +1,5 @@
 import uuid
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 
 from app.modules.dashboard.schemas import (
     CapabilityWorkloadItem,
@@ -37,7 +37,7 @@ def test_dashboard_summary_accepts_valid_counts() -> None:
 
 
 def test_recent_data_product_item_schema() -> None:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     item = RecentDataProductItem(
         id=uuid.uuid4(),
         name="Executive Sales Dashboard",
@@ -51,7 +51,7 @@ def test_recent_data_product_item_schema() -> None:
 
 
 def test_high_priority_work_item_schema() -> None:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     item = HighPriorityWorkItem(
         id=uuid.uuid4(),
         title="Missing auth and permissions",

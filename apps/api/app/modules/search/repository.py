@@ -6,24 +6,23 @@ from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.automation import AutomationTrigger
-from app.models.notifications import NotificationMessage, NotificationTemplate
 from app.models.catalog import DataProduct
 from app.models.compliance import ComplianceCheck, Policy
 from app.models.files import FileAsset
+from app.models.notifications import NotificationMessage, NotificationTemplate
 from app.models.people import Capability, Person, Team
 from app.models.projects import Project
 from app.models.work import WorkItem
 from app.modules.search.ranking import detect_matched_field
-from app.modules.tenancy.scope import apply_company_filter
 from app.modules.search.schemas import EntityLookupResult, SearchResult, SearchResultType
 from app.modules.search.urls import (
     build_automation_trigger_url,
-    build_notification_message_url,
-    build_notification_template_url,
     build_capability_url,
     build_compliance_check_url,
     build_data_product_url,
     build_file_url,
+    build_notification_message_url,
+    build_notification_template_url,
     build_person_url,
     build_policy_url,
     build_project_url,
@@ -31,6 +30,7 @@ from app.modules.search.urls import (
     build_work_item_url,
     project_search_result_type,
 )
+from app.modules.tenancy.scope import apply_company_filter
 
 ALL_SEARCH_TYPES = list(SearchResultType)
 PER_TYPE_FETCH_LIMIT = 15
@@ -59,8 +59,13 @@ class SearchRepository:
             results.extend(await self._search_data_products(query, company_id=company_id))
         if SearchResultType.WORK_ITEM in selected_types:
             results.extend(await self._search_work_items(query, company_id=company_id))
-        if SearchResultType.PROJECT in selected_types or SearchResultType.INTERNAL_PROJECT in selected_types:
-            results.extend(await self._search_projects(query, selected_types, company_id=company_id))
+        if (
+            SearchResultType.PROJECT in selected_types
+            or SearchResultType.INTERNAL_PROJECT in selected_types
+        ):
+            results.extend(
+                await self._search_projects(query, selected_types, company_id=company_id)
+            )
         if SearchResultType.PERSON in selected_types:
             results.extend(await self._search_people(query, company_id=company_id))
         if SearchResultType.TEAM in selected_types:

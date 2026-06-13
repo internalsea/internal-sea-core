@@ -1,13 +1,12 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import AsyncMock
 
 import pytest
-from fastapi.testclient import TestClient
-
 from app.main import create_app
 from app.modules.comments.router import get_comment_service
 from app.modules.comments.schemas import CommentListResponse, CommentRead
+from fastapi.testclient import TestClient
 
 
 @pytest.fixture
@@ -25,7 +24,7 @@ def api_client(mock_comment_service: AsyncMock) -> TestClient:
 
 
 def _sample_comment() -> CommentRead:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     return CommentRead(
         id=uuid.uuid4(),
         body="Looks good.",
@@ -49,7 +48,9 @@ def test_openapi_includes_comments_paths(api_client: TestClient) -> None:
     assert "/api/v1/comments/{comment_id}" in paths
 
 
-def test_list_data_product_comments(api_client: TestClient, mock_comment_service: AsyncMock) -> None:
+def test_list_data_product_comments(
+    api_client: TestClient, mock_comment_service: AsyncMock
+) -> None:
     comment = _sample_comment()
     mock_comment_service.list_data_product_comments.return_value = CommentListResponse(
         items=[comment],

@@ -60,17 +60,13 @@ class PerformanceRepository:
                 PerformanceMetricValue.metric_definition_id == filters.metric_definition_id
             )
         if filters.subject_type is not None:
-            query = query.where(
-                PerformanceMetricValue.subject_type == filters.subject_type.value
-            )
+            query = query.where(PerformanceMetricValue.subject_type == filters.subject_type.value)
         if filters.subject_id is not None:
             query = query.where(PerformanceMetricValue.subject_id == filters.subject_id)
         if filters.status is not None:
             query = query.where(PerformanceMetricValue.status == filters.status)
         if filters.period_start_from is not None:
-            query = query.where(
-                PerformanceMetricValue.period_start >= filters.period_start_from
-            )
+            query = query.where(PerformanceMetricValue.period_start >= filters.period_start_from)
         if filters.period_end_to is not None:
             query = query.where(PerformanceMetricValue.period_end <= filters.period_end_to)
         return query

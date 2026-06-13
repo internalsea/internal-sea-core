@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import uuid
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
+
 from sqlalchemy import and_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -12,14 +13,12 @@ from app.domain.enums import (
     AutomationRunStatus,
     AutomationStatus,
     ComplianceStatus,
-    PolicyStatus,
     DataProductStatus,
     MetricStatus,
+    PolicyStatus,
     ProjectStatus,
-    ProjectType,
     QualityStatus,
     WorkItemPriority,
-    WorkItemStatus,
     WorkItemType,
 )
 from app.models.activity import ActivityEvent
@@ -36,20 +35,15 @@ from app.models.performance import PerformanceMetricDefinition, PerformanceMetri
 from app.models.projects import Project
 from app.models.work import WorkItem
 from app.modules.dashboard.gaps import sort_ownership_gaps
-from app.modules.dashboard.insights import InsightContext, build_actionable_insights, is_project_at_risk, is_stale_technical_debt
+from app.modules.dashboard.insights import (
+    InsightContext,
+    build_actionable_insights,
+    is_project_at_risk,
+    is_stale_technical_debt,
+)
 from app.modules.dashboard.repository import (
-    COMPLETED_WORK_ITEM_STATUSES,
     OPEN_WORK_ITEM_FILTER,
     DashboardRepository,
-)
-from app.modules.dashboard.scoring import (
-    calculate_automation_health_score,
-    calculate_compliance_health_score,
-    calculate_overall_score,
-    calculate_performance_health_score,
-    calculate_project_health_score,
-    calculate_status_from_score,
-    calculate_work_health_score,
 )
 from app.modules.dashboard.schemas import (
     ActionableInsightsResponse,
@@ -70,6 +64,15 @@ from app.modules.dashboard.schemas import (
     RecentActivityItem,
     RecentActivityResponse,
     WorkDeliverySummary,
+)
+from app.modules.dashboard.scoring import (
+    calculate_automation_health_score,
+    calculate_compliance_health_score,
+    calculate_overall_score,
+    calculate_performance_health_score,
+    calculate_project_health_score,
+    calculate_status_from_score,
+    calculate_work_health_score,
 )
 from app.modules.performance.scoring import calculate_metric_score
 from app.worker.locks import count_locked_automation_triggers
@@ -138,7 +141,7 @@ class AdvancedDashboardRepository:
             ownership_gaps=len(ownership_gaps),
             automation_due_triggers=due_triggers,
             notification_failed_messages=summary.notification_messages_failed,
-            generated_at=datetime.now(timezone.utc),
+            generated_at=datetime.now(UTC),
         )
 
     async def get_operational_health(self) -> OperationalHealth:
@@ -188,7 +191,7 @@ class AdvancedDashboardRepository:
             critical_work_items_count=critical_count,
             overdue_items_count=summary.work_items_overdue,
             blocked_or_warning_projects=project_insights.warning_or_critical,
-            generated_at=datetime.now(timezone.utc),
+            generated_at=datetime.now(UTC),
         )
 
     async def get_data_product_health(self, *, limit: int) -> DataProductHealthResponse:
@@ -200,9 +203,7 @@ class AdvancedDashboardRepository:
         warn_q = sum(1 for p in products if p.quality_status == QualityStatus.WARNING)
         crit_q = sum(1 for p in products if p.quality_status == QualityStatus.CRITICAL)
         missing_owner = sum(
-            1
-            for p in active
-            if p.business_owner_id is None or p.technical_owner_id is None
+            1 for p in active if p.business_owner_id is None or p.technical_owner_id is None
         )
 
         work_counts = await self._open_work_by_data_product()
@@ -254,7 +255,9 @@ class AdvancedDashboardRepository:
                     health_reasons=reasons,
                 )
             )
-        items.sort(key=lambda i: ({"critical": 0, "warning": 1, "good": 2}.get(i.health_status, 3), i.name))
+        items.sort(
+            key=lambda i: ({"critical": 0, "warning": 1, "good": 2}.get(i.health_status, 3), i.name)
+        )
 
         return DataProductHealthResponse(
             total=len(products),
@@ -319,7 +322,11 @@ class AdvancedDashboardRepository:
                 reasons.append(f"{overdue_wi} overdue work item(s)")
                 overdue_or_at_risk += 1
 
-            if project.target_end_date and project.target_end_date < today and project.status == ProjectStatus.ACTIVE:
+            if (
+                project.target_end_date
+                and project.target_end_date < today
+                and project.status == ProjectStatus.ACTIVE
+            ):
                 insight_status = "critical"
                 reasons.append("Past target end date")
                 overdue_or_at_risk += 1
@@ -365,7 +372,9 @@ class AdvancedDashboardRepository:
         active_rules = await self._count(ComplianceRule, ComplianceRule.is_active.is_(True))
         active_controls = await self._count(Control, Control.status == "active")
         checks_total = await self._count(ComplianceCheck)
-        checks_open = await self._count(ComplianceCheck, ComplianceCheck.status.in_(OPEN_COMPLIANCE_STATUSES))
+        checks_open = await self._count(
+            ComplianceCheck, ComplianceCheck.status.in_(OPEN_COMPLIANCE_STATUSES)
+        )
         checks_compliant = await self._count(
             ComplianceCheck, ComplianceCheck.status == ComplianceStatus.COMPLIANT.value
         )
@@ -466,9 +475,7 @@ class AdvancedDashboardRepository:
                 )
 
         gaps.sort(key=lambda g: (g.score or 100))
-        averages = [
-            sum(scores) / len(scores) for scores in subject_scores.values() if scores
-        ]
+        averages = [sum(scores) / len(scores) for scores in subject_scores.values() if scores]
         avg_score = sum(averages) / len(averages) if averages else None
         weak = sum(1 for a in averages if a < 70)
 
@@ -544,7 +551,9 @@ class AdvancedDashboardRepository:
             NotificationTemplate, NotificationTemplate.status == "active"
         )
         messages_total = await self._count(NotificationMessage)
-        messages_queued = await self._count(NotificationMessage, NotificationMessage.status == "queued")
+        messages_queued = await self._count(
+            NotificationMessage, NotificationMessage.status == "queued"
+        )
         messages_failed = await self._count(
             NotificationMessage, NotificationMessage.status == "failed"
         )
@@ -608,7 +617,7 @@ class AdvancedDashboardRepository:
 
     async def get_actionable_insights(self, *, limit: int) -> ActionableInsightsResponse:
         today = date.today()
-        cutoff = datetime.now(timezone.utc) - timedelta(days=30)
+        cutoff = datetime.now(UTC) - timedelta(days=30)
         ownership_gaps = sort_ownership_gaps(await self._base.get_ownership_gaps(limit=100))
 
         overdue_work = list(

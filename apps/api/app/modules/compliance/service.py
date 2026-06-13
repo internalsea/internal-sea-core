@@ -24,7 +24,10 @@ from app.modules.compliance.errors import (
     PolicyNotFoundError,
     UnsupportedComplianceSubjectTypeError,
 )
-from app.modules.compliance.repository import CLOSED_CHECK_STATUSES, OPEN_CHECK_STATUSES, ComplianceRepository
+from app.modules.compliance.repository import (
+    OPEN_CHECK_STATUSES,
+    ComplianceRepository,
+)
 from app.modules.compliance.schemas import (
     ComplianceCheckCreate,
     ComplianceCheckFilters,
@@ -306,7 +309,9 @@ class ComplianceService:
         rule = await self._repository.create_rule(data)
         return ComplianceRuleRead.model_validate(rule)
 
-    async def update_rule(self, rule_id: uuid.UUID, payload: ComplianceRuleUpdate) -> ComplianceRuleRead:
+    async def update_rule(
+        self, rule_id: uuid.UUID, payload: ComplianceRuleUpdate
+    ) -> ComplianceRuleRead:
         rule = await self._repository.get_rule_by_id(rule_id)
         if rule is None:
             raise ComplianceRuleNotFoundError(rule_id)
@@ -444,9 +449,7 @@ class ComplianceService:
         if check is None:
             raise ComplianceCheckNotFoundError(check_id)
         update_data = payload.model_dump(exclude_unset=True)
-        subject_type = ComplianceSubjectType(
-            update_data.get("subject_type", check.subject_type)
-        )
+        subject_type = ComplianceSubjectType(update_data.get("subject_type", check.subject_type))
         subject_id = update_data.get("subject_id", check.subject_id)
         if "subject_type" in update_data or "subject_id" in update_data:
             if not is_supported_compliance_subject_type(subject_type):
@@ -505,9 +508,7 @@ class ComplianceService:
         overdue_count = sum(
             1
             for i in list_items
-            if i.due_date is not None
-            and i.due_date < today
-            and i.status in OPEN_CHECK_STATUSES
+            if i.due_date is not None and i.due_date < today and i.status in OPEN_CHECK_STATUSES
         )
         return EntityComplianceResponse(
             subject_type=subject_type,

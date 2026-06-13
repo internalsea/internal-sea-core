@@ -19,7 +19,9 @@ class WorkspaceNotFoundError(NotFoundError):
 
 class CompanyMemberNotFoundError(NotFoundError):
     def __init__(self, member_id: uuid.UUID | None = None) -> None:
-        message = f"Company member {member_id} not found" if member_id else "Company member not found"
+        message = (
+            f"Company member {member_id} not found" if member_id else "Company member not found"
+        )
         super().__init__(message)
 
 
@@ -34,7 +36,9 @@ class OnboardingNotAllowedError(ValidationError):
 
 class TenantSelectionRequiredError(ValidationError):
     def __init__(self) -> None:
-        super().__init__("Company selection required — provide X-Company-ID header or join a company")
+        super().__init__(
+            "Company selection required — provide X-Company-ID header or join a company"
+        )
 
 
 class TenantAccessDeniedError(ValidationError):

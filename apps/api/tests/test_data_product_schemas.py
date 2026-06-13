@@ -1,11 +1,10 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
-from pydantic import ValidationError
-
 from app.domain.enums import DataProductStatus, DataProductType, QualityStatus
 from app.modules.data_products.schemas import DataProductCreate, DataProductRead, DataProductUpdate
+from pydantic import ValidationError
 
 
 def test_valid_create_payload() -> None:
@@ -42,7 +41,7 @@ def test_enum_values_accepted_in_create() -> None:
 
 
 def test_data_product_read_from_attributes() -> None:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     product_id = uuid.uuid4()
     payload = DataProductRead(
         id=product_id,

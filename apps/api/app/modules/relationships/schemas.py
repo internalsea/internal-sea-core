@@ -23,10 +23,7 @@ class EntityLinkCreate(BaseModel):
 
     @model_validator(mode="after")
     def validate_not_self_link(self) -> "EntityLinkCreate":
-        if (
-            self.source_type == self.target_type
-            and self.source_id == self.target_id
-        ):
+        if self.source_type == self.target_type and self.source_id == self.target_id:
             raise ValueError("source and target cannot be the same object")
         return self
 

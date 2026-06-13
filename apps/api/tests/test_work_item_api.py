@@ -1,10 +1,8 @@
 import uuid
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from unittest.mock import AsyncMock
 
 import pytest
-from fastapi.testclient import TestClient
-
 from app.domain.enums import WorkItemPriority, WorkItemStatus, WorkItemType
 from app.main import create_app
 from app.modules.work_items.router import get_work_item_service
@@ -14,6 +12,7 @@ from app.modules.work_items.schemas import (
     WorkItemBoardResponse,
     WorkItemRead,
 )
+from fastapi.testclient import TestClient
 
 
 @pytest.fixture
@@ -31,7 +30,7 @@ def api_client(mock_work_item_service: AsyncMock) -> TestClient:
 
 
 def _sample_work_item() -> WorkItemRead:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     return WorkItemRead(
         id=uuid.uuid4(),
         title="Fix dashboard refresh",

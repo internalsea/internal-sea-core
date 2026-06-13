@@ -5,7 +5,7 @@ from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.domain.enums import FileAssetType, FileSensitivity, FileStatus, FileEntityType
+from app.domain.enums import FileAssetType, FileEntityType, FileSensitivity, FileStatus
 from app.models.files import FileAsset, FileAttachment, FileStorage
 
 
@@ -63,10 +63,7 @@ class FileRepository:
         count_query = select(func.count(FileStorage.id))
         total = int(await self._session.scalar(count_query) or 0)
         result = await self._session.scalars(
-            select(FileStorage)
-            .order_by(FileStorage.name.asc())
-            .offset(offset)
-            .limit(limit)
+            select(FileStorage).order_by(FileStorage.name.asc()).offset(offset).limit(limit)
         )
         return list(result.all()), total
 
@@ -74,9 +71,7 @@ class FileRepository:
         return await self._session.get(FileStorage, storage_id)
 
     async def get_storage_by_name(self, name: str) -> FileStorage | None:
-        result = await self._session.execute(
-            select(FileStorage).where(FileStorage.name == name)
-        )
+        result = await self._session.execute(select(FileStorage).where(FileStorage.name == name))
         return result.scalar_one_or_none()
 
     async def create_storage(self, data: dict[str, object]) -> FileStorage:
@@ -179,9 +174,7 @@ class FileRepository:
         limit: int,
     ) -> tuple[list[FileAttachment], int]:
         base = select(FileAttachment).where(FileAttachment.file_id == file_id)
-        count_query = select(func.count(FileAttachment.id)).where(
-            FileAttachment.file_id == file_id
-        )
+        count_query = select(func.count(FileAttachment.id)).where(FileAttachment.file_id == file_id)
         total = int(await self._session.scalar(count_query) or 0)
         result = await self._session.scalars(
             base.options(selectinload(FileAttachment.file))

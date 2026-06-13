@@ -165,6 +165,7 @@ export const router = createBrowserRouter([
           { path: 'notifications', element: <NotificationsPage /> },
           { path: 'meetings', element: <MeetingsPage /> },
           { path: 'deals', element: <DealsPage /> },
+          { path: 'activities', element: <Navigate to="/dashboard" replace /> },
           { path: 'files/new', element: <FileCreatePage /> },
           { path: 'files/:id/edit', element: <FileEditPage /> },
           { path: 'files/:id', element: <FileDetailPage /> },

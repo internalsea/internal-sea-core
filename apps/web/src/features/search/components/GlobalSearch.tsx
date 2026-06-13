@@ -14,7 +14,11 @@ function getErrorMessage(error: unknown): string {
   return 'Search is unavailable.'
 }
 
-export function GlobalSearch() {
+interface GlobalSearchProps {
+  variant?: 'light' | 'dark'
+}
+
+export function GlobalSearch({ variant = 'light' }: GlobalSearchProps) {
   const navigate = useNavigate()
   const containerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -78,8 +82,10 @@ export function GlobalSearch() {
         aria-expanded={showDropdown}
         aria-controls="global-search-results"
         className={cn(
-          'block h-9 w-full rounded-md border border-app-borderStrong bg-app-surface px-3 text-sm text-gray-900',
-          'placeholder:text-gray-400 focus:border-core-blue focus:outline-none focus:ring-1 focus:ring-core-blue',
+          'block h-9 w-full rounded-md border px-3 text-sm focus:outline-none focus:ring-1 focus:ring-core-blue',
+          variant === 'dark'
+            ? 'border-white/15 bg-white/10 text-white placeholder:text-gray-400 focus:border-white/30'
+            : 'border-app-borderStrong bg-app-surface text-gray-900 placeholder:text-gray-400 focus:border-core-blue',
         )}
       />
 

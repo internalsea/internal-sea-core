@@ -10,10 +10,15 @@ export interface NavigationGroup {
 
 export const navigationGroups: NavigationGroup[] = [
   {
-    title: 'Core',
+    title: 'Today',
     items: [
       { label: 'Dashboard', path: '/dashboard' },
       { label: 'Data Products', path: '/data-products' },
+    ],
+  },
+  {
+    title: 'Activities',
+    items: [
       { label: 'Work Items', path: '/work-items' },
       { label: 'Work Board', path: '/work-board' },
       { label: 'Projects', path: '/projects' },

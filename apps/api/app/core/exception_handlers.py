@@ -1,4 +1,6 @@
 import logging
+from collections.abc import Mapping, Sequence
+from typing import Any
 
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.exceptions import RequestValidationError
@@ -26,7 +28,9 @@ from app.modules.auth.errors import (
 logger = logging.getLogger(__name__)
 
 
-def _json_safe_validation_errors(errors: list[dict[str, object]]) -> list[dict[str, object]]:
+def _json_safe_validation_errors(
+    errors: Sequence[Mapping[str, Any]],
+) -> list[dict[str, object]]:
     sanitized: list[dict[str, object]] = []
     for error in errors:
         item = dict(error)

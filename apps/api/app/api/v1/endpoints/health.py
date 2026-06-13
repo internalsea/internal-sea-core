@@ -23,7 +23,7 @@ def liveness_check() -> dict[str, str]:
     return {"status": "live"}
 
 
-@router.get("/ready")
+@router.get("/ready", response_model=None)
 async def readiness_check() -> JSONResponse | dict[str, str]:
     if await check_database_connection():
         return {"status": "ready", "database": "connected"}
@@ -33,7 +33,7 @@ async def readiness_check() -> JSONResponse | dict[str, str]:
     )
 
 
-@router.get("/db")
+@router.get("/db", response_model=None)
 async def database_health_check() -> JSONResponse | dict[str, str]:
     if await check_database_connection():
         return {"status": "ok", "database": "connected"}

@@ -12,6 +12,7 @@ from app.domain.enums import (
     ComplianceSubjectType,
     FileEntityType,
 )
+from app.models.compliance import ComplianceCheck
 from app.modules.activity.schemas import ActivityEventCreateInternal
 from app.modules.activity.service import ActivityService
 from app.modules.compliance.errors import (
@@ -78,7 +79,7 @@ class ComplianceService:
         self._activity = activity_service
         self._session = session
 
-    def _enum_value(self, value) -> str | None:
+    def _enum_value(self, value: object) -> str | None:
         if value is None:
             return None
         return value.value if hasattr(value, "value") else str(value)
@@ -103,7 +104,7 @@ class ComplianceService:
         }
         return mapping.get(subject_type)
 
-    def _check_to_list_item(self, check) -> ComplianceCheckListItem:
+    def _check_to_list_item(self, check: ComplianceCheck) -> ComplianceCheckListItem:
         return ComplianceCheckListItem(
             id=check.id,
             subject_type=ComplianceSubjectType(check.subject_type),
@@ -169,7 +170,7 @@ class ComplianceService:
     async def _ensure_file_attachment_for_evidence(
         self,
         *,
-        check: object,
+        check: ComplianceCheck,
         file_id: uuid.UUID,
         purpose: str,
     ) -> None:
@@ -220,8 +221,7 @@ class ComplianceService:
         page: int,
         page_size: int,
     ) -> PolicyListResponse:
-        normalized_page, normalized_page_size = normalize_pagination(page, page_size)
-        offset = (normalized_page - 1) * normalized_page_size
+        normalized_page, normalized_page_size, offset = normalize_pagination(page, page_size)
         items, total = await self._repository.list_policies(
             filters=filters,
             offset=offset,
@@ -277,8 +277,7 @@ class ComplianceService:
         page: int,
         page_size: int,
     ) -> RuleListResponse:
-        normalized_page, normalized_page_size = normalize_pagination(page, page_size)
-        offset = (normalized_page - 1) * normalized_page_size
+        normalized_page, normalized_page_size, offset = normalize_pagination(page, page_size)
         items, total = await self._repository.list_rules(
             filters=filters,
             offset=offset,
@@ -336,8 +335,7 @@ class ComplianceService:
         page: int,
         page_size: int,
     ) -> ControlListResponse:
-        normalized_page, normalized_page_size = normalize_pagination(page, page_size)
-        offset = (normalized_page - 1) * normalized_page_size
+        normalized_page, normalized_page_size, offset = normalize_pagination(page, page_size)
         items, total = await self._repository.list_controls(
             filters=filters,
             offset=offset,
@@ -393,8 +391,7 @@ class ComplianceService:
         page: int,
         page_size: int,
     ) -> ComplianceCheckListResponse:
-        normalized_page, normalized_page_size = normalize_pagination(page, page_size)
-        offset = (normalized_page - 1) * normalized_page_size
+        normalized_page, normalized_page_size, offset = normalize_pagination(page, page_size)
         items, total = await self._repository.list_checks(
             filters=filters,
             offset=offset,
@@ -490,8 +487,7 @@ class ComplianceService:
         if not is_supported_compliance_subject_type(subject_type):
             raise UnsupportedComplianceSubjectTypeError(subject_type.value)
         await validate_compliance_subject_exists(self._session, subject_type, subject_id)
-        normalized_page, normalized_page_size = normalize_pagination(page, page_size)
-        offset = (normalized_page - 1) * normalized_page_size
+        normalized_page, normalized_page_size, offset = normalize_pagination(page, page_size)
         items, total = await self._repository.list_checks_for_subject(
             subject_type=subject_type,
             subject_id=subject_id,

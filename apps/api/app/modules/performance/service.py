@@ -1,4 +1,5 @@
 import uuid
+from datetime import date
 from decimal import Decimal
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -14,6 +15,7 @@ from app.domain.enums import (
     MetricValueType,
     PerformanceSubjectType,
 )
+from app.models.performance import PerformanceMetricDefinition, PerformanceMetricValue
 from app.modules.activity.schemas import ActivityEventCreateInternal
 from app.modules.activity.service import ActivityService
 from app.modules.performance.errors import (
@@ -67,7 +69,7 @@ class PerformanceService:
         self._activity = activity_service
         self._session = session
 
-    def _enum_value(self, value) -> str | None:
+    def _enum_value(self, value: object) -> str | None:
         if value is None:
             return None
         return value.value if hasattr(value, "value") else str(value)
@@ -81,7 +83,9 @@ class PerformanceService:
         except ValueError:
             return None
 
-    def _definition_to_list_item(self, definition) -> PerformanceMetricDefinitionListItem:
+    def _definition_to_list_item(
+        self, definition: PerformanceMetricDefinition
+    ) -> PerformanceMetricDefinitionListItem:
         return PerformanceMetricDefinitionListItem(
             id=definition.id,
             name=definition.name,
@@ -97,7 +101,7 @@ class PerformanceService:
             updated_at=definition.updated_at,
         )
 
-    def _value_to_list_item(self, value) -> PerformanceMetricValueListItem:
+    def _value_to_list_item(self, value: PerformanceMetricValue) -> PerformanceMetricValueListItem:
         return PerformanceMetricValueListItem(
             id=value.id,
             metric_definition_id=value.metric_definition_id,
@@ -209,13 +213,13 @@ class PerformanceService:
         metric_definition_id: uuid.UUID,
         subject_type: PerformanceSubjectType,
         subject_id: uuid.UUID,
-        period_start,
-        period_end,
+        period_start: date | None,
+        period_end: date | None,
         exclude_value_id: uuid.UUID | None = None,
         require_value_field: bool = False,
-        value_numeric=None,
-        value_text=None,
-        value_bool=None,
+        value_numeric: Decimal | None = None,
+        value_text: str | None = None,
+        value_bool: bool | None = None,
     ) -> None:
         if not is_supported_performance_subject_type(subject_type):
             raise UnsupportedPerformanceSubjectTypeError(subject_type.value)
@@ -311,7 +315,7 @@ class PerformanceService:
             )
         )
 
-    def _format_value_display(self, value) -> str:
+    def _format_value_display(self, value: PerformanceMetricValue) -> str:
         if value.value_numeric is not None:
             return str(value.value_numeric)
         if value.value_text is not None:

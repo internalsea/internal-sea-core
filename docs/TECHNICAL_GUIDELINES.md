@@ -233,7 +233,6 @@ packages/core-auth/     → Tokens, permissions
 | pytest | Python tests |
 | mypy | Static typing (incremental strictness) |
 | GitHub Actions | CI on push and PR |
-| SonarCloud | Code quality, security hotspots and coverage tracking |
 
 Configuration lives in root `pyproject.toml` until per-package splits are needed.
 

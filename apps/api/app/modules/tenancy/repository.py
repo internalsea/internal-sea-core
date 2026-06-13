@@ -10,6 +10,7 @@ from datetime import UTC, datetime
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.db.queries import get_model
 from app.domain.enums import CompanyMemberStatus, CompanyStatus, WorkspaceStatus
 from app.models.identity import User
 from app.models.tenancy import Company, CompanyMember, Workspace
@@ -56,7 +57,7 @@ class TenancyRepository:
         return items, total
 
     async def get_company_by_id(self, company_id: uuid.UUID) -> Company | None:
-        return await self._session.get(Company, company_id)
+        return await get_model(self._session, Company, company_id)
 
     async def get_company_by_slug(self, slug: str) -> Company | None:
         result = await self._session.execute(select(Company).where(Company.slug == slug))
@@ -100,7 +101,7 @@ class TenancyRepository:
         return items, total
 
     async def get_workspace_by_id(self, workspace_id: uuid.UUID) -> Workspace | None:
-        return await self._session.get(Workspace, workspace_id)
+        return await get_model(self._session, Workspace, workspace_id)
 
     async def get_default_workspace_for_company(self, company_id: uuid.UUID) -> Workspace | None:
         result = await self._session.execute(
@@ -160,7 +161,7 @@ class TenancyRepository:
         return result.scalar_one_or_none()
 
     async def get_member_by_id(self, member_id: uuid.UUID) -> CompanyMember | None:
-        return await self._session.get(CompanyMember, member_id)
+        return await get_model(self._session, CompanyMember, member_id)
 
     async def create_member(self, data: dict) -> CompanyMember:
         member = CompanyMember(**data)

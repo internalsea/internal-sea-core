@@ -26,15 +26,14 @@ class ActivityService:
         page: int,
         page_size: int,
     ) -> ActivityEventListResponse:
-        normalized_page, normalized_page_size = normalize_pagination(page, page_size)
-        offset = (normalized_page - 1) * normalized_page_size
+        normalized_page, normalized_page_size, offset = normalize_pagination(page, page_size)
         repo_filters = ActivityEventListFilters(
             entity_type=filters.entity_type,
             entity_id=filters.entity_id,
             action=filters.action,
             actor_id=filters.actor_id,
         )
-        items, total = await self._repository.list(
+        items, total = await self._repository.list_paginated(
             filters=repo_filters,
             offset=offset,
             limit=normalized_page_size,
@@ -55,8 +54,7 @@ class ActivityService:
         page: int,
         page_size: int,
     ) -> ActivityEventListResponse:
-        normalized_page, normalized_page_size = normalize_pagination(page, page_size)
-        offset = (normalized_page - 1) * normalized_page_size
+        normalized_page, normalized_page_size, offset = normalize_pagination(page, page_size)
         items, total = await self._repository.list_for_entity(
             entity_type=entity_type,
             entity_id=entity_id,

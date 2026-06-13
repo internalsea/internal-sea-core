@@ -4,10 +4,12 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, date, datetime, timedelta
+from typing import cast
 
 from sqlalchemy import and_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
+from sqlalchemy.sql.elements import ColumnElement
 
 from app.domain.enums import (
     AutomationRunStatus,
@@ -712,7 +714,7 @@ class AdvancedDashboardRepository:
     async def _count(self, model: type[object], *criteria: object) -> int:
         query = select(func.count()).select_from(model)
         for criterion in criteria:
-            query = query.where(criterion)
+            query = query.where(cast(ColumnElement[bool], criterion))
         return int(await self._session.scalar(query) or 0)
 
     async def _count_critical_open_work(self) -> int:

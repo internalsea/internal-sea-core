@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import uuid
+from typing import Any
 
 from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -40,7 +41,9 @@ class SearchRepository:
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
-    def _company_scope(self, query, model: type[object], company_id: uuid.UUID | None):
+    def _company_scope(
+        self, query: Any, model: type[object], company_id: uuid.UUID | None
+    ) -> Any:
         if company_id is not None:
             return apply_company_filter(query, model, company_id)
         return query

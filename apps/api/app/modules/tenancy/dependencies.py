@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import uuid
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from typing import Annotated
 
@@ -128,7 +128,7 @@ async def get_current_tenant(
     )
 
 
-def require_company_role(*roles: CompanyMemberRole) -> Callable[..., CurrentTenant]:
+def require_company_role(*roles: CompanyMemberRole) -> Callable[..., Awaitable[CurrentTenant]]:
     min_rank = min(ROLE_RANK[role] for role in roles)
 
     async def _dependency(

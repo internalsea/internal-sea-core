@@ -1,8 +1,10 @@
 import uuid
+from typing import Any
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.db.queries import get_model
 from app.models.work import Comment
 from app.modules.comments.schemas import CommentCreate, CommentUpdate
 
@@ -14,7 +16,7 @@ class CommentRepository:
     async def _paginated_list(
         self,
         *,
-        where_clause,
+        where_clause: Any,
         offset: int,
         limit: int,
     ) -> tuple[list[Comment], int]:
@@ -65,7 +67,7 @@ class CommentRepository:
         )
 
     async def get_by_id(self, comment_id: uuid.UUID) -> Comment | None:
-        return await self._session.get(Comment, comment_id)
+        return await get_model(self._session, Comment, comment_id)
 
     async def create_for_data_product(
         self,

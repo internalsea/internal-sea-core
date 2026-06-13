@@ -46,9 +46,8 @@ class WorkItemService:
         page: int,
         page_size: int,
     ) -> PaginatedWorkItemList:
-        normalized_page, normalized_page_size = normalize_pagination(page, page_size)
-        offset = (normalized_page - 1) * normalized_page_size
-        items, total = await self._repository.list(
+        normalized_page, normalized_page_size, offset = normalize_pagination(page, page_size)
+        items, total = await self._repository.list_paginated(
             filters=filters,
             offset=offset,
             limit=normalized_page_size,

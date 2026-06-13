@@ -1,10 +1,12 @@
 import uuid
 from dataclasses import dataclass
 from datetime import date
+from typing import Any
 
 from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.db.queries import get_model
 from app.domain.enums import ProjectStatus, ProjectType, WorkItemStatus
 from app.models.projects import Project
 from app.models.work import WorkItem
@@ -32,7 +34,7 @@ class ProjectRepository:
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
-    def _apply_filters(self, query, filters: ProjectListFilters):
+    def _apply_filters(self, query: Any, filters: ProjectListFilters) -> Any:
         if filters.search:
             pattern = f"%{filters.search}%"
             query = query.where(
@@ -67,7 +69,7 @@ class ProjectRepository:
             query = query.where(Project.company_id == filters.company_id)
         return query
 
-    async def list(
+    async def list_paginated(
         self,
         *,
         filters: ProjectListFilters,
@@ -86,7 +88,7 @@ class ProjectRepository:
         return list(result.all()), total
 
     async def get_by_id(self, project_id: uuid.UUID) -> Project | None:
-        return await self._session.get(Project, project_id)
+        return await get_model(self._session, Project, project_id)
 
     async def create(self, data: dict[str, object]) -> Project:
         project = Project(**data)

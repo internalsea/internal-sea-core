@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.pagination import calculate_pages, normalize_pagination
 from app.domain.enums import ActivityAction, ActivityEntityType, FileEntityType, FileStatus
+from app.models.files import FileAttachment
 from app.modules.activity.schemas import ActivityEventCreateInternal
 from app.modules.activity.service import ActivityService
 from app.modules.files.errors import (
@@ -57,7 +58,7 @@ class FileService:
         except ValueError:
             return None
 
-    def _attachment_to_read(self, attachment) -> FileAttachmentRead:
+    def _attachment_to_read(self, attachment: FileAttachment) -> FileAttachmentRead:
         file_item = None
         if attachment.file is not None:
             file_item = FileAssetListItem.model_validate(attachment.file)
@@ -108,7 +109,7 @@ class FileService:
             )
         )
 
-    def _enum_value(self, value) -> str | None:
+    def _enum_value(self, value: object) -> str | None:
         if value is None:
             return None
         return value.value if hasattr(value, "value") else str(value)
@@ -119,8 +120,7 @@ class FileService:
         page: int,
         page_size: int,
     ) -> FileStorageListResponse:
-        normalized_page, normalized_page_size = normalize_pagination(page, page_size)
-        offset = (normalized_page - 1) * normalized_page_size
+        normalized_page, normalized_page_size, offset = normalize_pagination(page, page_size)
         items, total = await self._repository.list_storages(
             offset=offset,
             limit=normalized_page_size,
@@ -184,8 +184,7 @@ class FileService:
         page: int,
         page_size: int,
     ) -> FileAssetListResponse:
-        normalized_page, normalized_page_size = normalize_pagination(page, page_size)
-        offset = (normalized_page - 1) * normalized_page_size
+        normalized_page, normalized_page_size, offset = normalize_pagination(page, page_size)
         repo_filters = FileListFilters(
             search=filters.search,
             file_type=filters.file_type,
@@ -250,8 +249,7 @@ class FileService:
         if not is_supported_file_entity_type(entity_type):
             raise UnsupportedFileEntityTypeError(entity_type.value)
         await validate_file_attachment_entity_exists(self._session, entity_type, entity_id)
-        normalized_page, normalized_page_size = normalize_pagination(page, page_size)
-        offset = (normalized_page - 1) * normalized_page_size
+        normalized_page, normalized_page_size, offset = normalize_pagination(page, page_size)
         items, total = await self._repository.list_attachments_for_entity(
             entity_type=entity_type,
             entity_id=entity_id,
@@ -335,8 +333,7 @@ class FileService:
         file_asset = await self._repository.get_file_by_id(file_id)
         if file_asset is None:
             raise FileAssetNotFoundError(file_id)
-        normalized_page, normalized_page_size = normalize_pagination(page, page_size)
-        offset = (normalized_page - 1) * normalized_page_size
+        normalized_page, normalized_page_size, offset = normalize_pagination(page, page_size)
         items, total = await self._repository.list_attachments_for_file(
             file_id=file_id,
             offset=offset,

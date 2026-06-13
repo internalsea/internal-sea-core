@@ -4,6 +4,8 @@ import uuid
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.db.base import Base
+from app.db.queries import get_model
 from app.domain.enums import NotificationChannelType
 from app.models.catalog import DataProduct
 from app.models.compliance import ComplianceCheck
@@ -24,7 +26,7 @@ from app.modules.notifications.errors import (
     UnsupportedNotificationEntityTypeError,
 )
 
-SUPPORTED_ENTITY_TYPES: dict[str, type] = {
+SUPPORTED_ENTITY_TYPES: dict[str, type[Base]] = {
     "data_product": DataProduct,
     "work_item": WorkItem,
     "project": Project,
@@ -44,7 +46,7 @@ async def validate_channel_exists(
     session: AsyncSession,
     channel_id: uuid.UUID,
 ) -> NotificationChannel:
-    channel = await session.get(NotificationChannel, channel_id)
+    channel = await get_model(session, NotificationChannel, channel_id)
     if channel is None:
         raise NotificationChannelNotFoundError(channel_id)
     return channel
@@ -54,7 +56,7 @@ async def validate_template_exists(
     session: AsyncSession,
     template_id: uuid.UUID,
 ) -> NotificationTemplate:
-    template = await session.get(NotificationTemplate, template_id)
+    template = await get_model(session, NotificationTemplate, template_id)
     if template is None:
         raise NotificationTemplateNotFoundError(template_id)
     return template
@@ -64,7 +66,7 @@ async def validate_message_exists(
     session: AsyncSession,
     message_id: uuid.UUID,
 ) -> NotificationMessage:
-    message = await session.get(NotificationMessage, message_id)
+    message = await get_model(session, NotificationMessage, message_id)
     if message is None:
         raise NotificationMessageNotFoundError(message_id)
     return message
@@ -77,11 +79,11 @@ async def validate_user_or_person_exists(
     person_id: uuid.UUID | None,
 ) -> None:
     if user_id is not None:
-        user = await session.get(User, user_id)
+        user = await get_model(session, User, user_id)
         if user is None:
             raise NotificationEntityNotFoundError("user", user_id)
     if person_id is not None:
-        person = await session.get(Person, person_id)
+        person = await get_model(session, Person, person_id)
         if person is None:
             raise NotificationEntityNotFoundError("person", person_id)
 
@@ -95,7 +97,7 @@ async def validate_notification_entity_exists(
         raise UnsupportedNotificationEntityTypeError(entity_type)
 
     model = SUPPORTED_ENTITY_TYPES[entity_type]
-    entity = await session.get(model, entity_id)
+    entity = await get_model(session, model, entity_id)
     if entity is None:
         raise NotificationEntityNotFoundError(entity_type, entity_id)
 

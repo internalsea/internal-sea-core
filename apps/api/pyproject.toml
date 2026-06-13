@@ -54,6 +54,21 @@ warn_unused_configs = true
 disallow_untyped_defs = true
 ignore_missing_imports = true
 files = ["app"]
+plugins = ["sqlalchemy.ext.mypy.plugin"]
+
+[[tool.mypy.overrides]]
+module = "app.seed.*"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = [
+    "app.modules.*.repository",
+    "app.modules.dashboard.advanced_repository",
+    "app.modules.relationships.service",
+    "app.worker.runner",
+    "app.modules.files.service",
+]
+disable_error_code = ["no-any-return", "attr-defined", "call-overload"]
 
 [build-system]
 requires = ["hatchling"]

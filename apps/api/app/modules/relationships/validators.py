@@ -70,21 +70,21 @@ async def get_entity_display_name(
     entity_id: uuid.UUID,
 ) -> str | None:
     if entity_type == EntityType.DATA_PRODUCT:
-        entity = await session.get(DataProduct, entity_id)
-        return entity.name if entity else None
+        data_product = await session.get(DataProduct, entity_id)
+        return data_product.name if data_product else None
     if entity_type == EntityType.WORK_ITEM:
-        entity = await session.get(WorkItem, entity_id)
-        return entity.title if entity else None
+        work_item = await session.get(WorkItem, entity_id)
+        return work_item.title if work_item else None
     if entity_type in (EntityType.PROJECT, EntityType.INTERNAL_PROJECT):
-        entity = await session.get(Project, entity_id)
-        return entity.name if entity else None
+        project = await session.get(Project, entity_id)
+        return project.name if project else None
     if entity_type == EntityType.PERSON:
-        entity = await session.get(Person, entity_id)
-        return entity.full_name if entity else None
+        person = await session.get(Person, entity_id)
+        return person.full_name if person else None
     if entity_type == EntityType.TEAM:
-        entity = await session.get(Team, entity_id)
-        return entity.name if entity else None
+        team = await session.get(Team, entity_id)
+        return team.name if team else None
     if entity_type == EntityType.CAPABILITY:
-        entity = await session.get(Capability, entity_id)
-        return entity.name if entity else None
+        capability = await session.get(Capability, entity_id)
+        return capability.name if capability else None
     return None

@@ -2,6 +2,8 @@ import uuid
 from datetime import UTC, datetime
 from typing import Any
 
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.core.pagination import calculate_pages, normalize_pagination
 from app.domain.enums import (
     ActivityAction,
@@ -10,6 +12,7 @@ from app.domain.enums import (
     AutomationTargetType,
     AutomationTriggerType,
 )
+from app.models.automation import AutomationTrigger
 from app.modules.activity.schemas import ActivityEventCreateInternal
 from app.modules.activity.service import ActivityService
 from app.modules.automation.errors import (
@@ -76,7 +79,7 @@ class AutomationService:
         self,
         repository: AutomationRepository,
         activity_service: ActivityService,
-        session,
+        session: AsyncSession,
     ) -> None:
         self._repository = repository
         self._activity = activity_service
@@ -92,8 +95,7 @@ class AutomationService:
         page: int,
         page_size: int,
     ) -> AutomationScheduleListResponse:
-        normalized_page, normalized_page_size = normalize_pagination(page, page_size)
-        offset = (normalized_page - 1) * normalized_page_size
+        normalized_page, normalized_page_size, offset = normalize_pagination(page, page_size)
         filters = AutomationScheduleListFilters(
             search=search,
             frequency=frequency,
@@ -164,8 +166,7 @@ class AutomationService:
         page: int,
         page_size: int,
     ) -> AutomationTriggerListResponse:
-        normalized_page, normalized_page_size = normalize_pagination(page, page_size)
-        offset = (normalized_page - 1) * normalized_page_size
+        normalized_page, normalized_page_size, offset = normalize_pagination(page, page_size)
         filters = AutomationTriggerListFilters(
             search=search,
             status=status,
@@ -308,8 +309,7 @@ class AutomationService:
     ) -> EntityAutomationsResponse:
         await ensure_automation_target_supported(target_type)
         await validate_automation_target_exists(self._session, target_type, target_id)
-        normalized_page, normalized_page_size = normalize_pagination(page, page_size)
-        offset = (normalized_page - 1) * normalized_page_size
+        normalized_page, normalized_page_size, offset = normalize_pagination(page, page_size)
         items, total = await self._repository.list_triggers_for_target(
             target_type.value,
             target_id,
@@ -334,8 +334,7 @@ class AutomationService:
         page: int,
         page_size: int,
     ) -> AutomationRunListResponse:
-        normalized_page, normalized_page_size = normalize_pagination(page, page_size)
-        offset = (normalized_page - 1) * normalized_page_size
+        normalized_page, normalized_page_size, offset = normalize_pagination(page, page_size)
         filters = AutomationRunListFilters(
             trigger_id=trigger_id,
             status=status,
@@ -426,7 +425,7 @@ class AutomationService:
 
     async def _record_trigger_activity(
         self,
-        trigger,
+        trigger: AutomationTrigger,
         *,
         title: str,
         description: str,

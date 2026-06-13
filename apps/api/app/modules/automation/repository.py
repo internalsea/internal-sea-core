@@ -1,10 +1,12 @@
 import uuid
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from typing import Any
 
 from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.db.queries import get_model
 from app.domain.enums import AutomationRunStatus, AutomationStatus
 from app.models.automation import AutomationRun, AutomationSchedule, AutomationTrigger
 
@@ -40,7 +42,9 @@ class AutomationRepository:
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
-    def _apply_schedule_filters(self, query, filters: AutomationScheduleListFilters):
+    def _apply_schedule_filters(
+        self, query: Any, filters: AutomationScheduleListFilters
+    ) -> Any:
         if filters.search:
             pattern = f"%{filters.search}%"
             query = query.where(
@@ -55,7 +59,9 @@ class AutomationRepository:
             query = query.where(AutomationSchedule.is_active.is_(filters.is_active))
         return query
 
-    def _apply_trigger_filters(self, query, filters: AutomationTriggerListFilters):
+    def _apply_trigger_filters(
+        self, query: Any, filters: AutomationTriggerListFilters
+    ) -> Any:
         if filters.search:
             pattern = f"%{filters.search}%"
             query = query.where(
@@ -78,7 +84,7 @@ class AutomationRepository:
             query = query.where(AutomationTrigger.schedule_id == filters.schedule_id)
         return query
 
-    def _apply_run_filters(self, query, filters: AutomationRunListFilters):
+    def _apply_run_filters(self, query: Any, filters: AutomationRunListFilters) -> Any:
         if filters.trigger_id:
             query = query.where(AutomationRun.trigger_id == filters.trigger_id)
         if filters.status:
@@ -116,7 +122,7 @@ class AutomationRepository:
         return list(result.all()), total
 
     async def get_schedule_by_id(self, schedule_id: uuid.UUID) -> AutomationSchedule | None:
-        return await self._session.get(AutomationSchedule, schedule_id)
+        return await get_model(self._session, AutomationSchedule, schedule_id)
 
     async def create_schedule(self, data: dict[str, object]) -> AutomationSchedule:
         schedule = AutomationSchedule(**data)
@@ -176,7 +182,7 @@ class AutomationRepository:
         return await self.list_triggers(filters=filters, offset=offset, limit=limit)
 
     async def get_trigger_by_id(self, trigger_id: uuid.UUID) -> AutomationTrigger | None:
-        return await self._session.get(AutomationTrigger, trigger_id)
+        return await get_model(self._session, AutomationTrigger, trigger_id)
 
     async def create_trigger(self, data: dict[str, object]) -> AutomationTrigger:
         trigger = AutomationTrigger(**data)
@@ -230,7 +236,7 @@ class AutomationRepository:
         return await self.list_runs(filters=filters, offset=offset, limit=limit)
 
     async def get_run_by_id(self, run_id: uuid.UUID) -> AutomationRun | None:
-        return await self._session.get(AutomationRun, run_id)
+        return await get_model(self._session, AutomationRun, run_id)
 
     async def create_run(self, data: dict[str, object]) -> AutomationRun:
         run = AutomationRun(**data)

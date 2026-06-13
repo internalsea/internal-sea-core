@@ -649,6 +649,7 @@ async def seed_database(session: AsyncSession | None = None) -> SeedSummary:
             await _run_seed(session, summary)
             await session.commit()
     else:
+        assert session is not None
         await _run_seed(session, summary)
 
     summary.print_summary()

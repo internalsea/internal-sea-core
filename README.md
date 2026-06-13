@@ -216,18 +216,6 @@ make docker-logs
 
 See [docs/DEVELOPMENT_GUIDELINES.md](docs/DEVELOPMENT_GUIDELINES.md) for how we work on this repo step by step.
 
-## SonarCloud
-
-Code quality analysis runs via [SonarCloud](https://sonarcloud.io) on pull requests and pushes to `main`.
-
-**One-time setup:**
-
-1. Create a project at [sonarcloud.io](https://sonarcloud.io/projects/create) (GitHub import recommended).
-2. Update `sonar.organization` and `sonar.projectKey` in `sonar-project.properties`.
-3. Add repository secret `SONAR_TOKEN` from SonarCloud (My Account → Security → Generate Tokens).
-
-Coverage reports are wired for `apps/api/coverage.xml` and `apps/web/coverage/lcov.info` once tests run in CI.
-
 ## Current project status
 
 **Twelve vertical slices implemented:**

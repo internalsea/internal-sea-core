@@ -1,9 +1,11 @@
 import uuid
 from dataclasses import dataclass
+from typing import Any
 
 from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.db.queries import get_model
 from app.domain.enums import DataProductStatus, DataProductType, QualityStatus
 from app.models.catalog import DataProduct
 
@@ -26,7 +28,7 @@ class DataProductRepository:
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
-    def _apply_filters(self, query, filters: DataProductListFilters):
+    def _apply_filters(self, query: Any, filters: DataProductListFilters) -> Any:
         if filters.search:
             pattern = f"%{filters.search}%"
             query = query.where(
@@ -55,7 +57,7 @@ class DataProductRepository:
             query = query.where(DataProduct.company_id == filters.company_id)
         return query
 
-    async def list(
+    async def list_paginated(
         self,
         *,
         filters: DataProductListFilters,
@@ -74,7 +76,7 @@ class DataProductRepository:
         return list(result.all()), total
 
     async def get_by_id(self, data_product_id: uuid.UUID) -> DataProduct | None:
-        return await self._session.get(DataProduct, data_product_id)
+        return await get_model(self._session, DataProduct, data_product_id)
 
     async def create(self, data: dict[str, object]) -> DataProduct:
         data_product = DataProduct(**data)

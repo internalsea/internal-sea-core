@@ -1,9 +1,11 @@
 import uuid
 from dataclasses import dataclass
+from typing import Any
 
 from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.db.queries import get_model
 from app.domain.enums import ProjectType, WorkItemStatus
 from app.models.catalog import DataProduct
 from app.models.people import Capability, Person
@@ -23,7 +25,7 @@ class CapabilityRepository:
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
-    def _apply_filters(self, query, filters: CapabilityListFilters):
+    def _apply_filters(self, query: Any, filters: CapabilityListFilters) -> Any:
         if filters.search:
             pattern = f"%{filters.search}%"
             query = query.where(
@@ -36,7 +38,7 @@ class CapabilityRepository:
             query = query.where(Capability.company_id == filters.company_id)
         return query
 
-    async def list(
+    async def list_paginated(
         self,
         *,
         filters: CapabilityListFilters,
@@ -55,7 +57,7 @@ class CapabilityRepository:
         return list(result.all()), total
 
     async def get_by_id(self, capability_id: uuid.UUID) -> Capability | None:
-        return await self._session.get(Capability, capability_id)
+        return await get_model(self._session, Capability, capability_id)
 
     async def get_by_name(self, name: str) -> Capability | None:
         return await self._session.scalar(select(Capability).where(Capability.name == name))

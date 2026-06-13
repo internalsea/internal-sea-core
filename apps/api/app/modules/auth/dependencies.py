@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import uuid
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 from typing import Annotated
 
 import jwt
@@ -85,7 +85,7 @@ async def require_active_user(
     return user
 
 
-def require_role(*roles: UserRole) -> Callable[..., User]:
+def require_role(*roles: UserRole) -> Callable[..., Awaitable[User]]:
     async def _dependency(user: Annotated[User, Depends(require_active_user)]) -> User:
         if user.is_superuser:
             return user

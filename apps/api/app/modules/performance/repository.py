@@ -1,10 +1,12 @@
 import uuid
 from dataclasses import dataclass
 from datetime import date
+from typing import Any
 
 from sqlalchemy import and_, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.db.queries import get_model
 from app.domain.enums import MetricStatus, PerformanceSubjectType
 from app.models.performance import PerformanceMetricDefinition, PerformanceMetricValue
 
@@ -32,7 +34,9 @@ class PerformanceRepository:
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
-    def _apply_definition_filters(self, query, filters: PerformanceDefinitionListFilters):
+    def _apply_definition_filters(
+        self, query: Any, filters: PerformanceDefinitionListFilters
+    ) -> Any:
         if filters.search:
             pattern = f"%{filters.search}%"
             query = query.where(
@@ -54,7 +58,9 @@ class PerformanceRepository:
             query = query.where(PerformanceMetricDefinition.owner_id == filters.owner_id)
         return query
 
-    def _apply_value_filters(self, query, filters: PerformanceValueListFilters):
+    def _apply_value_filters(
+        self, query: Any, filters: PerformanceValueListFilters
+    ) -> Any:
         if filters.metric_definition_id is not None:
             query = query.where(
                 PerformanceMetricValue.metric_definition_id == filters.metric_definition_id
@@ -96,7 +102,7 @@ class PerformanceRepository:
         self,
         definition_id: uuid.UUID,
     ) -> PerformanceMetricDefinition | None:
-        return await self._session.get(PerformanceMetricDefinition, definition_id)
+        return await get_model(self._session, PerformanceMetricDefinition, definition_id)
 
     async def get_definition_by_code(self, code: str) -> PerformanceMetricDefinition | None:
         return await self._session.scalar(
@@ -164,7 +170,7 @@ class PerformanceRepository:
         return await self.list_values(filters=filters, offset=offset, limit=limit)
 
     async def get_value_by_id(self, value_id: uuid.UUID) -> PerformanceMetricValue | None:
-        return await self._session.get(PerformanceMetricValue, value_id)
+        return await get_model(self._session, PerformanceMetricValue, value_id)
 
     async def get_latest_value(
         self,

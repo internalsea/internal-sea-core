@@ -1,10 +1,12 @@
 import uuid
 from dataclasses import dataclass
+from typing import Any
 
 from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from app.db.queries import get_model
 from app.domain.enums import (
     NotificationChannelStatus,
     NotificationMessageStatus,
@@ -34,12 +36,12 @@ class NotificationRepository:
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
-    def _enum_value(self, value) -> str | None:
+    def _enum_value(self, value: object) -> str | None:
         if value is None:
             return None
         return value.value if hasattr(value, "value") else str(value)
 
-    def _apply_channel_filters(self, query, filters: NotificationChannelFilters):
+    def _apply_channel_filters(self, query: Any, filters: NotificationChannelFilters) -> Any:
         if filters.search:
             pattern = f"%{filters.search}%"
             query = query.where(
@@ -55,7 +57,7 @@ class NotificationRepository:
             query = query.where(NotificationChannel.status == filters.status.value)
         return query
 
-    def _apply_template_filters(self, query, filters: NotificationTemplateFilters):
+    def _apply_template_filters(self, query: Any, filters: NotificationTemplateFilters) -> Any:
         if filters.search:
             pattern = f"%{filters.search}%"
             query = query.where(
@@ -71,7 +73,7 @@ class NotificationRepository:
             query = query.where(NotificationTemplate.event_type == filters.event_type.value)
         return query
 
-    def _apply_message_filters(self, query, filters: NotificationMessageFilters):
+    def _apply_message_filters(self, query: Any, filters: NotificationMessageFilters) -> Any:
         if filters.search:
             pattern = f"%{filters.search}%"
             query = query.where(
@@ -119,7 +121,7 @@ class NotificationRepository:
         return list(result.all()), total
 
     async def get_channel_by_id(self, channel_id: uuid.UUID) -> NotificationChannel | None:
-        return await self._session.get(NotificationChannel, channel_id)
+        return await get_model(self._session, NotificationChannel, channel_id)
 
     async def get_channel_by_name(self, name: str) -> NotificationChannel | None:
         return await self._session.scalar(
@@ -168,7 +170,7 @@ class NotificationRepository:
         return list(result.all()), total
 
     async def get_template_by_id(self, template_id: uuid.UUID) -> NotificationTemplate | None:
-        return await self._session.get(NotificationTemplate, template_id)
+        return await get_model(self._session, NotificationTemplate, template_id)
 
     async def get_template_by_name(self, name: str) -> NotificationTemplate | None:
         return await self._session.scalar(
@@ -220,7 +222,7 @@ class NotificationRepository:
         self,
         preference_id: uuid.UUID,
     ) -> NotificationPreference | None:
-        return await self._session.get(NotificationPreference, preference_id)
+        return await get_model(self._session, NotificationPreference, preference_id)
 
     async def get_duplicate_preference(
         self,

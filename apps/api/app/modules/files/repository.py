@@ -1,10 +1,12 @@
 import uuid
 from dataclasses import dataclass
+from typing import Any
 
 from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from app.db.queries import get_model
 from app.domain.enums import FileAssetType, FileEntityType, FileSensitivity, FileStatus
 from app.models.files import FileAsset, FileAttachment, FileStorage
 
@@ -24,7 +26,7 @@ class FileRepository:
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
-    def _apply_file_filters(self, query, filters: FileListFilters):
+    def _apply_file_filters(self, query: Any, filters: FileListFilters) -> Any:
         if filters.search:
             pattern = f"%{filters.search}%"
             query = query.where(
@@ -68,7 +70,7 @@ class FileRepository:
         return list(result.all()), total
 
     async def get_storage_by_id(self, storage_id: uuid.UUID) -> FileStorage | None:
-        return await self._session.get(FileStorage, storage_id)
+        return await get_model(self._session, FileStorage, storage_id)
 
     async def get_storage_by_name(self, name: str) -> FileStorage | None:
         result = await self._session.execute(select(FileStorage).where(FileStorage.name == name))
@@ -115,7 +117,7 @@ class FileRepository:
         return list(result.all()), total
 
     async def get_file_by_id(self, file_id: uuid.UUID) -> FileAsset | None:
-        return await self._session.get(FileAsset, file_id)
+        return await get_model(self._session, FileAsset, file_id)
 
     async def create_file(self, data: dict[str, object]) -> FileAsset:
         file_asset = FileAsset(**data)

@@ -1,9 +1,11 @@
 import uuid
 from datetime import date
+from typing import Any
 
 from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.db.queries import get_model
 from app.domain.enums import (
     ComplianceStatus,
     ComplianceSubjectType,
@@ -45,7 +47,7 @@ class ComplianceRepository:
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
-    def _enum_value(self, value) -> str | None:
+    def _enum_value(self, value: object) -> str | None:
         if value is None:
             return None
         return value.value if hasattr(value, "value") else str(value)
@@ -75,7 +77,7 @@ class ComplianceRepository:
         return list(result.all()), total
 
     async def get_policy_by_id(self, policy_id: uuid.UUID) -> Policy | None:
-        return await self._session.get(Policy, policy_id)
+        return await get_model(self._session, Policy, policy_id)
 
     async def get_policy_by_name(self, name: str) -> Policy | None:
         result = await self._session.execute(select(Policy).where(Policy.name == name))
@@ -141,7 +143,7 @@ class ComplianceRepository:
         return items, total
 
     async def get_rule_by_id(self, rule_id: uuid.UUID) -> ComplianceRule | None:
-        return await self._session.get(ComplianceRule, rule_id)
+        return await get_model(self._session, ComplianceRule, rule_id)
 
     async def create_rule(self, data: dict[str, object]) -> ComplianceRule:
         rule = ComplianceRule(**data)
@@ -194,7 +196,7 @@ class ComplianceRepository:
         return list(result.all()), total
 
     async def get_control_by_id(self, control_id: uuid.UUID) -> Control | None:
-        return await self._session.get(Control, control_id)
+        return await get_model(self._session, Control, control_id)
 
     async def create_control(self, data: dict[str, object]) -> Control:
         control = Control(**data)
@@ -214,7 +216,9 @@ class ComplianceRepository:
         await self._session.delete(control)
         await self._session.commit()
 
-    def _apply_check_filters(self, query, filters: ComplianceCheckFilters, *, today: date):
+    def _apply_check_filters(
+        self, query: Any, filters: ComplianceCheckFilters, *, today: date
+    ) -> Any:
         if filters.search:
             pattern = f"%{filters.search}%"
             query = query.where(
@@ -298,7 +302,7 @@ class ComplianceRepository:
         return list(result.all()), total
 
     async def get_check_by_id(self, check_id: uuid.UUID) -> ComplianceCheck | None:
-        return await self._session.get(ComplianceCheck, check_id)
+        return await get_model(self._session, ComplianceCheck, check_id)
 
     async def create_check(self, data: dict[str, object]) -> ComplianceCheck:
         check = ComplianceCheck(**data)
@@ -332,7 +336,7 @@ class ComplianceRepository:
         return list(result.all())
 
     async def get_evidence_by_id(self, evidence_id: uuid.UUID) -> ComplianceCheckEvidence | None:
-        return await self._session.get(ComplianceCheckEvidence, evidence_id)
+        return await get_model(self._session, ComplianceCheckEvidence, evidence_id)
 
     async def get_duplicate_evidence(
         self,

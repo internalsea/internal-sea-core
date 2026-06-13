@@ -139,9 +139,8 @@ class TenancyService:
         user: User,
     ) -> CompanyListResponse:
         companies = await self._repository.get_user_companies(user.id)
-        normalized_page, normalized_page_size = normalize_pagination(page, page_size)
+        normalized_page, normalized_page_size, offset = normalize_pagination(page, page_size)
         total = len(companies)
-        offset = (normalized_page - 1) * normalized_page_size
         page_items = companies[offset : offset + normalized_page_size]
         return CompanyListResponse(
             items=[CompanyRead.model_validate(c) for c in page_items],
@@ -205,8 +204,7 @@ class TenancyService:
         page: int,
         page_size: int,
     ) -> WorkspaceListResponse:
-        normalized_page, normalized_page_size = normalize_pagination(page, page_size)
-        offset = (normalized_page - 1) * normalized_page_size
+        normalized_page, normalized_page_size, offset = normalize_pagination(page, page_size)
         items, total = await self._repository.list_workspaces(
             company_id,
             offset=offset,
@@ -256,8 +254,7 @@ class TenancyService:
         page: int,
         page_size: int,
     ) -> CompanyMemberListResponse:
-        normalized_page, normalized_page_size = normalize_pagination(page, page_size)
-        offset = (normalized_page - 1) * normalized_page_size
+        normalized_page, normalized_page_size, offset = normalize_pagination(page, page_size)
         items, total = await self._repository.list_members(
             company_id,
             offset=offset,

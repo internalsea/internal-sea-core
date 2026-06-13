@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, datetime, timedelta
+from typing import Any, cast
 
 from sqlalchemy import and_, or_, update
+from sqlalchemy.engine import CursorResult
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.automation import AutomationTrigger
@@ -43,7 +45,7 @@ async def acquire_automation_trigger_lock(
     )
     result = await session.execute(stmt)
     await session.commit()
-    return result.rowcount == 1
+    return cast(CursorResult[Any], result).rowcount == 1
 
 
 async def release_automation_trigger_lock(
@@ -84,7 +86,7 @@ async def acquire_notification_message_lock(
     )
     result = await session.execute(stmt)
     await session.commit()
-    return result.rowcount == 1
+    return cast(CursorResult[Any], result).rowcount == 1
 
 
 async def release_notification_message_lock(

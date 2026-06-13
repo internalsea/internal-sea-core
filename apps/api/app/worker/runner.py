@@ -5,9 +5,10 @@ from __future__ import annotations
 import logging
 from datetime import UTC, datetime
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.config import get_settings
+from app.models.automation import AutomationTrigger
 from app.modules.activity.dependencies import build_activity_service
 from app.modules.automation.repository import AutomationRepository
 from app.modules.automation.runner import AutomationRunner
@@ -105,7 +106,7 @@ class WorkerRunner:
     @classmethod
     async def run_loop_with_session_factory(
         cls,
-        sessionmaker,
+        sessionmaker: async_sessionmaker[AsyncSession],
         *,
         instance_id: str | None = None,
         batch_size: int | None = None,
@@ -213,7 +214,7 @@ class WorkerRunner:
 
         return processed
 
-    def _should_simulate_trigger(self, trigger) -> bool:
+    def _should_simulate_trigger(self, trigger: AutomationTrigger) -> bool:
         if not self._settings.automation_real_run_enabled:
             return True
         if self._settings.automation_default_simulate:

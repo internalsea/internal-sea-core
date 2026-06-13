@@ -84,22 +84,6 @@ Architecture Decision Records (ADRs) for Internal Sea. New decisions append with
 
 ---
 
-## ADR-0006: Use SonarCloud for code quality
-
-**Status:** Accepted
-
-**Context:** The monorepo will grow across Python and TypeScript with shared packages. We want consistent quality gates, security hotspot tracking and coverage trends in one place, integrated with GitHub pull requests.
-
-**Decision:** Use SonarCloud with root `sonar-project.properties` and a dedicated GitHub Actions workflow (`.github/workflows/sonarcloud.yml`). Enforce the quality gate on pushes to `main`; run analysis without blocking on pull requests until the gate is stable.
-
-**Consequences:**
-
-- Requires `SONAR_TOKEN` in GitHub repository secrets and matching org/project keys in SonarCloud.
-- Coverage paths must be produced by CI test jobs as backend and frontend are implemented.
-- Placeholder org/project keys in `sonar-project.properties` must be replaced before the first successful scan.
-
----
-
 ## ADR-0010: Use one Project model with project_type
 
 **Status:** Accepted

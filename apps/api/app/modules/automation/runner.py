@@ -94,12 +94,13 @@ def _resolve_activity_entity(
                 return None
             subject_mapping = {
                 ComplianceSubjectType.DATA_PRODUCT: ActivityEntityType.DATA_PRODUCT,
-                ComplianceSubjectType.WORK_ITEM: ActivityEntityType.WORK_ITEM,
                 ComplianceSubjectType.PROJECT: ActivityEntityType.PROJECT,
                 ComplianceSubjectType.INTERNAL_PROJECT: ActivityEntityType.INTERNAL_PROJECT,
                 ComplianceSubjectType.TEAM: ActivityEntityType.TEAM,
                 ComplianceSubjectType.CAPABILITY: ActivityEntityType.CAPABILITY,
             }
+            if subject_type == "work_item":
+                return ActivityEntityType.WORK_ITEM, subject_id
             if compliance_subject in subject_mapping:
                 return subject_mapping[compliance_subject], subject_id
     return None

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
+from typing import cast
 
 from dateutil.relativedelta import relativedelta
 from sqlalchemy import or_, select
@@ -23,15 +24,15 @@ def calculate_next_run_at(
     if frequency == "custom":
         return schedule.next_run_at
     if frequency == "daily":
-        return from_datetime + relativedelta(days=1)
+        return cast(datetime, from_datetime + relativedelta(days=1))
     if frequency == "weekly":
-        return from_datetime + relativedelta(weeks=1)
+        return cast(datetime, from_datetime + relativedelta(weeks=1))
     if frequency == "monthly":
-        return from_datetime + relativedelta(months=1)
+        return cast(datetime, from_datetime + relativedelta(months=1))
     if frequency == "quarterly":
-        return from_datetime + relativedelta(months=3)
+        return cast(datetime, from_datetime + relativedelta(months=3))
     if frequency == "yearly":
-        return from_datetime + relativedelta(years=1)
+        return cast(datetime, from_datetime + relativedelta(years=1))
     return None
 
 

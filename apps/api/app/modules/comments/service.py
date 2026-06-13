@@ -1,7 +1,10 @@
 import uuid
+from collections.abc import Awaitable, Callable
+from typing import Any
 
 from app.core.pagination import calculate_pages, normalize_pagination
 from app.domain.enums import ActivityAction, ActivityEntityType, ProjectType
+from app.models.projects import Project
 from app.modules.activity.schemas import ActivityEventCreateInternal
 from app.modules.activity.service import ActivityService
 from app.modules.comments.errors import CommentNotFoundError
@@ -214,7 +217,7 @@ class CommentService:
             raise CommentNotFoundError(comment_id)
         await self._repository.delete(comment)
 
-    async def _get_internal_project(self, project_id: uuid.UUID):
+    async def _get_internal_project(self, project_id: uuid.UUID) -> Project:
         project = await self._projects.get_by_id(project_id)
         if project is None or project.project_type != ProjectType.INTERNAL_PROJECT:
             raise ProjectNotFoundError(project_id)
@@ -223,12 +226,11 @@ class CommentService:
     async def _list_comments(
         self,
         *,
-        list_fn,
+        list_fn: Callable[[int, int], Awaitable[tuple[list[Any], int]]],
         page: int,
         page_size: int,
     ) -> CommentListResponse:
-        normalized_page, normalized_page_size = normalize_pagination(page, page_size)
-        offset = (normalized_page - 1) * normalized_page_size
+        normalized_page, normalized_page_size, offset = normalize_pagination(page, page_size)
         items, total = await list_fn(offset, normalized_page_size)
         return CommentListResponse(
             items=[CommentRead.model_validate(item) for item in items],

@@ -71,7 +71,7 @@ class NotificationService:
         self._session = session
         self._dispatcher = NotificationDispatcher()
 
-    def _enum_value(self, value) -> str | None:
+    def _enum_value(self, value: object) -> str | None:
         if value is None:
             return None
         return value.value if hasattr(value, "value") else str(value)
@@ -102,7 +102,7 @@ class NotificationService:
             return
         title = "Notification simulated" if simulated else "Notification sent"
         description = message.subject or message.event_type
-        await self._activity.create(
+        await self._activity.record_event(
             ActivityEventCreateInternal(
                 entity_type=activity_entity,
                 entity_id=message.entity_id,
@@ -291,6 +291,8 @@ class NotificationService:
         )
         channel_type = self._enum_value(payload.channel_type)
         event_type = self._enum_value(payload.event_type)
+        if channel_type is None or event_type is None:
+            raise NotificationConflictError("channel_type and event_type are required")
         duplicate = await self._repository.get_duplicate_preference(
             user_id=payload.user_id,
             person_id=payload.person_id,

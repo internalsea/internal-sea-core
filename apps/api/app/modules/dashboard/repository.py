@@ -3,6 +3,7 @@ from __future__ import annotations
 import uuid
 from dataclasses import dataclass
 from datetime import date
+from typing import Any
 
 from sqlalchemy import and_, case, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -65,7 +66,7 @@ class DashboardRepository:
         self._session = session
         self._company_id = company_id
 
-    def _apply_company_scope(self, query, model: type[object]):
+    def _apply_company_scope(self, query: Any, model: type[object]) -> Any:
         if self._company_id is not None and hasattr(model, "company_id"):
             query = query.where(model.company_id == self._company_id)
         return query

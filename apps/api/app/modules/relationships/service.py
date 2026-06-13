@@ -79,8 +79,7 @@ class RelationshipService:
     ) -> EntityLinkListResponse:
         if filters.entity_type is not None and not is_supported_entity_type(filters.entity_type):
             raise InvalidEntityLinkError(f"Unsupported entity type: {filters.entity_type.value}")
-        normalized_page, normalized_page_size = normalize_pagination(page, page_size)
-        offset = (normalized_page - 1) * normalized_page_size
+        normalized_page, normalized_page_size, offset = normalize_pagination(page, page_size)
         repo_filters = EntityLinkListFilters(
             entity_type=filters.entity_type,
             entity_id=filters.entity_id,
@@ -91,7 +90,7 @@ class RelationshipService:
             link_type=filters.link_type,
             include_reverse=filters.include_reverse,
         )
-        items, total = await self._repository.list(
+        items, total = await self._repository.list_paginated(
             filters=repo_filters,
             offset=offset,
             limit=normalized_page_size,

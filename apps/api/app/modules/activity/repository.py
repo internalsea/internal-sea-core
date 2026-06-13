@@ -1,5 +1,6 @@
 import uuid
 from dataclasses import dataclass
+from typing import Any
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -21,7 +22,7 @@ class ActivityRepository:
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
-    def _apply_filters(self, query, filters: ActivityEventListFilters):
+    def _apply_filters(self, query: Any, filters: ActivityEventListFilters) -> Any:
         if filters.entity_type is not None:
             query = query.where(ActivityEvent.entity_type == filters.entity_type.value)
         if filters.entity_id is not None:
@@ -58,7 +59,7 @@ class ActivityRepository:
         filters = ActivityEventListFilters(entity_type=entity_type, entity_id=entity_id)
         return await self.list(filters=filters, offset=offset, limit=limit)
 
-    async def list(
+    async def list_paginated(
         self,
         *,
         filters: ActivityEventListFilters,

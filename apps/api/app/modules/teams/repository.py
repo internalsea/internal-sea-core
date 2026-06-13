@@ -1,9 +1,11 @@
 import uuid
 from dataclasses import dataclass
+from typing import Any
 
 from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.db.queries import get_model
 from app.domain.enums import ProjectType, WorkItemStatus
 from app.models.catalog import DataProduct
 from app.models.people import Person, Team
@@ -23,7 +25,7 @@ class TeamRepository:
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
-    def _apply_filters(self, query, filters: TeamListFilters):
+    def _apply_filters(self, query: Any, filters: TeamListFilters) -> Any:
         if filters.search:
             pattern = f"%{filters.search}%"
             query = query.where(
@@ -36,7 +38,7 @@ class TeamRepository:
             query = query.where(Team.company_id == filters.company_id)
         return query
 
-    async def list(
+    async def list_paginated(
         self,
         *,
         filters: TeamListFilters,
@@ -55,7 +57,7 @@ class TeamRepository:
         return list(result.all()), total
 
     async def get_by_id(self, team_id: uuid.UUID) -> Team | None:
-        return await self._session.get(Team, team_id)
+        return await get_model(self._session, Team, team_id)
 
     async def get_by_name(self, name: str) -> Team | None:
         return await self._session.scalar(select(Team).where(Team.name == name))

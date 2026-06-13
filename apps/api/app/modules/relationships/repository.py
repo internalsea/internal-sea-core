@@ -1,9 +1,11 @@
 import uuid
 from dataclasses import dataclass
+from typing import Any
 
 from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.db.queries import get_model
 from app.domain.enums import EntityLinkType, EntityType
 from app.models.relationships import EntityLink
 from app.modules.relationships.schemas import EntityLinkCreate, EntityLinkUpdate
@@ -25,7 +27,7 @@ class RelationshipRepository:
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
-    def _apply_filters(self, query, filters: EntityLinkListFilters):
+    def _apply_filters(self, query: Any, filters: EntityLinkListFilters) -> Any:
         if filters.source_type is not None:
             query = query.where(EntityLink.source_type == filters.source_type.value)
         if filters.source_id is not None:
@@ -55,7 +57,7 @@ class RelationshipRepository:
                 )
         return query
 
-    async def list(
+    async def list_paginated(
         self,
         *,
         filters: EntityLinkListFilters,
@@ -89,7 +91,7 @@ class RelationshipRepository:
         return await self.list(filters=filters, offset=offset, limit=limit)
 
     async def get_by_id(self, link_id: uuid.UUID) -> EntityLink | None:
-        return await self._session.get(EntityLink, link_id)
+        return await get_model(self._session, EntityLink, link_id)
 
     async def get_duplicate(
         self,

@@ -1,9 +1,11 @@
 import uuid
 from dataclasses import dataclass
+from typing import Any
 
 from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.db.queries import get_model
 from app.domain.enums import WorkItemPriority, WorkItemStatus, WorkItemType
 from app.models.work import WorkItem
 
@@ -26,7 +28,7 @@ class WorkItemRepository:
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
-    def _apply_filters(self, query, filters: WorkItemListFilters):
+    def _apply_filters(self, query: Any, filters: WorkItemListFilters) -> Any:
         if filters.search:
             pattern = f"%{filters.search}%"
             query = query.where(
@@ -55,7 +57,7 @@ class WorkItemRepository:
             query = query.where(WorkItem.company_id == filters.company_id)
         return query
 
-    async def list(
+    async def list_paginated(
         self,
         *,
         filters: WorkItemListFilters,
@@ -97,7 +99,7 @@ class WorkItemRepository:
         return list(result.all())
 
     async def get_by_id(self, work_item_id: uuid.UUID) -> WorkItem | None:
-        return await self._session.get(WorkItem, work_item_id)
+        return await get_model(self._session, WorkItem, work_item_id)
 
     async def create(self, data: dict[str, object]) -> WorkItem:
         work_item = WorkItem(**data)

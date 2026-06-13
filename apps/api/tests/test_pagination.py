@@ -2,9 +2,10 @@ from app.core.pagination import calculate_pages, normalize_pagination
 
 
 def test_normalize_pagination_clamps_page_size() -> None:
-    page, page_size = normalize_pagination(0, 500)
+    page, page_size, offset = normalize_pagination(0, 500)
     assert page == 1
     assert page_size == 100
+    assert offset == 0
 
 
 def test_calculate_pages() -> None:

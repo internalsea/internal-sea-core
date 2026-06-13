@@ -2,6 +2,7 @@ import uuid
 
 from app.core.pagination import calculate_pages, normalize_pagination
 from app.domain.enums import ActivityAction, ActivityEntityType, ProjectType
+from app.models.projects import Project
 from app.modules.activity.helpers import get_updated_fields
 from app.modules.activity.schemas import ActivityEventCreateInternal
 from app.modules.activity.service import ActivityService
@@ -23,7 +24,7 @@ class ProjectService:
         self._repository = repository
         self._activity = activity_service
 
-    def _project_entity_type(self, project) -> ActivityEntityType:
+    def _project_entity_type(self, project: Project) -> ActivityEntityType:
         if project.project_type == ProjectType.INTERNAL_PROJECT:
             return ActivityEntityType.INTERNAL_PROJECT
         return ActivityEntityType.PROJECT
@@ -35,9 +36,8 @@ class ProjectService:
         page: int,
         page_size: int,
     ) -> ProjectListResponse:
-        normalized_page, normalized_page_size = normalize_pagination(page, page_size)
-        offset = (normalized_page - 1) * normalized_page_size
-        items, total = await self._repository.list(
+        normalized_page, normalized_page_size, offset = normalize_pagination(page, page_size)
+        items, total = await self._repository.list_paginated(
             filters=filters,
             offset=offset,
             limit=normalized_page_size,
@@ -200,7 +200,7 @@ class ProjectService:
 
     async def _get_internal_project_model(
         self, project_id: uuid.UUID, *, company_id: uuid.UUID | None = None
-    ):
+    ) -> Project:
         project = await self._repository.get_by_id(project_id)
         if project is None or project.project_type != ProjectType.INTERNAL_PROJECT:
             raise ProjectNotFoundError(project_id)

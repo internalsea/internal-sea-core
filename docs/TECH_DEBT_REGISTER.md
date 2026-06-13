@@ -110,7 +110,6 @@ Source: [LOCAL_TEST_AND_READINESS_REVIEW.md](LOCAL_TEST_AND_READINESS_REVIEW.md)
 | TD-042 | Redis configured but unused by core API paths | Architecture | Low | P3 | General | Open |
 | TD-043 | Monorepo package coupling risk if boundaries ignored | Architecture | Low | P3 | General | Open |
 | TD-044 | Manual TypeScript/Python type sharing (no codegen) | DevEx | Low | P3 | General | Open |
-| TD-045 | SonarCloud placeholder org/project keys | DevEx | Low | P3 | General | Open |
 | TD-046 | No Kubernetes manifests; Docker Compose reference only | Operations | Low | P3 | General | Open |
 | TD-047 | Work board has no drag-and-drop | UX | Low | P3 | General | Open |
 | TD-048 | Manual UUID fallbacks remain in advanced form sections | UX | Low | P3 | General | Open |
@@ -1306,32 +1305,6 @@ OpenAPI codegen for types when API surface stabilizes.
 
 Suggested prompt:
 DevEx Tooling (OpenAPI codegen)
-
----
-
-### TD-045: SonarCloud placeholder org/project keys
-
-Category: DevEx  
-Severity: Low  
-Priority: P3  
-Status: Open  
-Source: docs/DECISION_LOG.md  
-Area: General
-
-Description:
-`sonar-project.properties` contains placeholders; first Sonar scan requires real keys.
-
-Why it matters:
-SonarCloud CI job may fail until configured.
-
-Current workaround:
-Structure check and backend/frontend jobs pass without Sonar.
-
-Recommended fix:
-Replace placeholders when SonarCloud project is created.
-
-Suggested prompt:
-CI Configuration (SonarCloud)
 
 ---
 

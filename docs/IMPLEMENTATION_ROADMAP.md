@@ -11,7 +11,6 @@ Phased delivery plan for Internal Sea. Each phase should end in something runnab
 - Docker Compose for Postgres and Redis
 - Documentation foundation and CI structure check
 - Placeholder READMEs for apps and packages
-- SonarCloud integration
 
 **Exit criteria:** Repo clones cleanly; `make docker-up` starts infra; CI passes structure checks.
 

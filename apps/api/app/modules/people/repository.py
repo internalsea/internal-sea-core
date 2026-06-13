@@ -1,9 +1,11 @@
 import uuid
 from dataclasses import dataclass
+from typing import Any
 
 from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.db.queries import get_model
 from app.domain.enums import SeniorityLevel, WorkItemStatus
 from app.models.catalog import DataProduct
 from app.models.people import Person
@@ -30,7 +32,7 @@ class PersonRepository:
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
-    def _apply_filters(self, query, filters: PersonListFilters):
+    def _apply_filters(self, query: Any, filters: PersonListFilters) -> Any:
         if filters.search:
             pattern = f"%{filters.search}%"
             query = query.where(
@@ -59,7 +61,7 @@ class PersonRepository:
             query = query.where(Person.company_id == filters.company_id)
         return query
 
-    async def list(
+    async def list_paginated(
         self,
         *,
         filters: PersonListFilters,
@@ -78,7 +80,7 @@ class PersonRepository:
         return list(result.all()), total
 
     async def get_by_id(self, person_id: uuid.UUID) -> Person | None:
-        return await self._session.get(Person, person_id)
+        return await get_model(self._session, Person, person_id)
 
     async def get_by_email(self, email: str) -> Person | None:
         return await self._session.scalar(select(Person).where(Person.email == email))

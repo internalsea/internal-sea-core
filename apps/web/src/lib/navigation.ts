@@ -11,9 +11,9 @@ export interface PrimaryNavGroup {
 
 export const primaryNavGroups: PrimaryNavGroup[] = [
   {
-    id: 'home',
-    label: 'Home',
-    items: [{ label: 'Dashboard', path: '/dashboard' }],
+    id: 'today',
+    label: 'Today',
+    items: [{ label: 'Today', path: '/dashboard' }],
   },
   {
     id: 'work',
@@ -44,6 +44,8 @@ export const primaryNavGroups: PrimaryNavGroup[] = [
       { label: 'Data Products', path: '/data-products' },
       { label: 'Governance', path: '/compliance' },
       { label: 'Compliance', path: '/compliance' },
+      { label: 'Evidence', path: '/compliance/evidence' },
+      { label: 'Frameworks', path: '/compliance/frameworks' },
       { label: 'Policies', path: '/policies' },
     ],
   },

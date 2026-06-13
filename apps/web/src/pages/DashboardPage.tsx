@@ -47,7 +47,7 @@ export function DashboardPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Dashboard"
+        title="Today"
         description="Executive and operational overview of data products, work, projects, compliance, performance and automation."
       />
 

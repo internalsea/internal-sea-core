@@ -18,6 +18,8 @@ import { CapabilityEditPage } from '@/pages/CapabilityEditPage'
 import { ComplianceCheckCreatePage } from '@/pages/ComplianceCheckCreatePage'
 import { ComplianceCheckDetailPage } from '@/pages/ComplianceCheckDetailPage'
 import { ComplianceCheckEditPage } from '@/pages/ComplianceCheckEditPage'
+import { ComplianceEvidencePage } from '@/pages/ComplianceEvidencePage'
+import { ComplianceFrameworksPage } from '@/pages/ComplianceFrameworksPage'
 import { CompliancePage } from '@/pages/CompliancePage'
 import { PolicyCreatePage } from '@/pages/PolicyCreatePage'
 import { PolicyDetailPage } from '@/pages/PolicyDetailPage'
@@ -147,6 +149,8 @@ export const router = createBrowserRouter([
           { path: 'compliance/checks/new', element: <ComplianceCheckCreatePage /> },
           { path: 'compliance/checks/:id/edit', element: <ComplianceCheckEditPage /> },
           { path: 'compliance/checks/:id', element: <ComplianceCheckDetailPage /> },
+          { path: 'compliance/evidence', element: <ComplianceEvidencePage /> },
+          { path: 'compliance/frameworks', element: <ComplianceFrameworksPage /> },
           { path: 'compliance', element: <CompliancePage /> },
           { path: 'policies', element: <PoliciesPage /> },
           { path: 'tools', element: <ToolsPage /> },

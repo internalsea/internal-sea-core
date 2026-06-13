@@ -86,9 +86,10 @@ CI deploy steps (internal-sea-core workflow):
 
 1. `update-repo internal-sea-core`
 2. `verify-build-contexts`
-3. `compose-up`
+3. `scripts/ci-prebuild-intsea-backend.sh` — builds `intsea-backend` before migrate/seed one-offs
+4. `compose-up`
 
-There is no `compose-build` subcommand on `ci-ssh-remote.sh`.
+`shared-landing` should also build before migrate/seed in `prepare_intsea_stack()` (push `scripts/remote-deploy.sh` when possible).
 
 ## Reset local environment
 

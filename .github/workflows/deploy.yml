@@ -231,6 +231,9 @@ jobs:
       - name: Verify Docker build contexts
         run: bash shared-landing/scripts/ci-ssh-remote.sh verify-build-contexts
 
+      - name: Pre-build intsea-backend on server
+        run: bash scripts/ci-prebuild-intsea-backend.sh
+
       - name: Docker Compose up
         run: bash shared-landing/scripts/ci-ssh-remote.sh compose-up
 

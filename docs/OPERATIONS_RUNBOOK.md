@@ -72,16 +72,23 @@ curl http://localhost:8000/api/v1/health
 
 ## On-prem deploy (shared-landing)
 
-After `update-repo internal-sea-core`, rebuild Internal Sea images before migrate/seed one-off containers run. Otherwise the server may keep an old `intsea-backend` image (`Skipped - No image to be pulled`) and seed will fail on stale code.
+`compose-up` already runs `docker compose up -d --build` for `intsea-backend`, but **migrations and seed run earlier** in `prepare_intsea_stack()` using a one-off container. That one-off must use a freshly built image after `update-repo internal-sea-core`.
 
-On the server (paths may vary):
+Required `shared-landing` change in `scripts/remote-deploy.sh` (`prepare_intsea_stack`):
 
 ```bash
-cd /opt/shared-landing
-docker compose build intsea-backend intsea-frontend
+docker_compose_with_env "${COMPOSE_DIR}" build intsea-backend
 ```
 
-CI/CD should run `compose-build intsea-backend intsea-frontend` (or equivalent) before `compose-up`.
+Run this **before** the `alembic upgrade` and `python -m app.seed.seed` one-off containers.
+
+CI deploy steps (internal-sea-core workflow):
+
+1. `update-repo internal-sea-core`
+2. `verify-build-contexts`
+3. `compose-up`
+
+There is no `compose-build` subcommand on `ci-ssh-remote.sh`.
 
 ## Reset local environment
 

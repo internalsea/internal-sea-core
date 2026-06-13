@@ -1,27 +1,73 @@
-import { useEffect, useId, useRef, useState } from 'react'
+import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { NavLink, useLocation } from 'react-router-dom'
 
 import type { PrimaryNavGroup } from '@/lib/navigation'
 import { isNavGroupActive, pathMatches } from '@/lib/navigation'
 import { cn } from '@/lib/utils'
 
+const navLinkActiveClass = 'bg-auth-surface font-medium text-gray-900'
+const navLinkClass = 'text-gray-700 hover:bg-auth-surface/80 hover:text-gray-900'
+const navButtonActiveClass = 'bg-auth-surface text-gray-900'
+const navButtonClass = 'text-gray-700 hover:bg-auth-surface/80 hover:text-gray-900'
+const menuPanelClass =
+  'fixed z-[100] min-w-[12rem] overflow-hidden rounded-lg border border-auth-surfaceBorder bg-auth-surface py-1 shadow-lg'
+
 interface NavDropdownProps {
   group: PrimaryNavGroup
+}
+
+interface MenuPosition {
+  top: number
+  left: number
+}
+
+function getMenuPosition(button: HTMLButtonElement): MenuPosition {
+  const rect = button.getBoundingClientRect()
+  return {
+    top: rect.bottom + 8,
+    left: rect.left,
+  }
 }
 
 export function NavDropdown({ group }: NavDropdownProps) {
   const location = useLocation()
   const menuId = useId()
   const containerRef = useRef<HTMLDivElement>(null)
+  const buttonRef = useRef<HTMLButtonElement>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
   const [isOpen, setIsOpen] = useState(false)
+  const [menuPosition, setMenuPosition] = useState<MenuPosition>({ top: 0, left: 0 })
   const isActive = isNavGroupActive(location.pathname, group)
   const isSingleItem = group.items.length === 1
 
+  useLayoutEffect(() => {
+    if (!isOpen || !buttonRef.current) {
+      return
+    }
+
+    function updatePosition() {
+      if (buttonRef.current) {
+        setMenuPosition(getMenuPosition(buttonRef.current))
+      }
+    }
+
+    updatePosition()
+    window.addEventListener('resize', updatePosition)
+    window.addEventListener('scroll', updatePosition, true)
+    return () => {
+      window.removeEventListener('resize', updatePosition)
+      window.removeEventListener('scroll', updatePosition, true)
+    }
+  }, [isOpen])
+
   useEffect(() => {
     function handlePointerDown(event: MouseEvent) {
-      if (!containerRef.current?.contains(event.target as Node)) {
-        setIsOpen(false)
+      const target = event.target as Node
+      if (containerRef.current?.contains(target) || menuRef.current?.contains(target)) {
+        return
       }
+      setIsOpen(false)
     }
 
     function handleEscape(event: globalThis.KeyboardEvent) {
@@ -51,8 +97,8 @@ export function NavDropdown({ group }: NavDropdownProps) {
           cn(
             'rounded-md px-3 py-2 text-sm font-medium transition-colors',
             linkActive || pathMatches(location.pathname, item.path)
-              ? 'bg-white/10 text-white'
-              : 'text-gray-300 hover:bg-white/5 hover:text-white',
+              ? navLinkActiveClass
+              : navLinkClass,
           )
         }
       >
@@ -61,9 +107,42 @@ export function NavDropdown({ group }: NavDropdownProps) {
     )
   }
 
+  const menu = isOpen
+    ? createPortal(
+        <div
+          id={menuId}
+          ref={menuRef}
+          role="menu"
+          style={{ top: menuPosition.top, left: menuPosition.left }}
+          className={menuPanelClass}
+        >
+          {group.items.map((item) => (
+            <NavLink
+              key={`${item.path}-${item.label}`}
+              to={item.path}
+              role="menuitem"
+              onClick={() => setIsOpen(false)}
+              className={({ isActive: linkActive }) =>
+                cn(
+                  'block px-4 py-2 text-sm transition-colors',
+                  linkActive || pathMatches(location.pathname, item.path)
+                    ? navLinkActiveClass
+                    : navLinkClass,
+                )
+              }
+            >
+              {item.label}
+            </NavLink>
+          ))}
+        </div>,
+        document.body,
+      )
+    : null
+
   return (
-    <div ref={containerRef} className="relative">
+    <div ref={containerRef} className="relative shrink-0">
       <button
+        ref={buttonRef}
         type="button"
         aria-expanded={isOpen}
         aria-haspopup="menu"
@@ -71,9 +150,7 @@ export function NavDropdown({ group }: NavDropdownProps) {
         onClick={() => setIsOpen((open) => !open)}
         className={cn(
           'inline-flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-          isActive
-            ? 'bg-white/10 text-white'
-            : 'text-gray-300 hover:bg-white/5 hover:text-white',
+          isActive ? navButtonActiveClass : navButtonClass,
         )}
       >
         {group.label}
@@ -91,32 +168,7 @@ export function NavDropdown({ group }: NavDropdownProps) {
           />
         </svg>
       </button>
-
-      {isOpen ? (
-        <div
-          id={menuId}
-          role="menu"
-          className="absolute left-0 top-[calc(100%+0.5rem)] z-50 min-w-[12rem] overflow-hidden rounded-lg border border-white/10 bg-core-navy py-1 shadow-lg"
-        >
-          {group.items.map((item) => (
-            <NavLink
-              key={`${item.path}-${item.label}`}
-              to={item.path}
-              role="menuitem"
-              className={({ isActive: linkActive }) =>
-                cn(
-                  'block px-4 py-2 text-sm transition-colors',
-                  linkActive || pathMatches(location.pathname, item.path)
-                    ? 'bg-white/10 font-medium text-white'
-                    : 'text-gray-300 hover:bg-white/5 hover:text-white',
-                )
-              }
-            >
-              {item.label}
-            </NavLink>
-          ))}
-        </div>
-      ) : null}
+      {menu}
     </div>
   )
 }

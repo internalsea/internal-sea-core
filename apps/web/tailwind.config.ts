@@ -27,6 +27,7 @@ export default {
           input: '#F5F8FB',
           inputBorder: '#BFCBD8',
           wave: '#A8BDD1',
+          nav: '#94AFC7',
         },
         status: {
           success: '#15803D',

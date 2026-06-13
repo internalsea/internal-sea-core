@@ -43,7 +43,7 @@ export function CreateActionMenu() {
           aria-haspopup="menu"
           aria-controls={menuId}
           onClick={() => setIsOpen((open) => !open)}
-          className="gap-1.5 bg-white text-core-navy hover:bg-gray-100"
+          className="gap-1.5"
         >
           <PlusIcon />
           Create

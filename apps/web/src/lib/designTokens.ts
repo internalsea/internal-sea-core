@@ -28,6 +28,7 @@ export const colors = {
     input: '#F5F8FB',
     inputBorder: '#BFCBD8',
     wave: '#A8BDD1',
+    nav: '#94AFC7',
   },
   text: {
     primary: '#111827',

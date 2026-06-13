@@ -15,15 +15,15 @@ export function TopBar() {
   const notificationsActive = isNotificationsPageActive(location.pathname)
 
   return (
-    <header className="flex h-topbar shrink-0 items-center gap-4 border-b border-white/10 bg-core-navy px-4 lg:px-6">
+    <header className="relative z-40 flex h-topbar shrink-0 items-center gap-4 overflow-visible border-b border-auth-surfaceBorder bg-auth-nav px-4 lg:px-6">
       <TopNav />
 
       <div className="flex shrink-0 items-center gap-2 sm:gap-3">
         <div className="hidden w-72 xl:block">
-          <GlobalSearch variant="dark" />
+          <GlobalSearch />
         </div>
         <div className="w-36 sm:w-44 xl:hidden">
-          <GlobalSearch variant="dark" />
+          <GlobalSearch />
         </div>
 
         <CreateActionMenu />
@@ -34,8 +34,8 @@ export function TopBar() {
           className={cn(
             'inline-flex h-9 w-9 items-center justify-center rounded-md transition-colors',
             notificationsActive
-              ? 'bg-white/10 text-white'
-              : 'text-gray-300 hover:bg-white/5 hover:text-white',
+              ? 'bg-auth-surface text-gray-900'
+              : 'text-gray-700 hover:bg-auth-surface/80 hover:text-gray-900',
           )}
         >
           <BellIcon />
@@ -47,8 +47,8 @@ export function TopBar() {
           className={cn(
             'inline-flex h-9 w-9 items-center justify-center rounded-md transition-colors',
             settingsActive
-              ? 'bg-white/10 text-white'
-              : 'text-gray-300 hover:bg-white/5 hover:text-white',
+              ? 'bg-auth-surface text-gray-900'
+              : 'text-gray-700 hover:bg-auth-surface/80 hover:text-gray-900',
           )}
         >
           <SettingsIcon />

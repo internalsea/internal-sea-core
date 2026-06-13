@@ -34,7 +34,11 @@ async def test_service_pagination_calculation() -> None:
     assert result.page_size == 20
     assert result.total == 45
     assert result.pages == 3
-    repository.list_paginated.assert_awaited_once_with(filters=PersonListFilters(), offset=20, limit=20)
+    repository.list_paginated.assert_awaited_once_with(
+        filters=PersonListFilters(),
+        offset=20,
+        limit=20,
+    )
 
 
 @pytest.mark.asyncio

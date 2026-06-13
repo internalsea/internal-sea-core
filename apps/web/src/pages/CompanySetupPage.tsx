@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { Navigate } from 'react-router-dom'
 
 import { getApiErrorMessage } from '@/app/AuthProvider'
-import { Card } from '@/components/ui/Card'
+import { AuthCard } from '@/components/layout/AuthCard'
+import { AuthLayout } from '@/components/layout/AuthLayout'
 import { AuthLoadingScreen } from '@/features/auth/components/AuthLoadingScreen'
 import { useAuth } from '@/features/auth/hooks'
 import { createCompany, listWorkspaces } from '@/features/tenancy/api'
@@ -23,15 +24,15 @@ export function CompanySetupPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-app-background px-4">
-      <div className="w-full max-w-md space-y-6">
+    <AuthLayout>
+      <div className="space-y-6">
         <div className="text-center">
-          <h1 className="text-2xl font-semibold text-gray-900">Set up your company</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-gray-900">Set up your company</h1>
           <p className="mt-2 text-sm text-gray-600">
             Create a company workspace to start using Internal Sea.
           </p>
         </div>
-        <Card title="Company details">
+        <AuthCard title="Company details">
           <CompanySetupForm
             isSubmitting={isSubmitting}
             submitError={submitError}
@@ -54,8 +55,8 @@ export function CompanySetupPage() {
               }
             }}
           />
-        </Card>
+        </AuthCard>
       </div>
-    </div>
+    </AuthLayout>
   )
 }

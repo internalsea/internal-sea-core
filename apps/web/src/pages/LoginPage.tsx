@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 
 import { getApiErrorMessage } from '@/app/AuthProvider'
-import { Card } from '@/components/ui/Card'
+import { AuthCard } from '@/components/layout/AuthCard'
+import { AuthLayout } from '@/components/layout/AuthLayout'
 import { LoginForm } from '@/features/auth/components/LoginForm'
 import { useAuth } from '@/features/auth/hooks'
 
@@ -16,15 +17,15 @@ export function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-app-background px-4">
-      <div className="w-full max-w-md space-y-6">
+    <AuthLayout>
+      <div className="space-y-6">
         <div className="text-center">
-          <h1 className="text-2xl font-semibold text-gray-900">Internal Sea</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-gray-900">Internal Sea</h1>
           <p className="mt-2 text-sm text-gray-600">
             Sign in to manage data products, work, projects and compliance.
           </p>
         </div>
-        <Card title="Sign in">
+        <AuthCard title="Sign in">
           <LoginForm
             isSubmitting={isSubmitting}
             submitError={submitError}
@@ -40,15 +41,15 @@ export function LoginPage() {
               }
             }}
           />
-          <div className="mt-4 border-t border-app-border pt-4">
+          <div className="mt-4 border-t border-auth-surfaceBorder pt-4">
             <Link
               to="/register"
-              className="inline-flex h-9 w-full items-center justify-center rounded-md border border-app-borderStrong bg-app-surface px-4 text-sm font-medium text-gray-700 transition-colors hover:bg-app-background"
+              className="inline-flex h-9 w-full items-center justify-center rounded-md border border-auth-inputBorder bg-auth-input px-4 text-sm font-medium text-gray-700 transition-colors hover:border-auth-surfaceBorder hover:bg-auth-surface"
             >
               Create account
             </Link>
           </div>
-        </Card>
+        </AuthCard>
         <p className="text-center text-sm text-gray-600">
           New to Internal Sea?{' '}
           <Link to="/register" className="font-medium text-core-blue hover:text-core-blueHover">
@@ -56,6 +57,6 @@ export function LoginPage() {
           </Link>
         </p>
       </div>
-    </div>
+    </AuthLayout>
   )
 }

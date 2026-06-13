@@ -21,6 +21,14 @@ export const colors = {
     border: '#E5E7EB',
     borderStrong: '#D1D5DB',
   },
+  auth: {
+    background: '#E3EBF3',
+    surface: '#EDF2F8',
+    surfaceBorder: '#D0DAE6',
+    input: '#F5F8FB',
+    inputBorder: '#BFCBD8',
+    wave: '#A8BDD1',
+  },
   text: {
     primary: '#111827',
     secondary: '#374151',

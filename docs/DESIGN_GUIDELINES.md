@@ -137,6 +137,7 @@ Prefer readable density. Use `font-semibold` only for hierarchy. Use muted text 
 - Active item: white text, subtle white overlay background
 - Group labels: uppercase, `text-xs`, gray-500
 - Hover: gray-800 background
+- Scrollable nav uses the `sidebar-scroll` class — custom thin scrollbar with transparent track and muted slate thumb; never rely on default browser scrollbars on dark panels
 
 ### Top bar
 
@@ -319,11 +320,15 @@ Use `apps/web/src/lib/designTokens.ts` for all status-to-color mappings.
 
 ### Login page
 
-1. Centered card on neutral background — no sidebar or top bar
-2. Product name and one-line description
-3. Email and password fields, primary sign-in button
-4. Inline error message on failed login
-5. Demo credentials helper for local development only
+1. Centered card on soft blue-grey wave background — no sidebar or top bar
+2. Use `AuthLayout` and `AuthCard` for consistent auth/public entry styling
+3. Card surface uses cool off-white (`auth.surface`), not flat white, with subtle shadow
+4. Product name and one-line description
+5. Email and password fields, primary sign-in button
+6. Inline error message on failed login
+7. Demo credentials helper for local development only
+
+Apply the same auth layout treatment to Register, First User Onboarding and Company Setup pages.
 
 ### Current user menu
 

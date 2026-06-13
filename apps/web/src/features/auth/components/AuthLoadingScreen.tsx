@@ -1,9 +1,10 @@
 import { LoadingState } from '@/components/common/LoadingState'
+import { AuthLayout } from '@/components/layout/AuthLayout'
 
 export function AuthLoadingScreen() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-app-background">
+    <AuthLayout>
       <LoadingState message="Checking session…" />
-    </div>
+    </AuthLayout>
   )
 }

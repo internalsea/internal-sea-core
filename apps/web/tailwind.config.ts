@@ -20,6 +20,14 @@ export default {
           border: '#E5E7EB',
           borderStrong: '#D1D5DB',
         },
+        auth: {
+          background: '#E3EBF3',
+          surface: '#EDF2F8',
+          surfaceBorder: '#D0DAE6',
+          input: '#F5F8FB',
+          inputBorder: '#BFCBD8',
+          wave: '#A8BDD1',
+        },
         status: {
           success: '#15803D',
           successSoft: '#F0FDF4',
@@ -38,6 +46,7 @@ export default {
       },
       boxShadow: {
         card: '0 1px 2px 0 rgb(17 24 39 / 0.04)',
+        authCard: '0 4px 24px -4px rgb(17 24 39 / 0.08), 0 1px 2px 0 rgb(17 24 39 / 0.04)',
       },
       width: {
         sidebar: '260px',

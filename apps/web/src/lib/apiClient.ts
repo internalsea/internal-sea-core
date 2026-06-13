@@ -32,7 +32,12 @@ export function setUnauthorizedHandler(handler: (() => void) | null): void {
 function buildUrl(path: string, params?: Record<string, string | number | boolean | undefined>): string {
   const base = API_BASE_URL.replace(/\/$/, '')
   const normalizedPath = path.startsWith('/') ? path : `/${path}`
-  const url = new URL(`${base}${normalizedPath}`)
+  const combinedPath = `${base.startsWith('/') || /^https?:\/\//i.test(base) ? base : `/${base}`}${normalizedPath}`
+
+  // Relative bases like /api/v1 need an origin; single-arg URL() rejects path-only strings.
+  const url = /^https?:\/\//i.test(base)
+    ? new URL(combinedPath)
+    : new URL(combinedPath, window.location.origin)
 
   if (params) {
     for (const [key, value] of Object.entries(params)) {

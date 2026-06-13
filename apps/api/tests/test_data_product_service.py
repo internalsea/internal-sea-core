@@ -21,7 +21,7 @@ async def test_service_not_found_handling() -> None:
 @pytest.mark.asyncio
 async def test_service_pagination_calculation() -> None:
     repository = AsyncMock()
-    repository.list.return_value = ([], 45)
+    repository.list_paginated.return_value = ([], 45)
     service = DataProductService(repository, AsyncMock())
 
     result = await service.list_data_products(
@@ -34,4 +34,4 @@ async def test_service_pagination_calculation() -> None:
     assert result.page_size == 20
     assert result.total == 45
     assert result.pages == 3
-    repository.list.assert_awaited_once_with(filters=DataProductListFilters(), offset=20, limit=20)
+    repository.list_paginated.assert_awaited_once_with(filters=DataProductListFilters(), offset=20, limit=20)

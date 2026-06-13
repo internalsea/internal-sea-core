@@ -21,7 +21,7 @@ async def test_service_not_found_handling() -> None:
 @pytest.mark.asyncio
 async def test_service_pagination_calculation() -> None:
     repository = AsyncMock()
-    repository.list.return_value = ([], 10)
+    repository.list_paginated.return_value = ([], 10)
     service = CapabilityService(repository)
 
     result = await service.list_capabilities(

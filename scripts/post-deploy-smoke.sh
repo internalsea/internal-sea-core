@@ -75,6 +75,37 @@ check_url() {
   rm -f "${err_file}"
 }
 
+check_api_json() {
+  local label="$1" url="$2" expected="$3"
+  local attempt=1 body content_type err_file
+
+  err_file="$(mktemp)"
+  while [ "${attempt}" -le "${RETRIES}" ]; do
+    log "Check ${label}: ${url} (attempt ${attempt}/${RETRIES})"
+    body="$(mktemp)"
+    if content_type="$(curl -fsS --max-time 30 -H 'Accept: application/json' -w '%{content_type}' -o "${body}" "${url}" 2>"${err_file}")"; then
+      if [[ "${content_type}" == *application/json* ]] && grep -q "${expected}" "${body}"; then
+        log "OK ${label} — JSON (${content_type})"
+        rm -f "${body}" "${err_file}"
+        return 0
+      fi
+      log "Expected JSON containing '${expected}', got content-type=${content_type} body=$(head -c 200 "${body}" | tr '\n' ' ')"
+    elif [ -s "${err_file}" ]; then
+      log "curl error: $(tr '\n' ' ' < "${err_file}")"
+    fi
+    rm -f "${body}"
+    if [ "${attempt}" -eq "${RETRIES}" ]; then
+      echo "::error::Failed ${label} — API must return JSON, not HTML (check Traefik routing and intsea-backend health)" >&2
+      print_tls_debug "${url}"
+      rm -f "${err_file}"
+      return 1
+    fi
+    sleep "${RETRY_DELAY}"
+    attempt=$((attempt + 1))
+  done
+  rm -f "${err_file}"
+}
+
 check_www_redirect() {
   local label="$1" url="$2" expected_apex="$3"
   local attempt=1 status location apex_host
@@ -121,8 +152,8 @@ log "Running post-deploy smoke checks against ${BASE_URL}"
 
 check_url "frontend home" "${BASE_URL}/"
 check_url "login page" "${BASE_URL}/login"
-check_url "API live" "${BASE_URL}/api/v1/health/live"
-check_url "API ready" "${BASE_URL}/api/v1/health/ready"
+check_api_json "API live" "${BASE_URL}/api/v1/health/live" '"status":"live"'
+check_api_json "API ready" "${BASE_URL}/api/v1/health/ready" '"status"'
 check_www_redirect "www redirect" "${WWW_URL}/" "$(host_from_url "${BASE_URL}")"
 
 log "All post-deploy smoke checks passed"

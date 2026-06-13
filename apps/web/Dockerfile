@@ -26,6 +26,8 @@ COPY package.json pnpm-lock.yaml* ./
 RUN pnpm install --frozen-lockfile || pnpm install
 
 COPY . .
+# Log build-time API URL so deploy logs confirm the production bundle target.
+RUN echo "VITE_API_BASE_URL=${VITE_API_BASE_URL}" && test -n "${VITE_API_BASE_URL}"
 RUN pnpm build
 
 FROM nginx:alpine AS production

@@ -145,7 +145,21 @@ jobs:
         run: pnpm typecheck
 
       - name: Build
+        env:
+          VITE_API_BASE_URL: /api/v1
         run: pnpm build
+
+      - name: Verify production API base URL in bundle
+        run: |
+          set -euo pipefail
+          if ! grep -rq '/api/v1' dist/assets/*.js; then
+            echo "::error::Production bundle missing /api/v1 API base URL"
+            exit 1
+          fi
+          if grep -rq 'http://localhost:8000/api/v1' dist/assets/*.js; then
+            echo "::error::Production bundle still references localhost API URL"
+            exit 1
+          fi
 
   deploy:
     name: SSH deploy
@@ -168,7 +182,7 @@ jobs:
       DEPLOY_BASE_DIR: ${{ secrets.DEPLOY_BASE_DIR }}
       DEPLOY_BRANCH: ${{ secrets.DEPLOY_BRANCH }}
       DEPLOY_GIT_TOKEN: ${{ secrets.DEPLOY_GIT_TOKEN }}
-      COMPOSE_SERVICES: intsea-backend intsea-frontend
+      COMPOSE_SERVICES: intsea-postgres intsea-redis intsea-backend intsea-frontend
       REPO_SHARED_LANDING: ${{ secrets.REPO_SHARED_LANDING }}
       REPO_CITY_GODS_TODAY: ${{ secrets.REPO_CITY_GODS_TODAY }}
       REPO_DEVS_FASHION: ${{ secrets.REPO_DEVS_FASHION }}

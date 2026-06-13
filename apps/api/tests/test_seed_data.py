@@ -86,7 +86,9 @@ def test_data_products_have_valid_enum_values() -> None:
 
 
 def test_data_products_allow_optional_documentation_url() -> None:
-    regional = next(product for product in DATA_PRODUCTS if product["name"] == "Regional Sales Mart")
+    regional = next(
+        product for product in DATA_PRODUCTS if product["name"] == "Regional Sales Mart"
+    )
     assert regional.get("documentation_url") is None
 
 

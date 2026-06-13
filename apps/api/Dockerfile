@@ -9,17 +9,8 @@ COPY alembic.ini ./
 COPY alembic ./alembic
 COPY app ./app
 
-RUN uv pip install --system \
-    "fastapi>=0.115.0" \
-    "uvicorn[standard]>=0.32.0" \
-    "pydantic-settings>=2.6.0" \
-    "sqlalchemy[asyncio]>=2.0.36" \
-    "asyncpg>=0.30.0" \
-    "alembic>=1.14.0" \
-    "passlib[bcrypt]>=1.7.4" \
-    "bcrypt>=4.0.0,<5" \
-    "PyJWT>=2.10.0" \
-    "email-validator>=2.2.0"
+# Install runtime deps from pyproject.toml (keep in sync with CI via uv sync).
+RUN uv pip install --system .
 
 EXPOSE 8000
 

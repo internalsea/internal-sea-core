@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { StatusBadge } from '@/components/ui/StatusBadge'
+import { PermissionGate } from '@/features/auth/components/PermissionGate'
 import { ActivitySection } from '@/features/activity/components/ActivitySection'
 import { CommentsSection } from '@/features/comments/components/CommentsSection'
 import { AutomationSection } from '@/features/automation/components/AutomationSection'
@@ -36,9 +37,16 @@ export function DataProductDetail({ dataProduct }: DataProductDetailProps) {
         title={dataProduct.name}
         description={dataProduct.description ?? undefined}
         actions={
-          <Link to="/data-products">
-            <Button variant="secondary">Back to Data Products</Button>
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            <PermissionGate require="editor">
+              <Link to={`/data-products/${dataProduct.id}/edit`}>
+                <Button>Edit</Button>
+              </Link>
+            </PermissionGate>
+            <Link to="/data-products">
+              <Button variant="secondary">Back to Data Products</Button>
+            </Link>
+          </div>
         }
       />
 

@@ -24,7 +24,9 @@ import { PolicyCreatePage } from '@/pages/PolicyCreatePage'
 import { PolicyDetailPage } from '@/pages/PolicyDetailPage'
 import { PolicyEditPage } from '@/pages/PolicyEditPage'
 import { DashboardPage } from '@/pages/DashboardPage'
+import { DataProductCreatePage } from '@/pages/DataProductCreatePage'
 import { DataProductDetailPage } from '@/pages/DataProductDetailPage'
+import { DataProductEditPage } from '@/pages/DataProductEditPage'
 import { DataProductsPage } from '@/pages/DataProductsPage'
 import { DealsPage } from '@/pages/DealsPage'
 import { FileCreatePage } from '@/pages/FileCreatePage'
@@ -106,6 +108,8 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <Navigate to="/dashboard" replace /> },
           { path: 'dashboard', element: <DashboardPage /> },
+          { path: 'data-products/new', element: <DataProductCreatePage /> },
+          { path: 'data-products/:id/edit', element: <DataProductEditPage /> },
           { path: 'data-products/:id', element: <DataProductDetailPage /> },
           { path: 'data-products', element: <DataProductsPage /> },
           { path: 'work-items/new', element: <WorkItemCreatePage /> },

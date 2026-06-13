@@ -106,6 +106,41 @@ check_api_json() {
   rm -f "${err_file}"
 }
 
+check_demo_login() {
+  local label="$1" url="$2" email="$3" password="$4"
+  local attempt=1 body status err_file
+
+  err_file="$(mktemp)"
+  while [ "${attempt}" -le "${RETRIES}" ]; do
+    log "Check ${label}: POST ${url} (attempt ${attempt}/${RETRIES})"
+    body="$(mktemp)"
+    status="$(curl -sS --max-time 30 \
+      -H 'Content-Type: application/json' \
+      -H 'Accept: application/json' \
+      -o "${body}" \
+      -w '%{http_code}' \
+      -d "{\"email\":\"${email}\",\"password\":\"${password}\"}" \
+      "${url}" 2>"${err_file}")" || status="000"
+
+    if [ "${status}" = "200" ] && grep -q '"access_token"' "${body}"; then
+      log "OK ${label} — HTTP 200 with access_token"
+      rm -f "${body}" "${err_file}"
+      return 0
+    fi
+
+    log "Expected HTTP 200 with access_token, got HTTP ${status} body=$(head -c 200 "${body}" | tr '\n' ' ')"
+    rm -f "${body}"
+    if [ "${attempt}" -eq "${RETRIES}" ]; then
+      echo "::error::Failed ${label} — demo login failed (run seed on server or set INTSEA_SEED_ON_DEPLOY=true)" >&2
+      rm -f "${err_file}"
+      return 1
+    fi
+    sleep "${RETRY_DELAY}"
+    attempt=$((attempt + 1))
+  done
+  rm -f "${err_file}"
+}
+
 check_www_redirect() {
   local label="$1" url="$2" expected_apex="$3"
   local attempt=1 status location apex_host
@@ -154,6 +189,8 @@ check_url "frontend home" "${BASE_URL}/"
 check_url "login page" "${BASE_URL}/login"
 check_api_json "API live" "${BASE_URL}/api/v1/health/live" '"status":"live"'
 check_api_json "API ready" "${BASE_URL}/api/v1/health/ready" '"status"'
+check_demo_login "demo admin login" "${BASE_URL}/api/v1/auth/login" \
+  "${SMOKE_DEMO_EMAIL:-admin@example.com}" "${SMOKE_DEMO_PASSWORD:-admin12345}"
 check_www_redirect "www redirect" "${WWW_URL}/" "$(host_from_url "${BASE_URL}")"
 
 log "All post-deploy smoke checks passed"

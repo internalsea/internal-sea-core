@@ -36,7 +36,9 @@ import { InternalProjectCreatePage } from '@/pages/InternalProjectCreatePage'
 import { InternalProjectDetailPage } from '@/pages/InternalProjectDetailPage'
 import { InternalProjectEditPage } from '@/pages/InternalProjectEditPage'
 import { InternalProjectsPage } from '@/pages/InternalProjectsPage'
+import { CompanySetupPage } from '@/pages/CompanySetupPage'
 import { LoginPage } from '@/pages/LoginPage'
+import { RegisterPage } from '@/pages/RegisterPage'
 import { ProjectCreatePage } from '@/pages/ProjectCreatePage'
 import { ProjectDetailPage } from '@/pages/ProjectDetailPage'
 import { ProjectEditPage } from '@/pages/ProjectEditPage'
@@ -91,7 +93,9 @@ export const router = createBrowserRouter([
     element: <RootProviders />,
     children: [
       { path: 'login', element: <LoginPage /> },
+      { path: 'register', element: <RegisterPage /> },
       { path: 'onboarding/first-user', element: <FirstUserOnboardingPage /> },
+      { path: 'onboarding/company-setup', element: <CompanySetupPage /> },
       {
         path: '/',
         element: (

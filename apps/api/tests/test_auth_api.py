@@ -15,12 +15,21 @@ def test_openapi_contains_auth_endpoints(client: TestClient) -> None:
     assert response.status_code == 200
     paths = response.json()["paths"]
     assert "/api/v1/auth/login" in paths
+    assert "/api/v1/auth/register" in paths
     assert "/api/v1/auth/me" in paths
     assert "/api/v1/auth/users" in paths
 
 
 def test_login_validation_error(client: TestClient) -> None:
     response = client.post("/api/v1/auth/login", json={"email": "bad", "password": ""})
+    assert response.status_code == 422
+
+
+def test_register_validation_error(client: TestClient) -> None:
+    response = client.post(
+        "/api/v1/auth/register",
+        json={"email": "bad", "full_name": "", "password": "short"},
+    )
     assert response.status_code == 422
 
 

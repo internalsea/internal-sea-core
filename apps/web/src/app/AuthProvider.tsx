@@ -10,7 +10,7 @@ import {
 import { useNavigate } from 'react-router-dom'
 
 import * as authApi from '@/features/auth/api'
-import type { CurrentUser, LoginRequest } from '@/features/auth/types'
+import type { CurrentUser, LoginRequest, RegisterRequest } from '@/features/auth/types'
 import {
   clearStoredToken,
   getStoredToken,
@@ -26,6 +26,7 @@ interface AuthContextValue {
   isAuthenticated: boolean
   isLoading: boolean
   login: (payload: LoginRequest) => Promise<void>
+  register: (payload: RegisterRequest) => Promise<void>
   logout: () => Promise<void>
   hasRole: (...roles: Array<CurrentUser['role']>) => boolean
   canWrite: boolean
@@ -117,6 +118,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
     [navigate],
   )
 
+  const register = useCallback(
+    async (payload: RegisterRequest) => {
+      const response = await authApi.register(payload)
+      setStoredToken(response.access_token)
+      setToken(response.access_token)
+      setUser(response.user)
+      navigate('/dashboard', { replace: true })
+    },
+    [navigate],
+  )
+
   const hasRole = useCallback(
     (...roles: Array<CurrentUser['role']>) => {
       if (!user) return false
@@ -133,12 +145,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
       isAuthenticated: Boolean(user && token),
       isLoading,
       login,
+      register,
       logout,
       hasRole,
       canWrite: user ? roleCanWrite(user.role, user.is_superuser) : false,
       canAdmin: user ? roleCanAdmin(user.role, user.is_superuser) : false,
     }),
-    [user, token, isLoading, login, logout, hasRole],
+    [user, token, isLoading, login, register, logout, hasRole],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

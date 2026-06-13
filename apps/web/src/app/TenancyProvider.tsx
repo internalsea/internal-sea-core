@@ -75,9 +75,13 @@ export function TenancyProvider({ children }: TenancyProviderProps) {
       clearTenant()
       if (isNoTenantError(error)) {
         const path = window.location.pathname
-        const skipRedirect = path === '/login' || path === '/onboarding/first-user'
+        const skipRedirect =
+          path === '/login' ||
+          path === '/register' ||
+          path === '/onboarding/first-user' ||
+          path === '/onboarding/company-setup'
         if (!skipRedirect) {
-          navigate('/onboarding/first-user', { replace: true })
+          navigate('/onboarding/company-setup', { replace: true })
         }
       }
       throw error

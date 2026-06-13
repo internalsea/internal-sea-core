@@ -11,8 +11,8 @@ interface LoginFormProps {
 }
 
 export function LoginForm({ isSubmitting = false, submitError, onSubmit }: LoginFormProps) {
-  const [email, setEmail] = useState('admin@example.com')
-  const [password, setPassword] = useState('admin12345')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
@@ -41,14 +41,6 @@ export function LoginForm({ isSubmitting = false, submitError, onSubmit }: Login
       <Button type="submit" className="w-full" disabled={isSubmitting}>
         {isSubmitting ? 'Signing in…' : 'Sign in'}
       </Button>
-      <div className="rounded-md border border-app-border bg-app-muted/40 p-3 text-xs text-gray-600">
-        <p className="font-medium text-gray-700">Demo credentials</p>
-        <ul className="mt-2 space-y-1">
-          <li>admin@example.com / admin12345</li>
-          <li>editor@example.com / editor12345</li>
-          <li>viewer@example.com / viewer12345</li>
-        </ul>
-      </div>
     </form>
   )
 }

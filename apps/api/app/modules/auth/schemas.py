@@ -13,6 +13,19 @@ class LoginRequest(BaseModel):
     password: str = Field(min_length=1)
 
 
+class RegisterRequest(BaseModel):
+    email: EmailStr
+    full_name: str
+    password: str = Field(min_length=8)
+
+    @field_validator("full_name")
+    @classmethod
+    def full_name_not_empty(cls, value: str) -> str:
+        if not value.strip():
+            raise ValueError("Full name is required")
+        return value.strip()
+
+
 class CurrentUser(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

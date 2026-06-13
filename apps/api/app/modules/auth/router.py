@@ -13,6 +13,7 @@ from app.modules.auth.schemas import (
     CurrentUser,
     LoginRequest,
     MessageResponse,
+    RegisterRequest,
     TokenResponse,
     UserCreate,
     UserFilters,
@@ -35,6 +36,14 @@ async def login(
     service: AuthService = Depends(get_auth_service),
 ) -> TokenResponse:
     return await service.login(payload)
+
+
+@router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
+async def register(
+    payload: RegisterRequest,
+    service: AuthService = Depends(get_auth_service),
+) -> TokenResponse:
+    return await service.register(payload)
 
 
 @router.get("/me", response_model=CurrentUser)

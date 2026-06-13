@@ -6,7 +6,7 @@ import pytest
 from app.domain.enums import UserRole
 from app.models.identity import User
 from app.modules.auth.errors import InvalidCredentialsError
-from app.modules.auth.schemas import LoginRequest
+from app.modules.auth.schemas import LoginRequest, RegisterRequest
 from app.modules.auth.security import hash_password
 from app.modules.auth.service import AuthService
 
@@ -49,4 +49,30 @@ async def test_login_returns_token_response() -> None:
     assert response.access_token
     assert response.token_type == "bearer"
     assert response.user.email == "admin@example.com"
+    session.commit.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_register_returns_token_response() -> None:
+    user = User(
+        id=uuid.uuid4(),
+        email="new@example.com",
+        full_name="New User",
+        hashed_password=hash_password("secret12345"),
+        role=UserRole.VIEWER,
+        is_active=True,
+        is_superuser=False,
+    )
+    repository = AsyncMock()
+    repository.get_user_by_email.return_value = None
+    repository.create_user.return_value = user
+    session = AsyncMock()
+    service = AuthService(repository, session)
+
+    response = await service.register(
+        RegisterRequest(email="new@example.com", full_name="New User", password="secret12345")
+    )
+    assert response.access_token
+    assert response.user.email == "new@example.com"
+    assert response.user.role == UserRole.VIEWER
     session.commit.assert_awaited_once()

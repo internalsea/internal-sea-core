@@ -19,6 +19,7 @@ from app.modules.auth.repository import AuthRepository
 from app.modules.auth.schemas import (
     CurrentUser,
     LoginRequest,
+    RegisterRequest,
     TokenResponse,
     UserCreate,
     UserCreateInternal,
@@ -62,9 +63,34 @@ class AuthService:
 
     async def login(self, payload: LoginRequest) -> TokenResponse:
         user = await self.authenticate_user(payload.email, payload.password)
-        await self._repository.update_last_login(user)
+        return await self._issue_token_response(user, update_last_login=True)
+
+    async def register(self, payload: RegisterRequest) -> TokenResponse:
+        validate_password_strength(payload.password)
+        email = payload.email.strip().lower()
+        existing = await self._repository.get_user_by_email(email)
+        if existing is not None:
+            raise DuplicateUserEmailError()
+
+        user = await self._repository.create_user(
+            UserCreateInternal(
+                email=email,
+                full_name=payload.full_name,
+                hashed_password=hash_password(payload.password),
+                role=UserRole.VIEWER,
+                is_active=True,
+                is_superuser=False,
+            )
+        )
         await self._session.commit()
         await self._session.refresh(user)
+        return await self._issue_token_response(user, update_last_login=False)
+
+    async def _issue_token_response(self, user: User, *, update_last_login: bool) -> TokenResponse:
+        if update_last_login:
+            await self._repository.update_last_login(user)
+            await self._session.commit()
+            await self._session.refresh(user)
 
         settings = get_settings()
         token = create_access_token(

@@ -45,7 +45,12 @@ function buildUrl(path: string, params?: Record<string, string | number | boolea
   return url.toString()
 }
 
-const TENANT_HEADER_SKIP_PATHS = ['/auth/login', '/tenancy/onboarding/first-user', '/health']
+const TENANT_HEADER_SKIP_PATHS = [
+  '/auth/login',
+  '/auth/register',
+  '/tenancy/onboarding/first-user',
+  '/health',
+]
 
 function shouldSkipTenantHeaders(path: string): boolean {
   return TENANT_HEADER_SKIP_PATHS.some((skipPath) => path.includes(skipPath))

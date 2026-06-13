@@ -3,11 +3,11 @@ import { Link, Navigate } from 'react-router-dom'
 
 import { getApiErrorMessage } from '@/app/AuthProvider'
 import { Card } from '@/components/ui/Card'
-import { LoginForm } from '@/features/auth/components/LoginForm'
+import { RegisterForm } from '@/features/auth/components/RegisterForm'
 import { useAuth } from '@/features/auth/hooks'
 
-export function LoginPage() {
-  const { isAuthenticated, isLoading, login } = useAuth()
+export function RegisterPage() {
+  const { isAuthenticated, isLoading, register } = useAuth()
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -20,19 +20,17 @@ export function LoginPage() {
       <div className="w-full max-w-md space-y-6">
         <div className="text-center">
           <h1 className="text-2xl font-semibold text-gray-900">Internal Sea</h1>
-          <p className="mt-2 text-sm text-gray-600">
-            Sign in to manage data products, work, projects and compliance.
-          </p>
+          <p className="mt-2 text-sm text-gray-600">Create an account to get started.</p>
         </div>
-        <Card title="Sign in">
-          <LoginForm
+        <Card title="Create account">
+          <RegisterForm
             isSubmitting={isSubmitting}
             submitError={submitError}
             onSubmit={async (payload) => {
               setSubmitError(null)
               setIsSubmitting(true)
               try {
-                await login(payload)
+                await register(payload)
               } catch (error) {
                 setSubmitError(getApiErrorMessage(error))
               } finally {
@@ -40,19 +38,11 @@ export function LoginPage() {
               }
             }}
           />
-          <div className="mt-4 border-t border-app-border pt-4">
-            <Link
-              to="/register"
-              className="inline-flex h-9 w-full items-center justify-center rounded-md border border-app-borderStrong bg-app-surface px-4 text-sm font-medium text-gray-700 transition-colors hover:bg-app-background"
-            >
-              Create account
-            </Link>
-          </div>
         </Card>
         <p className="text-center text-sm text-gray-600">
-          New to Internal Sea?{' '}
-          <Link to="/register" className="font-medium text-core-blue hover:text-core-blueHover">
-            Register
+          Already have an account?{' '}
+          <Link to="/login" className="font-medium text-core-blue hover:text-core-blueHover">
+            Sign in
           </Link>
         </p>
       </div>

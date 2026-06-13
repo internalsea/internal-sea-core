@@ -37,7 +37,7 @@ def test_search_result_schema_for_each_type() -> None:
 def test_search_response_schema() -> None:
     response = SearchResponse(query="sales", total=1, items=[])
     assert response.query == "sales"
-    assert response.total == 0
+    assert response.total == 1
 
 
 def test_search_filters_rejects_short_query() -> None:

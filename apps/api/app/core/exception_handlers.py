@@ -26,6 +26,17 @@ from app.modules.auth.errors import (
 logger = logging.getLogger(__name__)
 
 
+def _json_safe_validation_errors(errors: list[dict[str, object]]) -> list[dict[str, object]]:
+    sanitized: list[dict[str, object]] = []
+    for error in errors:
+        item = dict(error)
+        ctx = item.get("ctx")
+        if isinstance(ctx, dict):
+            item["ctx"] = {key: str(value) for key, value in ctx.items()}
+        sanitized.append(item)
+    return sanitized
+
+
 def _error_response(
     request: Request,
     *,
@@ -82,7 +93,7 @@ def register_exception_handlers(app: FastAPI) -> None:
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             error="validation_error",
             message="Request validation failed",
-            details=exc.errors(),
+            details=_json_safe_validation_errors(exc.errors()),
         )
 
     @app.exception_handler(IntegrityError)

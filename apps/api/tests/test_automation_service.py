@@ -45,7 +45,9 @@ async def test_run_trigger_not_found(service: tuple[AutomationService, AsyncMock
     svc, repository = service
     repository.get_trigger_by_id.return_value = None
     with pytest.raises(AutomationTriggerNotFoundError):
-        await svc.run_trigger(uuid.uuid4(), AutomationRunRequest(simulate=True))
+        await svc.run_trigger(
+            uuid.uuid4(), AutomationRunRequest(simulate=True), executed_by_id=None
+        )
 
 
 @pytest.mark.asyncio
@@ -113,5 +115,7 @@ async def test_run_trigger_delegates_to_runner(
     )
     svc._runner.run_trigger = AsyncMock(return_value=run_result)  # type: ignore[method-assign]
 
-    result = await svc.run_trigger(trigger.id, AutomationRunRequest(simulate=True))
+    result = await svc.run_trigger(
+        trigger.id, AutomationRunRequest(simulate=True), executed_by_id=None
+    )
     assert result.run.status == "simulated"

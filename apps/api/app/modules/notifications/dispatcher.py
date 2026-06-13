@@ -77,6 +77,8 @@ class NotificationDispatcher:
             provider=channel_type,
             worker_instance_id=worker_instance_id,
             started_at=now,
+            created_at=now,
+            updated_at=now,
             request_payload={
                 "simulate": simulate,
                 "channel_type": channel_type,

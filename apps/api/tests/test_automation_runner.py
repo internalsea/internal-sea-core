@@ -21,6 +21,33 @@ def _make_trigger(**overrides):
     return trigger
 
 
+def _make_run_mock(
+    *,
+    run_id: uuid.UUID,
+    trigger_id: uuid.UUID,
+    now: datetime,
+    status: str,
+    **overrides: object,
+) -> MagicMock:
+    return MagicMock(
+        id=run_id,
+        trigger_id=trigger_id,
+        status=status,
+        started_at=now,
+        finished_at=overrides.get("finished_at"),
+        target_type=overrides.get("target_type", "data_product"),
+        target_id=overrides.get("target_id", uuid.uuid4()),
+        action_type=overrides.get("action_type", "create_work_item"),
+        result_summary=overrides.get("result_summary"),
+        result_details=overrides.get("result_details"),
+        error_message=overrides.get("error_message"),
+        executed_by_id=overrides.get("executed_by_id"),
+        worker_instance_id=overrides.get("worker_instance_id"),
+        created_at=now,
+        updated_at=now,
+    )
+
+
 @pytest.mark.asyncio
 async def test_run_simulate_returns_simulated_status() -> None:
     session = AsyncMock()
@@ -28,39 +55,24 @@ async def test_run_simulate_returns_simulated_status() -> None:
     now = datetime.now(UTC)
     run_id = uuid.uuid4()
     repository.create_run = AsyncMock(
-        return_value=MagicMock(
-            id=run_id,
+        return_value=_make_run_mock(
+            run_id=run_id,
             trigger_id=uuid.uuid4(),
+            now=now,
             status=AutomationRunStatus.RUNNING.value,
-            started_at=now,
-            finished_at=None,
-            target_type="data_product",
-            target_id=uuid.uuid4(),
-            action_type="create_work_item",
-            result_summary=None,
-            result_details=None,
-            error_message=None,
-            executed_by_id=None,
-            created_at=now,
-            updated_at=now,
         )
     )
     repository.update_run = AsyncMock(
-        side_effect=lambda run, data: MagicMock(
-            id=run_id,
+        side_effect=lambda run, data: _make_run_mock(
+            run_id=run_id,
             trigger_id=run.trigger_id if hasattr(run, "trigger_id") else uuid.uuid4(),
+            now=now,
             status=data.get("status", AutomationRunStatus.SIMULATED.value),
-            started_at=now,
             finished_at=data.get("finished_at"),
-            target_type="data_product",
-            target_id=uuid.uuid4(),
-            action_type="create_work_item",
             result_summary=data.get("result_summary"),
             result_details=data.get("result_details"),
             error_message=data.get("error_message"),
-            executed_by_id=None,
-            created_at=now,
-            updated_at=now,
+            worker_instance_id=None,
         )
     )
     repository.touch_trigger_run_times = AsyncMock()
@@ -81,39 +93,26 @@ async def test_unsupported_action_type_returns_skipped() -> None:
     now = datetime.now(UTC)
     run_id = uuid.uuid4()
     repository.create_run = AsyncMock(
-        return_value=MagicMock(
-            id=run_id,
+        return_value=_make_run_mock(
+            run_id=run_id,
             trigger_id=uuid.uuid4(),
+            now=now,
             status=AutomationRunStatus.RUNNING.value,
-            started_at=now,
-            finished_at=None,
-            target_type="data_product",
-            target_id=uuid.uuid4(),
             action_type="send_notification",
-            result_summary=None,
-            result_details=None,
-            error_message=None,
-            executed_by_id=None,
-            created_at=now,
-            updated_at=now,
         )
     )
     repository.update_run = AsyncMock(
-        side_effect=lambda run, data: MagicMock(
-            id=run_id,
+        side_effect=lambda run, data: _make_run_mock(
+            run_id=run_id,
             trigger_id=uuid.uuid4(),
+            now=now,
             status=data["status"],
-            started_at=now,
             finished_at=data.get("finished_at"),
-            target_type="data_product",
-            target_id=uuid.uuid4(),
             action_type="send_notification",
             result_summary=data.get("result_summary"),
             result_details=data.get("result_details"),
             error_message=data.get("error_message"),
-            executed_by_id=None,
-            created_at=now,
-            updated_at=now,
+            worker_instance_id=None,
         )
     )
     repository.touch_trigger_run_times = AsyncMock()
@@ -142,40 +141,24 @@ async def test_create_work_item_uses_defaults() -> None:
     session.add = MagicMock()
 
     repository.create_run = AsyncMock(
-        return_value=MagicMock(
-            id=run_id,
+        return_value=_make_run_mock(
+            run_id=run_id,
             trigger_id=uuid.uuid4(),
+            now=now,
             status=AutomationRunStatus.RUNNING.value,
-            started_at=now,
-            finished_at=None,
-            target_type="data_product",
-            target_id=uuid.uuid4(),
-            action_type="create_work_item",
-            result_summary=None,
-            result_details=None,
-            error_message=None,
-            executed_by_id=None,
-            created_at=now,
-            updated_at=now,
         )
     )
 
     def update_run_side_effect(run, data):
-        return MagicMock(
-            id=run_id,
+        return _make_run_mock(
+            run_id=run_id,
             trigger_id=uuid.uuid4(),
+            now=now,
             status=data["status"],
-            started_at=now,
             finished_at=data.get("finished_at"),
-            target_type="data_product",
-            target_id=uuid.uuid4(),
-            action_type="create_work_item",
             result_summary=data.get("result_summary"),
             result_details=data.get("result_details"),
-            error_message=None,
-            executed_by_id=None,
-            created_at=now,
-            updated_at=now,
+            worker_instance_id=None,
         )
 
     repository.update_run = AsyncMock(side_effect=update_run_side_effect)

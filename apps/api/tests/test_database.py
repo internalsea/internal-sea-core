@@ -1,4 +1,4 @@
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from app.db.health import check_database_connection
@@ -19,7 +19,7 @@ async def test_check_database_connection_returns_true_on_success() -> None:
     mock_context.__aexit__.return_value = None
 
     mock_engine = AsyncMock()
-    mock_engine.connect.return_value = mock_context
+    mock_engine.connect = MagicMock(return_value=mock_context)
 
     with patch("app.db.health.get_engine", return_value=mock_engine):
         result = await check_database_connection()

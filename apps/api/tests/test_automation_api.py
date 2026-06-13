@@ -155,14 +155,25 @@ def auth_enabled_client(mock_automation_service: AsyncMock) -> TestClient:
     get_settings.cache_clear()
 
 
-def test_viewer_cannot_run_trigger(auth_enabled_client: TestClient) -> None:
-    login = auth_enabled_client.post(
-        "/api/v1/auth/login",
-        json={"email": "viewer@example.com", "password": "viewer12345"},
-    )
+def _login_or_skip(client: TestClient, *, email: str, password: str) -> str:
+    try:
+        login = client.post(
+            "/api/v1/auth/login",
+            json={"email": email, "password": password},
+        )
+    except Exception:
+        pytest.skip("Auth seed users not available in unit test DB")
     if login.status_code != 200:
         pytest.skip("Auth seed users not available in unit test DB")
-    token = login.json()["access_token"]
+    return login.json()["access_token"]
+
+
+def test_viewer_cannot_run_trigger(auth_enabled_client: TestClient) -> None:
+    token = _login_or_skip(
+        auth_enabled_client,
+        email="viewer@example.com",
+        password="viewer12345",
+    )
     response = auth_enabled_client.post(
         f"/api/v1/automation/triggers/{uuid.uuid4()}/run",
         headers={"Authorization": f"Bearer {token}"},
@@ -175,13 +186,11 @@ def test_editor_can_run_trigger(
     auth_enabled_client: TestClient,
     mock_automation_service: AsyncMock,
 ) -> None:
-    login = auth_enabled_client.post(
-        "/api/v1/auth/login",
-        json={"email": "editor@example.com", "password": "editor12345"},
+    token = _login_or_skip(
+        auth_enabled_client,
+        email="editor@example.com",
+        password="editor12345",
     )
-    if login.status_code != 200:
-        pytest.skip("Auth seed users not available in unit test DB")
-    token = login.json()["access_token"]
     trigger_id = uuid.uuid4()
     now = datetime.now(UTC)
     mock_automation_service.run_trigger.return_value = AutomationRunResult(

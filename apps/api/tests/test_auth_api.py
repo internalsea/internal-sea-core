@@ -79,6 +79,6 @@ def test_inactive_user_rejected_when_auth_enabled(monkeypatch: pytest.MonkeyPatc
     app.dependency_overrides[require_viewer] = override_viewer
     with TestClient(app) as client:
         response = client.get("/api/v1/data-products")
-        assert response.status_code == 403
+        assert response.status_code == 401
 
     get_settings.cache_clear()

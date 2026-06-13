@@ -5,6 +5,7 @@ from unittest.mock import AsyncMock
 import pytest
 from app.domain.enums import ProjectStatus, ProjectType
 from app.main import create_app
+from app.modules.internal_projects.router import get_project_service as get_internal_project_service
 from app.modules.projects.router import get_project_service
 from app.modules.projects.schemas import ProjectListItem, ProjectListResponse, ProjectRead
 from fastapi.testclient import TestClient
@@ -114,6 +115,9 @@ def test_create_internal_project_forces_type(
 ) -> None:
     project = _sample_project(project_type=ProjectType.INTERNAL_PROJECT)
     mock_project_service.create_project.return_value = project
+
+    app = api_client.app
+    app.dependency_overrides[get_internal_project_service] = lambda: mock_project_service
 
     response = api_client.post(
         "/api/v1/internal-projects",

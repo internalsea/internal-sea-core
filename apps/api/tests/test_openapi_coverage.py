@@ -5,7 +5,7 @@ EXPECTED_TAGS = {
     "Auth",
     "Dashboard",
     "Search",
-    "Data Products",
+    "Catalog",
     "Work",
     "Projects",
     "Internal Projects",
@@ -19,6 +19,9 @@ EXPECTED_TAGS = {
     "Compliance",
     "Automation",
     "Performance",
+    "Notifications",
+    "Tenancy",
+    "Worker",
 }
 
 

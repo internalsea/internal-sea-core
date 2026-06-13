@@ -89,7 +89,7 @@ async def test_service_calls_repository_with_normalized_query() -> None:
 
     response = await service.search(query="  sales  ", limit=10)
 
-    repository.search.assert_awaited_once_with(query="sales", types=None)
+    repository.search.assert_awaited_once_with(query="sales", types=None, company_id=None)
     assert response.query == "sales"
     assert response.total == 1
     assert response.items[0].title == "Executive Sales Dashboard"

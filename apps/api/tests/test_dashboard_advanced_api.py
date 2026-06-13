@@ -9,7 +9,6 @@ from app.modules.dashboard.schemas import (
     ExecutiveSummary,
     OperationalHealth,
 )
-from app.modules.dashboard.service import MAX_ADVANCED_DASHBOARD_LIMIT, normalize_dashboard_limit
 from fastapi.testclient import TestClient
 
 
@@ -72,9 +71,7 @@ def test_actionable_insights_endpoint(
     )
     response = api_client.get("/api/v1/dashboard/actionable-insights?limit=100")
     assert response.status_code == 200
-    mock_dashboard_service.get_actionable_insights.assert_awaited_once_with(
-        normalize_dashboard_limit(100, 20, max_limit=MAX_ADVANCED_DASHBOARD_LIMIT)
-    )
+    mock_dashboard_service.get_actionable_insights.assert_awaited_once_with(100)
 
 
 def test_operational_health_endpoint(

@@ -50,14 +50,6 @@ export const navigationGroups: NavigationGroup[] = [
       { label: 'Meetings', path: '/meetings' },
       { label: 'Deals', path: '/deals' },
       { label: 'Files', path: '/files' },
-      { label: 'Settings', path: '/settings' },
-    ],
-  },
-  {
-    title: 'Settings',
-    items: [
-      { label: 'Company Settings', path: '/settings/company' },
-      { label: 'Workspace Settings', path: '/settings/workspace' },
     ],
   },
 ]

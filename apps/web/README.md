@@ -384,8 +384,9 @@ See `src/features/tenancy/README.md`.
 | Route | Page |
 |-------|------|
 | `/onboarding/first-user` | First user setup (public, empty system) |
-| `/settings/company` | Company settings and members |
-| `/settings/workspace` | Workspace settings |
+| `/settings` | User, workspace, and company settings (header gear icon) |
+| `/settings/company` | Redirects to `/settings?section=company` |
+| `/settings/workspace` | Redirects to `/settings?section=workspace` |
 
 - `TenancyProvider` loads `/tenancy/current` after auth
 - `apiClient` sends `X-Company-ID` and `X-Workspace-ID` from localStorage

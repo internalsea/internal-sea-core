@@ -18,7 +18,6 @@ import { CapabilityEditPage } from '@/pages/CapabilityEditPage'
 import { ComplianceCheckCreatePage } from '@/pages/ComplianceCheckCreatePage'
 import { ComplianceCheckDetailPage } from '@/pages/ComplianceCheckDetailPage'
 import { ComplianceCheckEditPage } from '@/pages/ComplianceCheckEditPage'
-import { CompanySettingsPage } from '@/pages/CompanySettingsPage'
 import { CompliancePage } from '@/pages/CompliancePage'
 import { PolicyCreatePage } from '@/pages/PolicyCreatePage'
 import { PolicyDetailPage } from '@/pages/PolicyDetailPage'
@@ -76,7 +75,6 @@ import { WorkItemCreatePage } from '@/pages/WorkItemCreatePage'
 import { WorkItemDetailPage } from '@/pages/WorkItemDetailPage'
 import { WorkItemEditPage } from '@/pages/WorkItemEditPage'
 import { WorkItemsPage } from '@/pages/WorkItemsPage'
-import { WorkspaceSettingsPage } from '@/pages/WorkspaceSettingsPage'
 
 function RootProviders() {
   return (
@@ -172,8 +170,8 @@ export const router = createBrowserRouter([
           { path: 'files/:id', element: <FileDetailPage /> },
           { path: 'files', element: <FilesPage /> },
           { path: 'settings', element: <SettingsPage /> },
-          { path: 'settings/company', element: <CompanySettingsPage /> },
-          { path: 'settings/workspace', element: <WorkspaceSettingsPage /> },
+          { path: 'settings/company', element: <Navigate to="/settings?section=company" replace /> },
+          { path: 'settings/workspace', element: <Navigate to="/settings?section=workspace" replace /> },
           { path: '*', element: <NotFoundPage /> },
         ],
       },

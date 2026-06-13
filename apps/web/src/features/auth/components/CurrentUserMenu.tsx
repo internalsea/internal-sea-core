@@ -1,7 +1,9 @@
+import { Link } from 'react-router-dom'
+
+import { SettingsIcon } from '@/components/icons/SettingsIcon'
 import { Button } from '@/components/ui/Button'
-import { Badge } from '@/components/ui/Badge'
 import { useAuth } from '@/features/auth/hooks'
-import { formatRoleLabel } from '@/features/auth/utils'
+import { cn } from '@/lib/utils'
 
 export function CurrentUserMenu() {
   const { user, logout, isLoading } = useAuth()
@@ -14,12 +16,17 @@ export function CurrentUserMenu() {
 
   return (
     <div className="flex items-center gap-3">
-      <div className="text-right">
-        <p className="text-sm font-medium text-gray-900">{displayName}</p>
-        <Badge variant={user.role === 'admin' ? 'success' : user.role === 'editor' ? 'info' : 'neutral'}>
-          {formatRoleLabel(user.role)}
-        </Badge>
-      </div>
+      <p className="text-sm font-medium text-gray-900">{displayName}</p>
+      <Link
+        to="/settings"
+        aria-label="Settings"
+        className={cn(
+          'inline-flex h-8 w-8 items-center justify-center rounded-md text-gray-600',
+          'transition-colors hover:bg-app-muted hover:text-gray-900',
+        )}
+      >
+        <SettingsIcon />
+      </Link>
       <Button variant="ghost" size="sm" onClick={() => void logout()} disabled={isLoading}>
         Log out
       </Button>

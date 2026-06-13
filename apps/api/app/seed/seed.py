@@ -499,6 +499,7 @@ async def get_or_create_data_product(
 
     if existing is not None:
         changed = False
+        documentation_url = data.get("documentation_url")
         field_updates: list[tuple[object, object]] = [
             (existing.description, data["description"]),
             (existing.type, product_type),
@@ -512,7 +513,7 @@ async def get_or_create_data_product(
             (existing.refresh_frequency, data["refresh_frequency"]),
             (existing.source_systems, data["source_systems"]),
             (existing.consumers, data["consumers"]),
-            (existing.documentation_url, data["documentation_url"]),
+            (existing.documentation_url, documentation_url),
         ]
         for current, new in field_updates:
             if current != new:
@@ -532,7 +533,7 @@ async def get_or_create_data_product(
             existing.refresh_frequency = data["refresh_frequency"]
             existing.source_systems = data["source_systems"]
             existing.consumers = data["consumers"]
-            existing.documentation_url = data["documentation_url"]
+            existing.documentation_url = documentation_url
             stats.data_products.updated += 1
         else:
             stats.data_products.skipped += 1
@@ -552,7 +553,7 @@ async def get_or_create_data_product(
         refresh_frequency=data["refresh_frequency"],
         source_systems=data["source_systems"],
         consumers=data["consumers"],
-        documentation_url=data["documentation_url"],
+        documentation_url=data.get("documentation_url"),
     )
     session.add(product)
     await session.flush()

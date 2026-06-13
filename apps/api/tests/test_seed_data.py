@@ -85,6 +85,13 @@ def test_data_products_have_valid_enum_values() -> None:
         assert DataProductStatus(product["status"])
 
 
+def test_data_products_allow_optional_documentation_url() -> None:
+    partial_products = [product for product in DATA_PRODUCTS if "documentation_url" not in product]
+    assert len(partial_products) >= 1
+    for product in partial_products:
+        assert product["name"].strip()
+
+
 @pytest.mark.parametrize(
     "field",
     ["title", "type", "status", "priority"],

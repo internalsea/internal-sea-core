@@ -49,6 +49,15 @@ export const primaryNavGroups: PrimaryNavGroup[] = [
       { label: 'Policies', path: '/policies' },
     ],
   },
+  {
+    id: 'reports',
+    label: 'Reports',
+    items: [
+      { label: 'Capability Reports', path: '/reports/capabilities' },
+      { label: 'Project Reports', path: '/reports/projects' },
+      { label: 'Deal Reports', path: '/reports/deals' },
+    ],
+  },
 ]
 
 export interface SettingsLinkItem {

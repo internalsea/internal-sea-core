@@ -5,7 +5,6 @@ import { SettingsIcon } from '@/components/icons/SettingsIcon'
 import { CreateActionMenu } from '@/components/layout/CreateActionMenu'
 import { TopNav } from '@/components/layout/TopNav'
 import { CurrentUserMenu } from '@/features/auth/components/CurrentUserMenu'
-import { GlobalSearch } from '@/features/search/components/GlobalSearch'
 import { isNotificationsPageActive, isSettingsPageActive } from '@/lib/navigation'
 import { cn } from '@/lib/utils'
 
@@ -15,17 +14,10 @@ export function TopBar() {
   const notificationsActive = isNotificationsPageActive(location.pathname)
 
   return (
-    <header className="relative z-40 flex h-topbar shrink-0 items-center gap-4 overflow-visible border-b border-auth-surfaceBorder bg-auth-nav px-4 lg:px-6">
+    <header className="relative z-40 flex h-topbar shrink-0 items-center justify-between gap-4 overflow-visible border-b border-auth-surfaceBorder bg-auth-nav px-4 lg:px-6">
       <TopNav />
 
       <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-        <div className="hidden w-72 xl:block">
-          <GlobalSearch />
-        </div>
-        <div className="w-36 sm:w-44 xl:hidden">
-          <GlobalSearch />
-        </div>
-
         <CreateActionMenu />
 
         <Link

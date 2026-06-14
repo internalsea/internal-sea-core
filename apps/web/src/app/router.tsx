@@ -25,6 +25,7 @@ import { PolicyCreatePage } from '@/pages/PolicyCreatePage'
 import { PolicyDetailPage } from '@/pages/PolicyDetailPage'
 import { PolicyEditPage } from '@/pages/PolicyEditPage'
 import { DashboardPage } from '@/pages/DashboardPage'
+import { DealReportsPage } from '@/pages/DealReportsPage'
 import { DataProductCreatePage } from '@/pages/DataProductCreatePage'
 import { DataProductDetailPage } from '@/pages/DataProductDetailPage'
 import { DataProductEditPage } from '@/pages/DataProductEditPage'
@@ -66,6 +67,8 @@ import { MetricValueEditPage } from '@/pages/MetricValueEditPage'
 import { PerformancePage } from '@/pages/PerformancePage'
 import { PoliciesPage } from '@/pages/PoliciesPage'
 import { ProjectsPage } from '@/pages/ProjectsPage'
+import { ProjectReportsPage } from '@/pages/ProjectReportsPage'
+import { CapabilityReportsPage } from '@/pages/CapabilityReportsPage'
 import { SettingsPage } from '@/pages/SettingsPage'
 import { TeamCreatePage } from '@/pages/TeamCreatePage'
 import { TeamDetailPage } from '@/pages/TeamDetailPage'
@@ -174,6 +177,9 @@ export const router = createBrowserRouter([
           { path: 'files/:id/edit', element: <FileEditPage /> },
           { path: 'files/:id', element: <FileDetailPage /> },
           { path: 'files', element: <FilesPage /> },
+          { path: 'reports/capabilities', element: <CapabilityReportsPage /> },
+          { path: 'reports/projects', element: <ProjectReportsPage /> },
+          { path: 'reports/deals', element: <DealReportsPage /> },
           { path: 'settings', element: <SettingsPage /> },
           { path: 'settings/company', element: <Navigate to="/settings?section=company" replace /> },
           { path: 'settings/workspace', element: <Navigate to="/settings?section=workspace" replace /> },

@@ -1,3 +1,4 @@
+import { PowerOffIcon } from '@/components/icons/PowerOffIcon'
 import { Button } from '@/components/ui/Button'
 import { useAuth } from '@/features/auth/hooks'
 import { cn } from '@/lib/utils'
@@ -20,24 +21,24 @@ export function CurrentUserMenu() {
     <div className="flex items-center gap-2 border-l border-auth-surfaceBorder pl-3">
       <div
         className={cn(
-          'hidden h-8 w-8 items-center justify-center rounded-full bg-auth-surface text-xs font-semibold text-gray-800 sm:inline-flex',
+          'inline-flex h-8 w-8 items-center justify-center rounded-full bg-auth-surface text-xs font-semibold text-gray-800',
         )}
-        aria-hidden="true"
+        aria-label={displayName}
+        title={displayName}
       >
         {initials || 'U'}
       </div>
-      <div className="hidden min-w-0 lg:block">
-        <p className="truncate text-sm font-medium text-gray-900">{displayName}</p>
-        <p className="truncate text-xs text-gray-600">{user.email}</p>
-      </div>
       <Button
+        type="button"
         variant="ghost"
         size="sm"
         onClick={() => void logout()}
         disabled={isLoading}
-        className="text-gray-700 hover:bg-auth-surface/80 hover:text-gray-900"
+        aria-label="Log out"
+        title="Log out"
+        className="h-9 w-9 p-0 text-gray-700 hover:bg-auth-surface/80 hover:text-gray-900"
       >
-        Log out
+        <PowerOffIcon />
       </Button>
     </div>
   )
